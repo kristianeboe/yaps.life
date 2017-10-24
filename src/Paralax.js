@@ -21,6 +21,7 @@ const Paralax = (props) => {
             backgroundPosition: 'center center',
             backgroundImage: backgroundImage,
             backgroundSize: 'cover',
+            boxShadow: 'inset 0 0 0 2000px rgba(0,0,0,0.4)',
             height: '100vh',
             padding: '1em 0em',
             }}

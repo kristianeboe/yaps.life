@@ -16,9 +16,9 @@ class App extends Component {
 
     return (
       <div className='App'>
-        <Sidebar.Pushable as={Segment} >
-          <AppHeader toggleVisibility={this.toggleVisibility} visible={visible}/>
-          <Sidebar.Pusher onClick={() => this.setState({ visible: false })}>
+        <AppHeader toggleVisibility={this.toggleVisibility} visible={visible}/>
+        <Sidebar.Pushable as={Segment} className="AppContent" >
+          <Sidebar.Pusher onClick={() => this.setState({ visible: false })} >
             <Paralax
               h1_content='ER DU EN YAS MED SOMMERJOBB?'
               h3_content='(YAS = Young Aspiring Student)'
