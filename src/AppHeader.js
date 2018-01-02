@@ -8,10 +8,6 @@ import {
   Header,
   Image
 } from 'semantic-ui-react'
-import Responsive from 'react-responsive';
-
-const Mobile = ({ children }) => <Responsive maxWidth={768} children={children} />;
-const Default = ({ children }) => <Responsive minWidth={768} children={children} />;
 
 class AppHeader extends Component {
 
@@ -28,15 +24,15 @@ class AppHeader extends Component {
           zIndex: '5',
         }}/>
         <Sidebar
-          as={Menu}
-          animation='overlay'
-          width='wide'
-          direction='right'
-          visible={visible}
-          icon='labeled'
-          vertical
-          inverted
-        >
+            as={Menu}
+            animation='push'
+            width='wide'
+            direction='right'
+            visible={visible}
+            icon='labeled'
+            vertical
+            inverted
+          >
           <Menu.Item name='home'>
             <Icon name='home' />
               Home

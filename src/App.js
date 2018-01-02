@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Sidebar, Segment} from 'semantic-ui-react'
+import {Sidebar, Segment, Image} from 'semantic-ui-react'
 import AppHeader from './AppHeader';
 import Process from './Process';
 import Register from './Register';
@@ -16,32 +16,26 @@ class App extends Component {
 
     return (
       <div className='App'>
-        <AppHeader toggleVisibility={this.toggleVisibility} visible={visible}/>
         <Sidebar.Pushable as={Segment} className="AppContent" >
+          <AppHeader toggleVisibility={this.toggleVisibility} visible={visible}/>
           <Sidebar.Pusher onClick={() => this.setState({ visible: false })} >
             <Paralax
               h1_content='ER DU EN YAS MED SOMMERJOBB?'
               h3_content='(YAS = Young Aspiring Student)'
               h2_content='Flytt inn i kollektiv med andre ambisiøse studenter som også har fått sommerjobb i de beste bedriftene, alt du trenger å gjøre er å registrere deg så fikser vi resten.'
               button_content='Registrer deg i dag!'
-              backgroundImage='url("/assets/images/thomas-brault-15523.jpg")'
+              backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'
+              full_page
             />
-            <Paralax
-              h1_content=''
-              h3_content=''
-              h2_content=''
-              button_content=''
-              backgroundImage='url("/assets/images/live.jpg")'
-            />
-            {/* <Landing /> */}
             <Process />
-            <Register />
             <Paralax
               h1_content='What is a YAP?'
               h3_content=''
               h2_content=''
               button_content=''
+              backgroundImage='url("/assets/images/yap_man_compressed.jpg")'
             />
+            <Register />
           </Sidebar.Pusher>
         </Sidebar.Pushable>
       </div>

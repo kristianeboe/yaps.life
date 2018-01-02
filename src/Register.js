@@ -76,12 +76,12 @@ class Register extends Component {
     const { name, email, submittedName, submittedEmail, sex} = this.state
     return (
       <div>
-        <Segment inverted>
+        <Segment inverted vertical>
           <Container>
             <Form onSubmit={this.handleSubmit} inverted>
               <Form.Group>
-                <Form.Input label='First name' placeholder='First Name' width={8} name='first_name' onChange={this.handleChange} />
-                <Form.Input label='Last Name' placeholder='Last Name' width={8} name='last_name' onChange={this.handleChange} />
+                <Form.Input placeholder='First Name' width={8} name='first_name' onChange={this.handleChange} />
+                <Form.Input placeholder='Last Name' width={8} name='last_name' onChange={this.handleChange} />
               </Form.Group>
               <Form.Input placeholder='Email' name='email' onChange={this.handleChange} />
               <Form.Group>
