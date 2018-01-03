@@ -1,15 +1,15 @@
 import React, { Component } from 'react'
-import { Form, Segment, Container, Dropdown, TextArea} from 'semantic-ui-react'
+import { Form, Segment, Container, Dropdown, TextArea, Checkbox, Message } from 'semantic-ui-react'
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 
-const gender = [
+const gender_options = [
   { key: 'm', text: 'Male', value: 'male' },
   { key: 'f', text: 'Female', value: 'female' },
   { key: 'o', text: 'Other', value: 'other' },
 ]
 
-const type_of_work = [
+const type_of_work_options = [
   { key: 'c', text: 'Coding', value: 'coding' },
   { key: 's', text: 'Strategy', value: 'strategy' },
   { key: 'pm', text: 'Project management', value: 'project_management' },
@@ -20,7 +20,7 @@ const type_of_work = [
   { key: 'o', text: 'Other', value: 'other' },
 ]
 
-const interests = [
+const interests_options = [
   { key: 'partying', text: 'Partying', value: 'partying' },
   { key: 'hacking', text: 'Hacking', value: 'hacking' },
   { key: 'sleeping', text: 'Sleeping', value: 'sleeping' },
@@ -30,7 +30,7 @@ const interests = [
   { key: 'working_out', text: 'Working out', value: 'working_out' },
 ]
 
-const preferences_roommates = [
+const preferences_roommates_options = [
   { key: 'same_company', text: 'Same company', value: 'same_company' },
   { key: 'same_type_of_work', text: 'Same type of work', value: 'same_type_of_work' },
   { key: 'different_type_of_work', text: 'Different type of work', value: 'different_type_of_work' },
@@ -42,21 +42,24 @@ class Register extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       first_name: '',
       last_name: '',
       email: '',
       gender: '',
       age: '',
-      field_of_study:'',
-      university:'',
-      workplace:'',
+      field_of_study: '',
+      university: '',
+      workplace: '',
       field_of_work: [],
       linkedIn_id: '',
       preferences_apartment: [],
       preferences_roommates: [],
       max_rent: '',
       other_requests: '',
+      tos_checkbox: '',
+      loading: false,
+      form_success: false,
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -67,6 +70,7 @@ class Register extends Component {
 
   handleSubmit = (event) => {
     // const { name, email } = this.state
+    this.setState({ loading: true })
     const user = this.state
     // const name = "Kristian Elset Bø"
     // const email = "kristian.e.boe@gmail.com"
@@ -75,41 +79,89 @@ class Register extends Component {
     const firebase = this.props.firebase
     const collection = firebase.firestore().collection('users');
     console.log(user)
-    // collection.add(user);
+    collection.add(user).then(() => {
+      this.setState({
+        first_name: '',
+        last_name: '',
+        email: '',
+        gender: '',
+        age: '',
+        field_of_study: '',
+        university: '',
+        workplace: '',
+        field_of_work: [],
+        linkedIn_id: '',
+        preferences_apartment: [],
+        preferences_roommates: [],
+        max_rent: '',
+        other_requests: '',
+        tos_checkbox: '',
+        loading: false,
+        form_success: true
+      })
+    });
     alert("User registered!")
   }
 
   render() {
+    const {
+      first_name,
+      last_name,
+      email,
+      gender,
+      age,
+      field_of_study,
+      university,
+      workplace,
+      field_of_work,
+      preferences_apartment,
+      preferences_roommates,
+      linkedIn_id,
+      max_rent,
+      other_requests,
+      tos_checkbox,
+      loading,
+      form_success } = this.state
+
     return (
-      <div>
-        <Segment inverted vertical>
-          <Container>
-            <Form onSubmit={this.handleSubmit} inverted>
-              <Form.Group>
-                <Form.Input placeholder='First Name' width={8} name='first_name' onChange={this.handleChange} />
-                <Form.Input placeholder='Last Name' width={8} name='last_name' onChange={this.handleChange} />
-              </Form.Group>
-              <Form.Input placeholder='Email' name='email' onChange={this.handleChange} />
-              <Form.Group>
-                <Form.Select name='gender' options={gender} placeholder='Gender' onChange={this.handleChange} width={8}/>
-                <Form.Input placeholder='Age' name='age' onChange={this.handleChange} width={8}/>
-              </Form.Group>
-              <Form.Group>
-                <Form.Input placeholder='Field of study' name='field_of_study' onChange={this.handleChange} width={8}/>
-                <Form.Input placeholder='University' name='university' onChange={this.handleChange} width={8}/>
-              </Form.Group>
-              <Form.Input placeholder='Where are you going to work?' name='workplace' onChange={this.handleChange} />
-              <Dropdown name='field_of_work' placeholder="Type of work" fluid multiple search selection options={type_of_work} onChange={this.handleChange}/>
-              <Dropdown name='preferences_apartment' placeholder='Interests' fluid multiple search selection options={interests} onChange={this.handleChange}/>
-              <Dropdown name='preferences_roommates' placeholder='Roommates' fluid multiple search selection options={preferences_roommates} onChange={this.handleChange} />
-              <Form.Input placeholder='LinkedIn id' name='linkedIn_id' onChange={this.handleChange} />
-              <Form.Input placeholder='Max rent' name='max_rent' onChange={this.handleChange} />
-              <TextArea placeholder='Other requests, notes or concerns?' name='other_requests'onChange={this.handleChange} />
-              <Button type="submit" >Submit</Button>
-            </Form>
-          </Container>
-        </Segment>
-      </div>
+      <Segment inverted vertical>
+        <Container>
+          <Form onSubmit={this.handleSubmit} inverted loading={loading} success={form_success}>
+            <Form.Group widths='equal'>
+              <Form.Input required label='First Name' placeholder='First Name' name='first_name' value={first_name} onChange={this.handleChange} />
+              <Form.Input required label='Last Name' placeholder='Last Name' name='last_name' value={last_name} onChange={this.handleChange} />
+            </Form.Group>
+            <Form.Input required label='Email' placeholder='Email' name='email' value={email} onChange={this.handleChange} />
+            <Form.Group widths='equal'>
+              {/* <label>Gender</label>
+              <Dropdown required placeholder='Gender' name='gender' value={gender} fluid selection options={gender} onChange={this.handleChange} /> */}
+              <Form.Select required label='Gender' placeholder='Gender' name='gender' value={gender} options={gender_options} onChange={this.handleChange} />
+              <Form.Input required label='Age' placeholder='Age' name='age' value={age} onChange={this.handleChange} />
+            </Form.Group>
+            <Form.Group widths='equal'>
+              <Form.Input label='Field of study' placeholder='Field of study' name='field_of_study' value={field_of_study} onChange={this.handleChange} />
+              <Form.Input required label='University' placeholder='University' name='university' value={university} onChange={this.handleChange} />
+            </Form.Group>
+            <Form.Input label='Address of workplace' placeholder='Where are you going to work?' name='workplace' value={workplace} onChange={this.handleChange} />
+            <label>Type of work</label>
+            <Dropdown placeholder='Type of work' name='field_of_work' value={field_of_work} fluid multiple search selection options={type_of_work_options} onChange={this.handleChange} />
+            <label>Interests</label>
+            <Dropdown label='Interests' placeholder='Interests' name='preferences_apartment' value={preferences_apartment} fluid multiple search selection options={interests_options} onChange={this.handleChange} />
+            <label>Roommate preferences</label>
+            <Dropdown label='Roommates' placeholder='Roommates' name='preferences_roommates' value={preferences_roommates} fluid multiple search selection options={preferences_roommates_options} onChange={this.handleChange} />
+            <Form.Input required label='LinkedIn id' placeholder='LinkedIn id' name='linkedIn_id' value={linkedIn_id} onChange={this.handleChange} />
+            <Form.Input label='Max rent' placeholder='Max rent' name='max_rent' value={max_rent} onChange={this.handleChange} />
+            <TextArea label='Other notes' placeholder='Other requests, notes or concerns?' name='other_requests' value={other_requests} onChange={this.handleChange} />
+            <Form.Checkbox required label='I agree to the Terms and Conditions' name='tos_checkbox' value={tos_checkbox} onChange={this.handleChange}/>
+            <Button type="submit" >Submit</Button>
+            <Message
+              success
+              header='Form Completed'
+              content="You've been registered! We'll be in touch soon"
+            />
+          </Form>
+        </Container>
+      </Segment>
     )
   }
 }
