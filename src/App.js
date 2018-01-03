@@ -5,6 +5,7 @@ import Process from './Process';
 import Register from './Register';
 import Paralax from './Paralax';
 import './App.css';
+import firebase from './firebase'
 
 class App extends Component {
   state = { visible: false }
@@ -35,7 +36,7 @@ class App extends Component {
               button_content=''
               backgroundImage='url("/assets/images/yap_man_compressed.jpg")'
             />
-            <Register />
+            <Register firebase={firebase}/>
           </Sidebar.Pusher>
         </Sidebar.Pushable>
       </div>

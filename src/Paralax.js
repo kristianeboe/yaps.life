@@ -31,7 +31,7 @@ const Paralax = (props) => {
             padding: '1em 0em',
           }}
       >
-          {/* <Container text> */}
+          <Container text>
           <Item.Content verticalAlign='middle'>
             <Header
               as='h1'
@@ -58,7 +58,7 @@ const Paralax = (props) => {
               </Button>
             )}
             </Item.Content>
-      {/* </Container> */}
+      </Container>
       </Segment>
         </Item>
 

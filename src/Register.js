@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Segment, Container, Dropdown, TextArea} from 'semantic-ui-react'
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 
 const gender = [
@@ -56,8 +57,6 @@ class Register extends Component {
       preferences_roommates: [],
       max_rent: '',
       other_requests: '',
-      submittedName: '', 
-      submittedEmail: '',
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -67,13 +66,20 @@ class Register extends Component {
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   handleSubmit = (event) => {
-    const { name, email } = this.state
+    // const { name, email } = this.state
+    const user = this.state
+    // const name = "Kristian Elset Bø"
+    // const email = "kristian.e.boe@gmail.com"
+    // const interests = ["code", "curls", "girls"]
 
-    this.setState({ submittedName: name, submittedEmail: email })
+    const firebase = this.props.firebase
+    const collection = firebase.firestore().collection('users');
+    console.log(user)
+    // collection.add(user);
+    alert("User registered!")
   }
 
   render() {
-    const { name, email, submittedName, submittedEmail, sex} = this.state
     return (
       <div>
         <Segment inverted vertical>
@@ -85,7 +91,7 @@ class Register extends Component {
               </Form.Group>
               <Form.Input placeholder='Email' name='email' onChange={this.handleChange} />
               <Form.Group>
-                <Form.Select name='gender' options={gender} placeholder='Gender' onChange={this.onChange} width={8}/>
+                <Form.Select name='gender' options={gender} placeholder='Gender' onChange={this.handleChange} width={8}/>
                 <Form.Input placeholder='Age' name='age' onChange={this.handleChange} width={8}/>
               </Form.Group>
               <Form.Group>
@@ -94,10 +100,12 @@ class Register extends Component {
               </Form.Group>
               <Form.Input placeholder='Where are you going to work?' name='workplace' onChange={this.handleChange} />
               <Dropdown name='field_of_work' placeholder="Type of work" fluid multiple search selection options={type_of_work} onChange={this.handleChange}/>
-              <Dropdown name='preferences_apartment' placeholder='Interests' fluid multiple search selection options={interests} />
-              <Dropdown name='preferences_roommates' placeholder='Roommates' fluid multiple search selection options={preferences_roommates} />
+              <Dropdown name='preferences_apartment' placeholder='Interests' fluid multiple search selection options={interests} onChange={this.handleChange}/>
+              <Dropdown name='preferences_roommates' placeholder='Roommates' fluid multiple search selection options={preferences_roommates} onChange={this.handleChange} />
               <Form.Input placeholder='LinkedIn id' name='linkedIn_id' onChange={this.handleChange} />
-              <TextArea placeholder='Other requests, notes or concerns?' name='other_requests'/>
+              <Form.Input placeholder='Max rent' name='max_rent' onChange={this.handleChange} />
+              <TextArea placeholder='Other requests, notes or concerns?' name='other_requests'onChange={this.handleChange} />
+              <Button type="submit" >Submit</Button>
             </Form>
           </Container>
         </Segment>
