@@ -1,5 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const googleMapsClient = require('@google/maps').createClient({
+  key: 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
+});
 
 admin.initializeApp(functions.config().firebase)
 
@@ -30,8 +33,8 @@ const APP_NAME = 'YAPS.life';
  * Sends a welcome email to new user.
  */
 // [START onCreateTrigger]
-exports.sendWelcomeEmail = functions.firestore.document('users/{userId}').onCreate(event => {
-// [END onCreateTrigger]
+exports.sendWelcomeEmail = functions.firestore.document('users/{userId}').onDelete(event => {
+  // [END onCreateTrigger]
   // [START eventAttributes]
   const user = event.data; // The Firebase user.
 
@@ -56,4 +59,33 @@ function sendWelcomeEmail(email, displayName) {
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('New welcome email sent to:', email);
   });
+}
+
+exports.googleMapsDistance = functions.firestore.document('users/{userId}').onCreate(event => {
+  var origin1 = 'Arnebråtveien 75D Oslo';
+  var origin2 = 'Nydalen Oslo'
+  var origin3 = 'Grunerløkka Oslo'
+  var destination1 = 'Netlight AS';
+
+  googleMapsClient.distanceMatrix({
+    origins: [
+      origin1, origin2, origin3
+    ],
+    destinations: [
+      destination1
+    ]
+  }).then((result, status) => {
+    console.log(result)
+    console.log(status)
+  })
+
+});
+
+function getNextDayOfWeek(date, dayOfWeek) {
+  // Code to check that date and dayOfWeek are valid left as an exercise ;)
+  var resultDate = new Date(date.getTime());
+
+  resultDate.setDate(date.getDate() + (7 + dayOfWeek - date.getDay()) % 7);
+
+  return resultDate;
 }
