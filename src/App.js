@@ -21,10 +21,10 @@ class App extends Component {
           <AppHeader toggleVisibility={this.toggleVisibility} visible={visible}/>
           <Sidebar.Pusher onClick={() => this.setState({ visible: false })} >
             <Paralax
-              h1_content='ER DU EN YAS MED SOMMERJOBB?'
-              h3_content='(YAS = Young Aspiring Student)'
-              h2_content='Flytt inn i kollektiv med andre ambisiøse studenter som også har fått sommerjobb i de beste bedriftene, alt du trenger å gjøre er å registrere deg så fikser vi resten.'
-              button_content='Registrer deg i dag!'
+              h1_content='Are you a YAP?'
+              h3_content='(YAP = Young Aspiring Professional)'
+              h2_content='Move into a sharehouse with other yaps in a location determined by AI, all you need to do is register and we will do the rest.'
+              button_content='Register today!'
               backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'
               full_page
             />

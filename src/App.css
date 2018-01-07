@@ -1,3 +1,10 @@
 .AppContent {
   margin: 0 !important;
 }
+
+.parallax-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+}
