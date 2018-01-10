@@ -1,5 +1,5 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+// const functions = require('firebase-functions');
+// const admin = require('firebase-admin');
 const googleMapsClient = require('@google/maps').createClient({
   key: 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
 });
@@ -7,7 +7,7 @@ const googleMapsClient = require('@google/maps').createClient({
 const request = require('request')
 const axios = require('axios')
 
-admin.initializeApp(functions.config().firebase)
+// admin.initializeApp(functions.config().firebase)
 
 // const nodemailer = require('nodemailer');
 // // // Create and Deploy Your First Cloud Functions
@@ -64,54 +64,66 @@ admin.initializeApp(functions.config().firebase)
 //   });
 // }
 
-exports.googleMapsDistance = functions.firestore.document('users/{userId}').onCreate(event => {
-  console.log('I am new again')
+// exports.googleMapsDistance = functions.firestore.document('users/{userId}').onCreate(event => {
 
-  const googleMapsAPIkey = 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
+const googleMapsAPIkey = 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
 
-  const origin1 = ('Arnebråtveien 75D Oslo')
-  const origin2 = ('Nydalen Oslo')
-  const origin3 = ('Grunerløkka Oslo')
-  const destination1 = ('Netlight AS')
-  const destination2 = ('Google Norge')
-  const destination3 = ('Professor Kohts Vei 9, 1366 Lysaker, Norge')
+const origin1 = ('Arnebråtveien 75D Oslo')
+const origin2 = ('Nydalen Oslo')
+const origin3 = ('Grunerløkka Oslo')
+const destination1 = ('Netlight AS')
+const destination2 = ('Google Norge')
+const destination3 = ('Professor Kohts Vei 9, 1366 Lysaker, Norge')
 
-  const nextMondayAt8 = getNextDayOfWeek(new Date(), 1)
+const origins = [origin1, origin2, origin3]
+const destinations = [destination1, destination2, destination3]
 
-  googleMapsClient.distanceMatrix({
-    origins: [
-      origin1, origin2, origin3
-    ],
-    destinations: [
-      destination1, destination2, destination3
-    ],
-    mode: 'transit',
-    arrival_time: nextMondayAt8,
-  }, function (err, response) {
-    if (!err) {
-      const data = response.json
-      
-      const origins = data.origin_addresses;
-      const destinations = data.destination_addresses;
+const nextMondayAt8 = getNextDayOfWeek(new Date(), 1)
+originsURL = encodeURI(origin1) + '|' + encodeURI(origin2)
+destinationsURL = encodeURI(destination1) + '|' + encodeURI(destination2)
 
-      for (let i = 0; i < origins.length; i++) {
-        var results = data.rows[i].elements;
-        for (let j = 0; j < results.length; j++) {
-          var element = results[j];
-          var distance = element.distance.text;
-          var duration = element.duration.text;
-          var from = origins[i];
-          var to = destinations[j];
-          console.log('Duration', from, to, duration)
-        }
+
+
+googleMapsClient.distanceMatrix({
+  origins: [
+    origin1, origin2, origin3
+  ],
+  destinations: [
+    destination1, destination2, destination3
+  ],
+  // travelMode: 'TRANSIT',
+  // transitOptions: {
+  //   arrivalTime: nextMondayAt8,
+  // }
+}, function (err, response) {
+  console.log('')
+  console.log('DM client')
+  if (!err) {
+    const data = response.json
+
+    console.log(data)
+
+    var origins = data.origin_addresses;
+    var destinations = data.destination_addresses;
+
+    for (var i = 0; i < origins.length; i++) {
+      var results = data.rows[i].elements;
+      for (var j = 0; j < results.length; j++) {
+        var element = results[j];
+        var distance = element.distance.text;
+        var duration = element.duration.text;
+        var from = origins[i];
+        var to = destinations[j];
+        console.log('Duration', from, to, duration)
       }
-
-    } else {
-      console.log('Err distancematrix', err)
     }
 
-  });
-})
+
+  } else {
+    console.log('Err distancematrix', err)
+  }
+
+});
 
 function getNextDayOfWeek(date, dayOfWeek) {
   // Code to check that date and dayOfWeek are valid left as an exercise ;)
