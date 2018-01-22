@@ -8,13 +8,13 @@ import {
 
 const Process = () => (
   <Segment vertical textAlign='center' style={{ padding: '5em 0em' }} >
+    <Header as='h3' style={{ fontSize: '2em' }}>HVOR DU BOR OG HVEM DU BOR MED HAR UTROLIG MYE Å SI</Header>
+    <p style={{ fontSize: '1.33em' }}>
+      Vi matcher deg inn i et kollektiv med andre studenter med sommerjobb på tvers av bransjer, men med like preferanser.
+    Siden vi vet du har sommerjobb kan vi anta at du både er betalingsdyktig og en god leietaker noe som vil gjøre det
+    lettere å pitche deg inn for utleiere over hele byen.
+    </p>
     <Grid columns={3} container stackable verticalAlign='middle'>
-      <Header as='h3' style={{ fontSize: '2em' }}>HVOR DU BOR OG HVEM DU BOR MED HAR UTROLIG MYE Å SI</Header>
-      <p style={{ fontSize: '1.33em' }}>
-      Vi matcher deg inn i et kollektiv med andre studenter med sommerjobb på tvers av bransjer, men med like preferanser. 
-      Siden vi vet du har sommerjobb kan vi anta at du både er betalingsdyktig og en god leietaker noe som vil gjøre det 
-      lettere å pitche deg inn for utleiere over hele byen.
-      </p>
       <Grid.Row>
         <Grid.Column>
           <Image src="/assets/images/signup.jpg" />

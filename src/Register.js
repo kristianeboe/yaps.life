@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Segment, Container, Dropdown, TextArea, Message } from 'semantic-ui-react'
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-
+import firebase from './firebase'
 
 const gender_options = [
   { key: 'm', text: 'Male', value: 'male' },
@@ -69,16 +69,10 @@ class Register extends Component {
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   handleSubmit = (event) => {
-    // const { name, email } = this.state
     this.setState({ loading: true })
     const user = this.state
-    // const name = "Kristian Elset Bø"
-    // const email = "kristian.e.boe@gmail.com"
-    // const interests = ["code", "curls", "girls"]
 
-    const firebase = this.props.firebase
     const collection = firebase.firestore().collection('users');
-    console.log(user)
     collection.add(user).then(() => {
       this.setState({
         first_name: '',
@@ -100,7 +94,6 @@ class Register extends Component {
         form_success: true
       })
     });
-    alert("User registered!")
   }
 
   render() {
@@ -133,8 +126,6 @@ class Register extends Component {
             </Form.Group>
             <Form.Input required label='Email' placeholder='Email' name='email' value={email} onChange={this.handleChange} />
             <Form.Group widths='equal'>
-              {/* <label>Gender</label>
-              <Dropdown required placeholder='Gender' name='gender' value={gender} fluid selection options={gender} onChange={this.handleChange} /> */}
               <Form.Select required label='Gender' placeholder='Gender' name='gender' value={gender} options={gender_options} onChange={this.handleChange} />
               <Form.Input required label='Age' placeholder='Age' name='age' value={age} onChange={this.handleChange} />
             </Form.Group>
@@ -152,7 +143,7 @@ class Register extends Component {
             <Form.Input required label='LinkedIn id' placeholder='LinkedIn id' name='linkedIn_id' value={linkedIn_id} onChange={this.handleChange} />
             <Form.Input label='Max rent' placeholder='Max rent' name='max_rent' value={max_rent} onChange={this.handleChange} />
             <TextArea label='Other notes' placeholder='Other requests, notes or concerns?' name='other_requests' value={other_requests} onChange={this.handleChange} />
-            <Form.Checkbox required label='I agree to the Terms and Conditions' name='tos_checkbox' value={tos_checkbox} onChange={this.handleChange}/>
+            <Form.Checkbox required label='I agree to the Terms and Conditions' name='tos_checkbox' value={tos_checkbox} onChange={this.handleChange} />
             <Button type="submit" >Submit</Button>
             <Message
               success

@@ -7,17 +7,18 @@ class User extends Component {
 
   constructor(props) {
     super(props);
-    // const provider = new firebase.auth.GoogleAuthProvider();
+
+    const user = firebase.auth().currentUser
+
     this.state = {
-      signedIn: false,
+      signedIn: user ? true : false,
       user: null,
     };
-
   }
 
   uiConfig = {
     // Popup signin flow rather than redirect flow.
-    signInFlow: 'popup',
+    signInFlow: 'redirect',
     // We will display Google and Facebook as auth providers.
     signInOptions: [
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -37,7 +38,7 @@ class User extends Component {
 
     return (
       <div>
-        <AppHeader signedIn={this.state.signedIn} />
+        <AppHeader />
         {
           this.state.signedIn ?
             <div>

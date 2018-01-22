@@ -13,21 +13,33 @@ class AppHeader extends Component {
 
   constructor(props) {
     super(props);
-    // const provider = new firebase.auth.GoogleAuthProvider();
     const user = firebase.auth().currentUser
     this.state = {
-      user: user,
+      signedIn: user? true : false,
     };
   }
 
+  componentWillMount() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.setState({signedIn: true})
+
+      } else {
+        this.setState({signedIn: false})
+      }
+    });
+  }
+
   logout = () => {
-    firebase.auth().signOut().then(function() {
+    firebase.auth().signOut().then(function () {
       // Sign-out successful.
-    }).catch(function(error) {
+    }).catch(function (error) {
       console.log(error)
       // An error happened.
     });
   }
+
+
 
   render() {
     return (
@@ -38,7 +50,7 @@ class AppHeader extends Component {
           </Menu.Item>
           <Menu.Item><Link to="/">Home</Link></Menu.Item>
           <Menu.Item><Link to="/user">User</Link></Menu.Item>
-          {this.props.signedIn ?
+          {this.state.signedIn ?
             <Menu.Item onClick={this.logout} ><Link to="/">Sign out</Link></Menu.Item>
             :
             <Menu.Item ><Link to="/user">Sign in</Link></Menu.Item>
