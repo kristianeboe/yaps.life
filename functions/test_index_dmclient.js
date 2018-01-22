@@ -37,18 +37,44 @@ googleMapsClient.distanceMatrix({
     const origins = data.origin_addresses;
     const destinations = data.destination_addresses;
 
-    let 
+    let address_ratings = {}
+
     for (let i = 0; i < origins.length; i++) {
       var results = data.rows[i].elements;
       for (let j = 0; j < results.length; j++) {
         var element = results[j];
         var distance = element.distance.text;
-        var duration = element.duration.text;
+        var duration = element.duration.value;
         var from = origins[i];
         var to = destinations[j];
-        console.log('Duration', from, to, duration)
+
+        // console.log('lol', address_ratings)
+        if (address_ratings[from]) {
+          address_ratings[from] = address_ratings[from] + (duration/results.length)
+        }
+        else {
+          address_ratings[from] = duration/results.length
+        }
       }
     }
+
+    console.log(address_ratings)
+
+    best_rating = 3600
+    best_address = ''
+    for (address in address_ratings) {
+      if (address_ratings[address] < best_rating) {
+        best_rating = address_ratings[address]
+        best_address = address
+      }
+    }
+
+    if (best_rating >= 3600) {
+      return 'All these addresses are more than an hour away'
+    }
+
+    console.log('best_address', best_address, best_rating)
+    return best_address
 
 
   } else {

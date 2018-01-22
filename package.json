@@ -6,7 +6,9 @@
     "firebase": "^4.8.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-firebaseui": "^1.0.10",
     "react-responsive": "^3.0.0",
+    "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.13",
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.73.1"

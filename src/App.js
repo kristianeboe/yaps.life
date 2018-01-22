@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import {Sidebar, Segment, Image} from 'semantic-ui-react'
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
+import { Sidebar, Segment, Image, } from 'semantic-ui-react'
 import AppHeader from './AppHeader';
 import Process from './Process';
 import Register from './Register';
@@ -7,18 +12,32 @@ import Paralax from './Paralax';
 import './App.css';
 import firebase from './firebase'
 
+
+
 class App extends Component {
   state = { visible: false }
-  
+
   toggleVisibility = () => this.setState({ visible: !this.state.visible })
 
   render() {
     const { visible } = this.state
 
+    const About = () => (
+      <div>
+        <h2>About</h2>
+      </div>
+    )
+
+    const User = () => (
+      <div>
+        <h2>User</h2>
+      </div>
+    )
+
     return (
       <div className='App'>
+        <AppHeader toggleVisibility={this.toggleVisibility} visible={visible} />
         <Sidebar.Pushable as={Segment} className="AppContent" >
-          <AppHeader toggleVisibility={this.toggleVisibility} visible={visible}/>
           <Sidebar.Pusher onClick={() => this.setState({ visible: false })} >
             <Paralax
               h1_content='Are you a YAP?'
@@ -36,7 +55,7 @@ class App extends Component {
               button_content=''
               backgroundImage='url("/assets/images/yap_man_compressed.jpg")'
             />
-            <Register firebase={firebase}/>
+            <Register firebase={firebase} />
           </Sidebar.Pusher>
         </Sidebar.Pushable>
       </div>

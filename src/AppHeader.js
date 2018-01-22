@@ -6,48 +6,53 @@ import {
   Sidebar,
   Segment,
   Header,
-  Image
+  Image,
+  Dropdown,
+  Container
 } from 'semantic-ui-react'
+import {
+  Link
+} from 'react-router-dom'
+import firebase from './firebase'
+
 
 class AppHeader extends Component {
 
-  
-  render() {
+  constructor(props) {
+    super(props);
+    // const provider = new firebase.auth.GoogleAuthProvider();
+    const user = firebase.auth().currentUser
+    console.log("App header")
+    this.state = {
+      user: user,
+    };
+  }
 
-    const {visible, toggleVisibility} = this.props
+  logout = () => {
+    firebase.auth().signOut().then(function() {
+      // Sign-out successful.
+    }).catch(function(error) {
+      console.log(error)
+      // An error happened.
+    });
+  }
+
+  render() {
     return (
-      <div className="AppHeader">
-        <Icon name='bars' size='big' onClick={toggleVisibility} style={{
-          position: 'fixed',
-          top: '0.5em',
-          right: '0.5em',
-          zIndex: '5',
-        }}/>
-        <Sidebar
-            as={Menu}
-            animation='push'
-            width='wide'
-            direction='right'
-            visible={visible}
-            icon='labeled'
-            vertical
-            inverted
-          >
-          <Menu.Item name='home'>
-            <Icon name='home' />
-              Home
+      <Menu fixed='top' inverted>
+        <Container>
+          <Menu.Item as='a' header>
+            Yaps.life
           </Menu.Item>
-          <Menu.Item name='gamepad'>
-            <Icon name='gamepad' />
-              Games
-          </Menu.Item>
-          <Menu.Item name='camera'>
-            <Icon name='camera' />
-              Channels
-          </Menu.Item>
-        </Sidebar>
-      </div>
-    )
+          <Menu.Item><Link to="/">Home</Link></Menu.Item>
+          <Menu.Item><Link to="/user">User</Link></Menu.Item>
+          {this.props.signedIn ?
+            <Menu.Item onClick={this.logout} ><Link to="/">Sign out</Link></Menu.Item>
+            :
+            <Menu.Item ><Link to="/user">Sign in</Link></Menu.Item>
+          }
+        </Container>
+      </Menu>)
   }
 }
 
