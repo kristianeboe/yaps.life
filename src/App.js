@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link
-} from 'react-router-dom'
-import { Sidebar, Segment, Image, } from 'semantic-ui-react'
+import { Sidebar, Segment, } from 'semantic-ui-react'
 import AppHeader from './AppHeader';
 import Process from './Process';
 import Register from './Register';
@@ -21,19 +16,7 @@ class App extends Component {
 
   render() {
     const { visible } = this.state
-
-    const About = () => (
-      <div>
-        <h2>About</h2>
-      </div>
-    )
-
-    const User = () => (
-      <div>
-        <h2>User</h2>
-      </div>
-    )
-
+    
     return (
       <div className='App'>
         <AppHeader toggleVisibility={this.toggleVisibility} visible={visible} />
@@ -44,6 +27,7 @@ class App extends Component {
               h3_content='(YAP = Young Aspiring Professional)'
               h2_content='Move into a sharehouse with other yaps in a location determined by AI, all you need to do is register and we will do the rest.'
               button_content='Register today!'
+              button_onClick={() => document.getElementById('register-section').scrollIntoView() }
               backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'
               full_page
             />

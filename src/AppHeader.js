@@ -1,13 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Button,
   Menu,
-  Icon,
-  Sidebar,
-  Segment,
-  Header,
-  Image,
-  Dropdown,
   Container
 } from 'semantic-ui-react'
 import {
@@ -22,7 +15,6 @@ class AppHeader extends Component {
     super(props);
     // const provider = new firebase.auth.GoogleAuthProvider();
     const user = firebase.auth().currentUser
-    console.log("App header")
     this.state = {
       user: user,
     };

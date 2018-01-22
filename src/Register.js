@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Segment, Container, Dropdown, TextArea, Checkbox, Message } from 'semantic-ui-react'
+import { Form, Segment, Container, Dropdown, TextArea, Message } from 'semantic-ui-react'
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 
@@ -124,7 +124,7 @@ class Register extends Component {
       form_success } = this.state
 
     return (
-      <Segment inverted vertical>
+      <Segment inverted vertical id="register-section">
         <Container>
           <Form onSubmit={this.handleSubmit} inverted loading={loading} success={form_success}>
             <Form.Group widths='equal'>
