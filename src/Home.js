@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Sidebar, Segment, } from 'semantic-ui-react'
 import AppHeader from './AppHeader';
 import Process from './Process';
 import Register from './Register';

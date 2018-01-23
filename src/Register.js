@@ -152,24 +152,6 @@ class Register extends Component {
   }
 
   render() {
-    // const {
-    //   first_name,
-    //   last_name,
-    //   email,
-    //   gender,
-    //   age,
-    //   field_of_study,
-    //   university,
-    //   workplace,
-    //   field_of_work,
-    //   preferences_apartment,
-    //   preferences_roommates,
-    //   linkedIn_id,
-    //   max_rent,
-    //   other_requests,
-    //   tos_checkbox,
-    //   form_loading,
-    //   form_success } = this.state
 
     const inputProps = {
       name: 'workplace',
@@ -189,6 +171,7 @@ class Register extends Component {
           <img
             src={require('./powered_by_google_default.png')}
             style={{ display: 'inline-block', width: '150px' }}
+            alt="Powered by Google"
           />
         </div>
       </div>
@@ -221,7 +204,7 @@ class Register extends Component {
                 styles={{ root: { zIndex: 50 } }}
                 inputProps={inputProps}
                 renderFooter={Footer}
-                onEnterKeyDown={this.handleSelect}
+                onSelect={this.handleSelect}
                 shouldFetchSuggestions={shouldFetchSuggestions}
                 highlightFirstSuggestion
                 options={{
