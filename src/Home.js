@@ -19,9 +19,9 @@ class Home extends Component {
       <div className='Home'>
         <AppHeader />
         <Parallax
-          h1_content='Are you a YAP?'
-          h3_content='(YAP = Young Aspiring Professional)'
-          h2_content='Move into a sharehouse with other yaps in a location determined by AI, all you need to do is register and we will do the rest.'
+          h1_content='Distributed co-living'
+          h3_content=''
+          h2_content='Move into a share house with others in a location determined by AI, all you need to do is register and we will do the rest.'
           button_content='Register today!'
           button_onClick={() => document.getElementById('register-section').scrollIntoView()}
           backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'

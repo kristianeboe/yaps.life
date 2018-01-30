@@ -89,7 +89,7 @@ class Register extends Component {
       .catch(error => {
         console.log('Oh no!', error)
         this.setState({
-          geocodeResults: this.renderGeocodeFailure(error),
+          geocodeResults: null, //this.renderGeocodeFailure(error),
           loading: false,
         })
       })
@@ -123,9 +123,11 @@ class Register extends Component {
     this.setState({ loading: true })
     let user = this.extractUserFromState()
 
-    // if (firebase.auth().currentUser) {
-    //   user['google_uid'] = firebase.auth().currentUser.uid
-    // }
+    if (firebase.auth().currentUser) {
+      user['google_uid'] = firebase.auth().currentUser.uid
+      user['photo_url'] = firebase.auth().currentUser.photoURL
+      user['displayName'] = firebase.auth().currentUser.displayName
+    }
 
     const collection = firebase.firestore().collection('users');
     collection.add(user).then(() => {
