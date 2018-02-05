@@ -31,49 +31,71 @@ exports.postProcessingUserTrigger = functions.firestore.document('users/{userId}
   const userId = event.data.ref.id
   const userData = event.data.data()
 
+  console.log('data', event.data)
+  console.log('userRef', userRef)
+  console.log('userId', userId)
+  console.log('userData', userData)
+
   return postProcessingUser(userId, userData, userRef)
 
 });
 
 function postProcessingUser(userId, userData, userRef) {
 
-  // get matchScores
-  const matchScores = await getMachScores(userId, userData)
-
-  // get bestMatchId
-  const bestMatchId = Object.keys(matchScores).reduce((a, b) => matchScores[a] > matchScores[b] ? a : b);
-
-  // get bestOrigin
-  const bestOrigin = await googleMapsDistance(userData.workplace, bestMatchId)
-
-  // update database
-
-  userRef.collection('roommates').add({
-    matches: matchScores,
-    bestMatchId: bestMatchId,
-    bestOrigin: bestOrigin,
+  getMachScores(userId, userData).then((matchScores) => {
+    console.log('matchscores', matchScores)
+    return Object.keys(matchScores).reduce((a, b) => matchScores[a] > matchScores[b] ? a : b);
+  }).then((bestMatchId) => {
+    return googleMapsDistance(userData.workplace, bestMatchId)
+  }).then((bestOrigin) => {
+    userRef.collection('roommates').add({
+      matches: matchScores,
+      bestMatchId: bestMatchId,
+      bestOrigin: bestOrigin,
+    })
+  }).catch((error) => {
+    console.log(error)
   })
 
-  return matchScores
+
+  // // get matchScores
+  // const matchScores = await getMachScores(userId, userData)
+
+  // // get bestMatchId
+  // const bestMatchId = Object.keys(matchScores).reduce((a, b) => matchScores[a] > matchScores[b] ? a : b);
+
+  // // get bestOrigin
+  // const bestOrigin = await googleMapsDistance(userData.workplace, bestMatchId)
+
+  // // update database
+
+  // userRef.collection('roommates').add({
+  //   matches: matchScores,
+  //   bestMatchId: bestMatchId,
+  //   bestOrigin: bestOrigin,
+  // })
+
+
 
 }
 
 function getMachScores(userId, userData) {
   return new Promise((resolve, reject) => {
+    console.log('made it inside promise 1')
     let matchScores = {}
 
-    resolve(admin.firestore().collection("users").get().then((querySnapshot) => {
+    admin.firestore().collection("users").get().then((querySnapshot) => {
       querySnapshot.forEach((user) => {
         if (userId != user.id) {
           matchScores[user.id] = match(userData, user.data())
         }
       });
-      return matchScores
+      resolve(matchScores)
     }).catch((error) => {
       console.log('Trouble getting matchScores', error)
-    }))
-  }
+    })
   })
+}
 
 
 
@@ -106,7 +128,8 @@ function match(newUser, matchUser) {
 }
 
 
-async function googleMapsDistance(userWorkplace, bestMatchId) {
+function googleMapsDistance(userWorkplace, bestMatchId) {
+
   const origin1 = 'Arnebråtveien 75D Oslo'
   const origin2 = 'Nydalen Oslo'
   const origin3 = 'Grunerløkka Oslo'
