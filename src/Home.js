@@ -27,14 +27,14 @@ class Home extends Component {
           backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'
           full_page
         />
-        <Process />
+        {/* <Process />
         <Parallax
           h1_content='What is a YAP?'
           h3_content=''
           h2_content=''
           button_content=''
           backgroundImage='url("/assets/images/yap_man_compressed.jpg")'
-        />
+        /> */}
         <Register />
       </div>
     );

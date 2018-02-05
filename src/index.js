@@ -10,12 +10,14 @@ import {
 } from 'react-router-dom'
 import Home from './Home'
 import User from './User'
+import Register from './Register'
 
 const RouterWrapper = () => (
   <Router>
     <div>
       <Route exact path="/" component={Home}/>
       <Route path="/user" component={User} />
+      <Route path="/register" component={Register} />
     </div>
   </Router>
 )

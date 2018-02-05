@@ -50,6 +50,7 @@ class AppHeader extends Component {
           </Menu.Item>
           <Menu.Item><Link to="/">Home</Link></Menu.Item>
           <Menu.Item><Link to="/user">User</Link></Menu.Item>
+          <Menu.Item><Link to="/register">Register</Link></Menu.Item>
           <Menu.Menu position='right'>
             {this.state.signedIn ?
               <Menu.Item onClick={this.logout} ><Link to="/">Sign out</Link></Menu.Item>

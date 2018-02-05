@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Segment, Container, Dropdown, TextArea, Message } from 'semantic-ui-react'
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-import firebase from './firebase'
+import firebase, {} from './firebase'
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, geocodeByPlaceId } from 'react-places-autocomplete'
 
 const gender_options = [
@@ -120,17 +120,10 @@ class Register extends Component {
   }
 
   handleSubmit = (event) => {
-    this.setState({ loading: true })
+    this.setState({ form_loading: true })
     let user = this.extractUserFromState()
 
-    if (firebase.auth().currentUser) {
-      user['google_uid'] = firebase.auth().currentUser.uid
-      user['photo_url'] = firebase.auth().currentUser.photoURL
-      user['displayName'] = firebase.auth().currentUser.displayName
-    }
-
-    const collection = firebase.firestore().collection('users');
-    collection.add(user).then(() => {
+    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).set(user, { merge: true }).then(() => {
       this.setState({
         first_name: '',
         last_name: '',
