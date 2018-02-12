@@ -21,7 +21,6 @@ exports.createUser = functions.auth.user().onCreate(event => {
     console.log("Error", error)
     return false
   })
-
 });
 
 
@@ -41,41 +40,36 @@ exports.postProcessingUserTrigger = functions.firestore.document('users/{userId}
 });
 
 function postProcessingUser(userId, userData, userRef) {
-
-  getMachScores(userId, userData).then((matchScores) => {
+  let updateObject = {}
+  return getMachScores(userId, userData).then((matchScores) => {
     console.log('matchscores', matchScores)
-    return Object.keys(matchScores).reduce((a, b) => matchScores[a] > matchScores[b] ? a : b);
+    updateObject.matchScores = matchScores
+    const bestMatchId = Object.keys(matchScores).reduce((a, b) => matchScores[a] > matchScores[b] ? a : b);
+    console.log('bestMatchId fresh', bestMatchId)
+    updateObject.bestMatchId = bestMatchId
+    return bestMatchId
   }).then((bestMatchId) => {
+    console.log('bestMatchId inside next promise', bestMatchId)
+    console.log('userData inside promise', userData)
     return googleMapsDistance(userData.workplace, bestMatchId)
+    // googleMapsDistance(roommates)
   }).then((bestOrigin) => {
-    userRef.collection('roommates').add({
-      matches: matchScores,
-      bestMatchId: bestMatchId,
-      bestOrigin: bestOrigin,
+    console.log('bestOrigin', bestOrigin)
+    // userRef.collection('roommates').add({
+    //   matches: updateObject.matchScores,
+    //   bestMatchId: updateObject.bestMatchId,
+    //   bestOrigin: bestOrigin,
+    // })
+    userRef.update({
+      match: {
+        roommates: [updateObject.bestMatchId, ],
+        bestOrigin,
+        matches: updateObject.matchScores,
+      }
     })
   }).catch((error) => {
     console.log(error)
   })
-
-
-  // // get matchScores
-  // const matchScores = await getMachScores(userId, userData)
-
-  // // get bestMatchId
-  // const bestMatchId = Object.keys(matchScores).reduce((a, b) => matchScores[a] > matchScores[b] ? a : b);
-
-  // // get bestOrigin
-  // const bestOrigin = await googleMapsDistance(userData.workplace, bestMatchId)
-
-  // // update database
-
-  // userRef.collection('roommates').add({
-  //   matches: matchScores,
-  //   bestMatchId: bestMatchId,
-  //   bestOrigin: bestOrigin,
-  // })
-
-
 
 }
 
@@ -93,6 +87,7 @@ function getMachScores(userId, userData) {
       resolve(matchScores)
     }).catch((error) => {
       console.log('Trouble getting matchScores', error)
+      reject(error)
     })
   })
 }
@@ -129,58 +124,70 @@ function match(newUser, matchUser) {
 
 
 function googleMapsDistance(userWorkplace, bestMatchId) {
+  return new Promise((resolve, reject) => {
+    const origin1 = 'Arnebråtveien 75D Oslo'
+    const origin2 = 'Nydalen Oslo'
+    const origin3 = 'Grunerløkka Oslo'
 
-  const origin1 = 'Arnebråtveien 75D Oslo'
-  const origin2 = 'Nydalen Oslo'
-  const origin3 = 'Grunerløkka Oslo'
+
+    let origins = [origin1, origin2, origin3].map((origin) => encodeURI(origin))
+    let userWorkplaceWithoutSpaces = userWorkplace.replace(/,/g, " ");
+    let destinations = [encodeURI(userWorkplaceWithoutSpaces)]
+
+    console.log('destinations before', destinations)
+    admin.firestore().collection("users").doc(bestMatchId).get().then((doc) => {
+      return doc.data().workplace
+    }).then((bestMatchUserWorkplace) => {
+      let bestMatchUserWorkplaceWithoutSpaces = bestMatchUserWorkplace.replace(/,/g, " ")
+      destinations.push(encodeURI(bestMatchUserWorkplaceWithoutSpaces))
+      console.log('destinations after', destinations)
+      console.log('destinations join', destinations.join('|'))
+      const mode = 'transit'
+
+      // const nextMondayAt8 = getNextDayOfWeek(new Date(), 1).getTime()
+
+      // '&departure_time=' + nextMondayAt8
+      let requestUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=' + origins.join('|') + '&destinations=' + destinations.join('|') + '&mode=' + mode + '&key=' + 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
+
+      axios.get(requestUrl).then((response) => {
+
+        console.log(response.data)
+        const data = response.data
+
+        const origins = data.origin_addresses;
+        const destinations = data.destination_addresses;
+
+        let originsToDestinationsObject = {}
+
+        for (let i = 0; i < origins.length; i++) {
+          var results = data.rows[i].elements;
+          for (let j = 0; j < results.length; j++) {
+            var element = results[j];
+            var distance = element.distance;
+            var duration = element.duration;
+            var from = origins[i];
+            var to = destinations[j];
+            console.log(from, to, duration.value)
+            originsToDestinationsObject[from] = { [to]: duration.value }
+          }
+        }
+
+        const bestOrigin = getBestOrigin(originsToDestinationsObject)
+
+        console.log(originsToDestinationsObject)
+
+        resolve(bestOrigin)
+
+      }).catch((error) => {
+        console.log("error in axios and data parsing", error)
+        reject(error)
+      })
+
+    })
 
 
-  let origins = [origin1, origin2, origin3].map((origin) => encodeURI(origin))
-  let destinations = [encodeURI(userWorkplace)]
-  bestMatchUserWorkplace = await admin.firestore().collection("users").doc(bestMatchId).get().then((doc) => {
-    return doc.data().workplace
   })
-  destinations.push(encodeURI(bestMatchUserWorkplace))
 
-  const mode = 'transit'
-
-  // const nextMondayAt8 = getNextDayOfWeek(new Date(), 1).getTime()
-
-  // '&departure_time=' + nextMondayAt8
-  let requestUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=' + origins.join('|') + '&destinations=' + destinations.join('|') + '&mode=' + mode + '&key=' + 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
-
-  return axios.get(requestUrl).then((response) => {
-
-    // console.log(response)
-    const data = response.data
-
-    const origins = data.origin_addresses;
-    const destinations = data.destination_addresses;
-
-    let originsToDestinationsObject = {}
-
-    for (let i = 0; i < origins.length; i++) {
-      var results = data.rows[i].elements;
-      for (let j = 0; j < results.length; j++) {
-        var element = results[j];
-        var distance = element.distance;
-        var duration = element.duration;
-        var from = origins[i];
-        var to = destinations[j];
-        console.log(from, to, duration.value)
-        originsToDestinationsObject[from] = { [to]: duration.value }
-      }
-    }
-
-    const bestOrigin = getBestOrigin(originsToDestinationsObject)
-
-    console.log(originsToDestinationsObject)
-
-    return bestOrigin
-
-  }).catch((error) => {
-    console.log("FUCK!", error)
-  })
 
 }
 
