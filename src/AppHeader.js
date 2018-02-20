@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
 import {
   Menu,
-  Container
+  Container,
+  Modal,
+  Header,
+  Button,
 } from 'semantic-ui-react'
 import {
   Link
 } from 'react-router-dom'
 import firebase from './firebase'
+import Login from './Login'
 
 
 class AppHeader extends Component {
@@ -39,9 +43,16 @@ class AppHeader extends Component {
     });
   }
 
+  
+
 
 
   render() {
+    
+    const ModalModalExample = () => (
+      <Login />
+    )
+
     return (
       <Menu fixed='top' inverted>
         <Container>
@@ -53,10 +64,11 @@ class AppHeader extends Component {
           <Menu.Item><Link to="/register">Register</Link></Menu.Item>
           <Menu.Menu position='right'>
             {this.state.signedIn ?
-              <Menu.Item onClick={this.logout} ><Link to="/">Sign out</Link></Menu.Item>
+              <Menu.Item onClick={this.logout} ><Link to="/">Log out</Link></Menu.Item>
               :
-              <Menu.Item ><Link to="/user">Sign in</Link></Menu.Item>
+              <Menu.Item ><Link to="/user">Log in</Link></Menu.Item>
             }
+            <ModalModalExample />
           </Menu.Menu>
         </Container>
       </Menu>)

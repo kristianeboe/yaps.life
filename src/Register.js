@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Segment, Container, Dropdown, TextArea, Message } from 'semantic-ui-react'
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-import firebase, {} from './firebase'
+import firebase from './firebase'
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, geocodeByPlaceId } from 'react-places-autocomplete'
 
 const gender_options = [
