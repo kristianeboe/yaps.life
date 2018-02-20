@@ -60,12 +60,12 @@ class User extends Component {
 
     auth.onAuthStateChanged((user) => {
       if (user) {
+        this.setState({user})
         firebase.firestore().collection("users").doc(user.uid).get().then((doc) => {
           const userData = doc.data()
           this.setState({
             userData,
             bestOrigin: userData.match.bestOrigin,
-            signedIn: true,
           })
           return userData
         }).then((userData) => {
@@ -86,6 +86,7 @@ class User extends Component {
 
         })
       } else {
+        this.setState({user: null})
         console.log('did mount auth state log out')
       }
     });
@@ -114,7 +115,7 @@ class User extends Component {
         <AppHeader />
         <Container>
           {
-            this.state.signedIn ?
+            this.state.user ?
               <div>
                 <h1>User</h1>
                 <p>Welcome! You are now signed-in!</p>
