@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Form, Segment, Container, Dropdown, TextArea, Message } from 'semantic-ui-react'
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import { Form, Segment, Button, Container, Dropdown, TextArea, Message, Tab } from 'semantic-ui-react'
 import firebase from './firebase'
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, geocodeByPlaceId } from 'react-places-autocomplete'
+import Parallax from './Parallax';
+
 
 const gender_options = [
   { key: 'm', text: 'Male', value: 'male' },
@@ -61,6 +62,7 @@ class Register extends Component {
       tos_checkbox: '',
       form_loading: false,
       form_success: false,
+      activeIndex: 0,
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -146,6 +148,8 @@ class Register extends Component {
     });
   }
 
+  handleTabChange = (e, { activeIndex }) => this.setState({ activeIndex })
+
   render() {
 
     const inputProps = {
@@ -173,67 +177,105 @@ class Register extends Component {
     )
 
     const shouldFetchSuggestions = ({ value }) => value.length > 2
+    const { activeIndex } = this.state
 
+    const pane1 = (
+      <div>
+        <Form.Group widths='equal'>
+          <Form.Input required label='First Name' placeholder='First Name' name='first_name' value={this.state.first_name} onChange={this.handleChange} />
+          <Form.Input required label='Last Name' placeholder='Last Name' name='last_name' value={this.state.last_name} onChange={this.handleChange} />
+        </Form.Group>
+        <Form.Input required label='Email' placeholder='Email' name='email' value={this.state.email} onChange={this.handleChange} />
+        <Form.Group widths='equal'>
+          <Form.Select required label='Gender' placeholder='Gender' name='gender' value={this.state.gender} options={gender_options} onChange={this.handleChange} />
+          <Form.Input required label='Age' placeholder='Age' name='age' value={this.state.age} onChange={this.handleChange} />
+        </Form.Group>
+        <Button onClick={() => (this.setState({ activeIndex: activeIndex + 1 }))}>Next tab</Button>
+      </div>
+    )
+    const pane2 = (
+      <div>
+        <Form.Group widths='equal'>
+          <Form.Input label='Field of study' placeholder='Field of study' name='field_of_study' value={this.state.field_of_study} onChange={this.handleChange} />
+          <Form.Input required label='University' placeholder='University' name='university' value={this.state.university} onChange={this.handleChange} />
+        </Form.Group>
+        <Button onClick={() => (this.setState({ activeIndex: activeIndex + 1 }))}>Next tab</Button>
+      </div>
+    )
+    const pane3 = (
+      <div>
+
+        <Form.Field required>
+          <label>Workplace</label>
+          <PlacesAutocomplete
+            styles={{ root: { zIndex: 50 } }}
+            inputProps={inputProps}
+            renderFooter={Footer}
+            onSelect={this.handleSelect}
+            shouldFetchSuggestions={shouldFetchSuggestions}
+            highlightFirstSuggestion
+            options={{
+              types: ['establishment']
+            }}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Type of work</label>
+          <Dropdown placeholder='Type of work' name='field_of_work' value={this.state.field_of_work} fluid multiple search selection options={type_of_work_options} onChange={this.handleChange} />
+        </Form.Field>
+
+        <Button onClick={() => (this.setState({ activeIndex: activeIndex + 1 }))}>Next tab</Button>
+      </div>
+    )
+    const pane4 = (
+      <div>
+        <Form.Field>
+          <label>Interests</label>
+          <Dropdown label='Interests' placeholder='Interests' name='preferences_apartment' value={this.state.preferences_apartment} fluid multiple search selection options={interests_options} onChange={this.handleChange} />
+        </Form.Field>
+        <Form.Field>
+          <label>Roommate preferences</label>
+          <Dropdown label='Roommates' placeholder='Roommates' name='preferences_roommates' value={this.state.preferences_roommates} fluid multiple search selection options={preferences_roommates_options} onChange={this.handleChange} />
+        </Form.Field>
+        <Button onClick={() => (this.setState({ activeIndex: activeIndex + 1 }))}>Next tab</Button>
+      </div>
+    )
+
+    const pane5 = (
+      <div>
+        <Form.Group>
+          <Form.Input required label='LinkedIn id' placeholder='LinkedIn id' name='linkedIn_id' value={this.state.linkedIn_id} onChange={this.handleChange} />
+          <Form.Input label='Max rent' placeholder='Max rent' name='max_rent' value={this.state.max_rent} onChange={this.handleChange} />
+        </Form.Group>
+        <TextArea label='Other notes' placeholder='Other requests, notes or concerns?' name='other_requests' value={this.state.other_requests} onChange={this.handleChange} />
+        <Form.Checkbox required label='I agree to the Terms and Conditions' name='tos_checkbox' value={this.state.tos_checkbox} onChange={this.handleChange} />
+        <Button type="submit" >Submit</Button>
+      </div>
+    )
+
+    const panes = [pane1, pane2, pane3, pane4, pane5].map((pane, key) => ({ menuItem: 'Step ' + key, render: () => <Tab.Pane>{pane}</Tab.Pane> }))
     return (
-      <Segment inverted vertical id="register-section">
-        <Container>
-          <Form onSubmit={this.handleSubmit} inverted loading={this.state.form_loading} success={this.state.form_success}>
-            <Form.Group widths='equal'>
-              <Form.Input required label='First Name' placeholder='First Name' name='first_name' value={this.state.first_name} onChange={this.handleChange} />
-              <Form.Input required label='Last Name' placeholder='Last Name' name='last_name' value={this.state.last_name} onChange={this.handleChange} />
-            </Form.Group>
-            <Form.Input required label='Email' placeholder='Email' name='email' value={this.state.email} onChange={this.handleChange} />
-            <Form.Group widths='equal'>
-              <Form.Select required label='Gender' placeholder='Gender' name='gender' value={this.state.gender} options={gender_options} onChange={this.handleChange} />
-              <Form.Input required label='Age' placeholder='Age' name='age' value={this.state.age} onChange={this.handleChange} />
-            </Form.Group>
-            <Form.Group widths='equal'>
-              <Form.Input label='Field of study' placeholder='Field of study' name='field_of_study' value={this.state.field_of_study} onChange={this.handleChange} />
-              <Form.Input required label='University' placeholder='University' name='university' value={this.state.university} onChange={this.handleChange} />
-            </Form.Group>
-
-
-            <Form.Field required>
-              <label>Workplace</label>
-              <PlacesAutocomplete
-                styles={{ root: { zIndex: 50 } }}
-                inputProps={inputProps}
-                renderFooter={Footer}
-                onSelect={this.handleSelect}
-                shouldFetchSuggestions={shouldFetchSuggestions}
-                highlightFirstSuggestion
-                options={{
-                  types: ['establishment']
-                }}
+      <div className="register_root">
+        <Parallax
+          h1_content='Register'
+          h3_content=''
+          h2_content='Enter your info and meet your new flatmates'
+          button_content=''
+          backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'
+        />
+        <Segment vertical id="register-section">
+          <Container>
+            <Form onSubmit={this.handleSubmit} loading={this.state.form_loading} success={this.state.form_success}>
+              <Tab menu={{ fluid: true, vertical: true, tabular: 'left' }} activeIndex={activeIndex} onTabChange={this.handleTabChange} panes={panes} />
+              <Message
+                success
+                header='Form Completed'
+                content="You've been registered! We'll be in touch soon"
               />
-            </Form.Field>
-
-
-            <Form.Field>
-              <label>Type of work</label>
-              <Dropdown placeholder='Type of work' name='field_of_work' value={this.state.field_of_work} fluid multiple search selection options={type_of_work_options} onChange={this.handleChange} />
-            </Form.Field>
-            <Form.Field>
-              <label>Interests</label>
-              <Dropdown label='Interests' placeholder='Interests' name='preferences_apartment' value={this.state.preferences_apartment} fluid multiple search selection options={interests_options} onChange={this.handleChange} />
-            </Form.Field>
-            <Form.Field>
-              <label>Roommate preferences</label>
-              <Dropdown label='Roommates' placeholder='Roommates' name='preferences_roommates' value={this.state.preferences_roommates} fluid multiple search selection options={preferences_roommates_options} onChange={this.handleChange} />
-            </Form.Field>
-            <Form.Input required label='LinkedIn id' placeholder='LinkedIn id' name='linkedIn_id' value={this.state.linkedIn_id} onChange={this.handleChange} />
-            <Form.Input label='Max rent' placeholder='Max rent' name='max_rent' value={this.state.max_rent} onChange={this.handleChange} />
-            <TextArea label='Other notes' placeholder='Other requests, notes or concerns?' name='other_requests' value={this.state.other_requests} onChange={this.handleChange} />
-            <Form.Checkbox required label='I agree to the Terms and Conditions' name='tos_checkbox' value={this.state.tos_checkbox} onChange={this.handleChange} />
-            <Button type="submit" >Submit</Button>
-            <Message
-              success
-              header='Form Completed'
-              content="You've been registered! We'll be in touch soon"
-            />
-          </Form>
-        </Container>
-      </Segment>
+            </Form>
+          </Container>
+        </Segment>
+      </div>
     )
   }
 }
