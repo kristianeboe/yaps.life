@@ -23,10 +23,9 @@ const Parallax = (props) => {
   full_page ? view_height = '100vh' : view_height = '50vh'
 
   return (
-    <Segment
-      inverted
-      textAlign='center'
+    <div
       style={{
+        textAlign:'center',
         backgroundAttachment: 'fixed',
         backgroundPosition: 'center center',
         backgroundImage: backgroundImage,
@@ -36,7 +35,7 @@ const Parallax = (props) => {
       }}
     >
       <Item.Content style={{
-        height: view_height,
+        height: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -46,7 +45,7 @@ const Parallax = (props) => {
             as='h1'
             content={h1_content}
             inverted
-            style={{ fontSize: '3em', fontWeight: 'normal', marginBottom: 0, marginTop: '3em' }}
+            style={{ fontSize: '3em', fontWeight: 'normal', marginBottom: 0, marginTop: '0' }}
           />
           <Header
             as='h3'
@@ -68,7 +67,7 @@ const Parallax = (props) => {
           )}
         </Container>
       </Item.Content>
-    </Segment>
+    </div>
   )
 }
 

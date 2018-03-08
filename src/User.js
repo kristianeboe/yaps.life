@@ -60,33 +60,32 @@ class User extends Component {
 
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.setState({user})
+        this.setState({ user })
+
         firebase.firestore().collection("users").doc(user.uid).get().then((doc) => {
           const userData = doc.data()
+          console.log(userData)
           this.setState({
             userData,
-            bestOrigin: userData.match.bestOrigin,
+            bestOrigin: 'Oslo',
           })
-          return userData
-        }).then((userData) => {
-          let userPromises = []
-          console.log(userData.match.roommates)
-          for (let roommate of userData.match.roommates) {
-            console.log(roommate)
-            userPromises.push(firebase.firestore().collection("users").doc(roommate).get().then(doc => doc.data()))
-          }
-          userPromises.push(firebase.firestore().collection("users").doc(userData.match.roommates[0]).get().then(doc => doc.data()))
-
-          console.log('userPromises', userPromises)
-          Promise.all(userPromises).then((results) => {
-            this.setState({
-              roommates: results
-            })
+          return userData.match.roommates
+        }).then((roommates) => {
+          return Promise.all(roommates.map((roommate) => firebase.firestore().collection("users").doc(roommate.userId).get()))
+        }).then((results) => {
+          console.log(results)
+          const roommates = []
+          results.map((doc) => {
+            const roommate = doc.data()
+            roommates.push(roommate)
           })
-
-        })
+          console.log(roommates)
+          console.log(this.state)
+          this.setState({roommates})
+          console.log(this.state)
+        }).catch(error => console.log(error))
       } else {
-        this.setState({user: null})
+        this.setState({ user: null })
         console.log('did mount auth state log out')
       }
     });
@@ -127,21 +126,19 @@ class User extends Component {
                         image={this.state.userData.photoURL}
                         header={this.state.userData.displayName}
                         meta={this.state.userData.workplace}
-                        // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
-                        // extra={extra}
+                      // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
+                      // extra={extra}
                       />
                     )}
-                    {this.state.roommates &&
-                      this.state.roommates.map(roommate => (
-                        <Card
-                          image={roommate.photoURL}
-                          header={roommate.displayName}
-                          meta={roommate.workplace}
-                          // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
-                          // extra={extra}
-                        />
-                      ))
-                    }
+                    {this.state.roommates.map(roommate => (
+                      <Card
+                        image={roommate.photoURL}
+                        header={roommate.displayName}
+                        meta={roommate.workplace}
+                      // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
+                      // extra={extra}
+                      />
+                    ))}
                   </Card.Group>
 
                   <h1>Your ideal origin is:</h1>

@@ -42,16 +42,14 @@ exports.postProcessingUserTrigger = functions.firestore.document('users/{userId}
 function postProcessingUser(userId, userData, userRef) {
   let updateObject = {}
   return getMachScores(userId, userData).then((matchScores) => {
-    console.log('matchscores', matchScores)
+    matchScores.sort((a, b) => a.score - b.score)
+    top3 = matchScores.slice(0, 3)
     updateObject.matchScores = matchScores
+    updateObject.top3 = top3
     const bestMatchId = Object.keys(matchScores).reduce((a, b) => matchScores[a] > matchScores[b] ? a : b);
-    console.log('bestMatchId fresh', bestMatchId)
-    updateObject.bestMatchId = bestMatchId
-    return bestMatchId
-  }).then((bestMatchId) => {
-    console.log('bestMatchId inside next promise', bestMatchId)
-    console.log('userData inside promise', userData)
-    return googleMapsDistance(userData.workplace, bestMatchId)
+    return top3
+  }).then((top3) => {
+    return googleMapsDistance(userData.workplace, top3)
     // googleMapsDistance(roommates)
   }).then((bestOrigin) => {
     console.log('bestOrigin', bestOrigin)
@@ -60,11 +58,13 @@ function postProcessingUser(userId, userData, userRef) {
     //   bestMatchId: updateObject.bestMatchId,
     //   bestOrigin: bestOrigin,
     // })
+    console.log('updateObject', updateObject)
     userRef.update({
       match: {
-        roommates: [updateObject.bestMatchId, ],
+        roommates: updateObject.top3,
         bestOrigin,
         matches: updateObject.matchScores,
+        top3: updateObject.top3,
       }
     })
   }).catch((error) => {
@@ -76,12 +76,15 @@ function postProcessingUser(userId, userData, userRef) {
 function getMachScores(userId, userData) {
   return new Promise((resolve, reject) => {
     console.log('made it inside promise 1')
-    let matchScores = {}
+    let matchScores = []
 
     admin.firestore().collection("users").get().then((querySnapshot) => {
       querySnapshot.forEach((user) => {
         if (userId != user.id) {
-          matchScores[user.id] = match(userData, user.data())
+          matchScores.push({
+            userId: user.id,
+            score: match(userData, user.data())
+          })
         }
       });
       resolve(matchScores)
@@ -123,7 +126,7 @@ function match(newUser, matchUser) {
 }
 
 
-function googleMapsDistance(userWorkplace, bestMatchId) {
+function googleMapsDistance(userWorkplace, top3) {
   return new Promise((resolve, reject) => {
     const origin1 = 'Arnebråtveien 75D Oslo'
     const origin2 = 'Nydalen Oslo'
@@ -133,62 +136,71 @@ function googleMapsDistance(userWorkplace, bestMatchId) {
     let origins = [origin1, origin2, origin3].map((origin) => encodeURI(origin))
     let userWorkplaceWithoutSpaces = userWorkplace.replace(/,/g, " ");
     let destinations = [encodeURI(userWorkplaceWithoutSpaces)]
-
+    console.log('top3', top3)
     console.log('destinations before', destinations)
-    admin.firestore().collection("users").doc(bestMatchId).get().then((doc) => {
-      return doc.data().workplace
-    }).then((bestMatchUserWorkplace) => {
-      let bestMatchUserWorkplaceWithoutSpaces = bestMatchUserWorkplace.replace(/,/g, " ")
-      destinations.push(encodeURI(bestMatchUserWorkplaceWithoutSpaces))
-      console.log('destinations after', destinations)
-      console.log('destinations join', destinations.join('|'))
-      const mode = 'transit'
+    Promise.all(top3.map((user) => admin.firestore().collection("users").doc(user.userId).get()))
+      .then((results) => {
+        results.map((doc) => {
+          const userWorkplace = doc.data().workplace
+          const userWorkplaceWithoutSpaces = userWorkplace.replace(/,/g, " ")
+          destinations.push(encodeURI(userWorkplaceWithoutSpaces))
+        })
 
-      // const nextMondayAt8 = getNextDayOfWeek(new Date(), 1).getTime()
+        return destinations
+      }).then(destinations => {
 
-      // '&departure_time=' + nextMondayAt8
-      let requestUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=' + origins.join('|') + '&destinations=' + destinations.join('|') + '&mode=' + mode + '&key=' + 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
+        console.log('destinations after', destinations)
+        const mode = 'transit'
 
-      axios.get(requestUrl).then((response) => {
+        // const nextMondayAt8 = getNextDayOfWeek(new Date(), 1).getTime()
 
-        console.log(response.data)
-        const data = response.data
+        // '&departure_time=' + nextMondayAt8
+        let requestUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=' + origins.join('|') + '&destinations=' + destinations.join('|') + '&mode=' + mode + '&key=' + 'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
+        return requestUrl
+      }).then(requestUrl => {
+        axios.get(requestUrl).then((response) => {
 
-        const origins = data.origin_addresses;
-        const destinations = data.destination_addresses;
+          console.log(response.data)
+          const data = response.data
 
-        let originsToDestinationsObject = {}
+          const origins = data.origin_addresses;
+          const destinations = data.destination_addresses;
 
-        for (let i = 0; i < origins.length; i++) {
-          var results = data.rows[i].elements;
-          for (let j = 0; j < results.length; j++) {
-            var element = results[j];
-            var distance = element.distance;
-            var duration = element.duration;
-            var from = origins[i];
-            var to = destinations[j];
-            console.log(from, to, duration.value)
-            originsToDestinationsObject[from] = { [to]: duration.value }
+          let originsToDestinationsObject = {}
+          let bestOrigin = ""
+          try {
+            for (let i = 0; i < origins.length; i++) {
+              var results = data.rows[i].elements;
+              for (let j = 0; j < results.length; j++) {
+                var element = results[j];
+                var distance = element.distance;
+                var duration = element.duration;
+                var from = origins[i];
+                var to = destinations[j];
+                console.log(from, to, duration.value)
+                originsToDestinationsObject[from] = { [to]: duration.value }
+              }
+            }
+            bestOrigin = getBestOrigin(originsToDestinationsObject)
+
+          } catch(error) {
+            bestOrigin = "Could not determine"
           }
-        }
 
-        const bestOrigin = getBestOrigin(originsToDestinationsObject)
 
-        console.log(originsToDestinationsObject)
+          console.log(originsToDestinationsObject)
 
-        resolve(bestOrigin)
+          resolve(bestOrigin)
+        }).catch((error) => {
+          console.log("error in axios and data parsing", error)
+          reject(error)
+        })
 
       }).catch((error) => {
-        console.log("error in axios and data parsing", error)
+        console.log("error bestOrigin", error)
         reject(error)
       })
-
-    })
-
-
   })
-
-
 }
 
 function getBestOrigin(originsToDestinations) {
@@ -214,3 +226,16 @@ function getNextDayOfWeek(date, dayOfWeek) {
   return date;
 }
 
+exports.postProcessingAllUsers = functions.firestore.document('test/{lol}').onCreate((event) => {
+  admin.firestore().collection('users').get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const user = doc.data()
+      postProcessingUser(doc.id, user, doc.ref)
+    })
+  })
+  // admin.firestore().collection('users').doc('VgWbJNFTyqRaanGoStkQWyUi4533').get().then(doc => {
+  //   const user = doc.data()
+  //   console.log('user', user)
+  //   postProcessingUser(doc.id, user, doc.ref)
+  // })
+})

@@ -54,7 +54,7 @@ class AppHeader extends Component {
     )
 
     return (
-      <Menu fixed='top' inverted>
+      <Menu fixed='top' inverted style={{}}>
         <Container>
           <Menu.Item header>
             <Link to="/">Yaps.life</Link>
