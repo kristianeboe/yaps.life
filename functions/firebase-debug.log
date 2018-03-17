@@ -1,0 +1,36 @@
+[debug] [2018-03-09T15:18:51.700Z] ----------------------------------------------------------------------
+[debug] [2018-03-09T15:18:51.702Z] Command:       /usr/local/Cellar/node/9.4.0/bin/node /usr/local/bin/firebase experimental:functions:shell
+[debug] [2018-03-09T15:18:51.702Z] CLI Version:   3.17.3
+[debug] [2018-03-09T15:18:51.702Z] Platform:      darwin
+[debug] [2018-03-09T15:18:51.702Z] Node Version:  v9.4.0
+[debug] [2018-03-09T15:18:51.703Z] Time:          Fri Mar 09 2018 16:18:51 GMT+0100 (CET)
+[debug] [2018-03-09T15:18:51.703Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-03-09T15:18:51.714Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-03-09T15:18:51.714Z] > authorizing via signed-in user
+[debug] [2018-03-09T15:18:51.716Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yaps-1496498804190  
+  
+ Fri Mar 09 2018 16:18:51 GMT+0100 (CET)
+[debug] [2018-03-09T15:18:52.542Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-09T15:18:52.543Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yaps-1496498804190/tokens  
+  
+ Fri Mar 09 2018 16:18:52 GMT+0100 (CET)
+[debug] [2018-03-09T15:18:53.290Z] <<< HTTP RESPONSE 200
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-03-09T15:18:53.569Z] Fetching environment
+[debug] [2018-03-09T15:18:53.570Z] >>> HTTP REQUEST GET https://appengine.googleapis.com/v1/apps/yaps-1496498804190  
+  
+ Fri Mar 09 2018 16:18:53 GMT+0100 (CET)
+[debug] [2018-03-09T15:18:53.571Z] >>> HTTP REQUEST GET https://apikeys.googleapis.com/v1/projects/yaps-1496498804190/apiKeys  
+  
+ Fri Mar 09 2018 16:18:53 GMT+0100 (CET)
+[debug] [2018-03-09T15:18:54.439Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-09T15:18:54.752Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-09T15:18:54.752Z] Starting @google-cloud/functions-emulator
+[debug] [2018-03-09T15:18:55.788Z] Parsing function triggers
+[debug] [2018-03-09T15:18:56.068Z] Deploying functions locally
+[debug] [2018-03-09T15:18:56.070Z] Deploying functions locally
+[debug] [2018-03-09T15:18:56.070Z] Deploying functions locally
+[info] ✔  functions: postProcessingAllUsers
+[info] ✔  functions: postProcessingUserTrigger
+[info] ✔  functions: createUser

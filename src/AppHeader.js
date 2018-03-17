@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom'
 import firebase from './firebase'
 import Login from './Login'
+import SignUp from './SignUp'
 
 
 class AppHeader extends Component {
@@ -48,10 +49,6 @@ class AppHeader extends Component {
 
 
   render() {
-    
-    const ModalModalExample = () => (
-      <Login />
-    )
 
     return (
       <Menu fixed='top' inverted style={{}}>
@@ -66,9 +63,9 @@ class AppHeader extends Component {
             {this.state.signedIn ?
               <Menu.Item onClick={this.logout} ><Link to="/">Log out</Link></Menu.Item>
               :
-              <Menu.Item ><Link to="/user">Log in</Link></Menu.Item>
+              <Menu.Item ><Link to="/sign-in">Log in</Link></Menu.Item>
             }
-            <ModalModalExample />
+            <Login />
           </Menu.Menu>
         </Container>
       </Menu>)

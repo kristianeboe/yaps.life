@@ -9,7 +9,9 @@ import {
     Segment,
     Icon,
 } from 'semantic-ui-react'
-import firebase from './firebase'
+import firebase, { auth, facebookProvider, googleProvider } from './firebase'
+import SignUp from './SignUp'
+
 
 class SignIn extends Component {
 
@@ -39,24 +41,33 @@ class SignIn extends Component {
         });
     }
 
+    facebookLogin = () => {
+        auth.signInWithPopup(facebookProvider)
+    }
+
+    googleSignIn = () => {
+        auth.signInWithPopup(googleProvider)
+    }
+
     render() {
         console.log(this.state)
         return (
 
 
             <Modal trigger={<Menu.Item>Sign up</Menu.Item>} style={{ textAlign: 'center' }} >
-                <Modal.Header>
+                {/* <Modal.Header>
                     <Button.Group size='large'>
-                        <Button color='grey'> <Icon name='google' /> Google </Button>
+                        <Button color='grey' onClick={this.googleSignIn} > <Icon name='google' /> Google </Button>
                         <Button.Or />
-                        <Button color='facebook'>      <Icon name='facebook' /> Facebook    </Button>
+                        <Button color='facebook' onClick={this.facebookLogin} >      <Icon name='facebook' /> Facebook    </Button>
                         <Button.Or />
                         <Button color='linkedin'>   <Icon name='linkedin' /> LinkedIn    </Button>
                     </Button.Group>
-                </Modal.Header>
+                </Modal.Header> */}
 
                 <Modal.Content >
-                    <Form size='large' onSubmit={this.handleSubmit}>
+                    <SignUp />
+                    {/* <Form size='large' onSubmit={this.handleSubmit}>
                         <Form.Input
                             fluid
                             icon='user'
@@ -79,7 +90,7 @@ class SignIn extends Component {
                         />
 
                         <Button type="submit" color='teal' fluid size='large'>Sign up</Button>
-                    </Form>
+                    </Form> */}
                 </Modal.Content>
             </Modal>
         )

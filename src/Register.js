@@ -4,6 +4,11 @@ import firebase from './firebase'
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, geocodeByPlaceId } from 'react-places-autocomplete'
 import Parallax from './Parallax';
 import AppHeader from './AppHeader'
+import 'rc-slider/assets/index.css';
+import 'rc-tooltip/assets/bootstrap.css';
+import Tooltip from 'rc-tooltip';
+import Slider from 'rc-slider';
+
 
 const gender_options = [
   { key: 'm', text: 'Male', value: 'male' },
@@ -22,14 +27,87 @@ const type_of_work_options = [
   { key: 'o', text: 'Other', value: 'other' },
 ]
 
+const personality_options = [
+  { key: 'OpenMinded', text: 'Open Minded', value: 'open minded' },
+  { key: 'Spontaneous', text: 'Spontaneous', value: 'spontaneous' },
+  { key: 'Crazy', text: 'Crazy', value: 'crazy' },
+  { key: 'Social', text: 'Social', value: 'social' },
+  { key: 'Outgoing', text: 'Outgoing', value: 'outgoing' },
+  { key: 'Hardworking', text: 'Hardworking', value: 'hardworking' },
+  { key: 'Active', text: 'Active', value: 'active' },
+  { key: 'ShyFriendly', text: 'ShyFriendly', value: 'shyFriendly' },
+  { key: 'Calm', text: 'Calm', value: 'calm' },
+  { key: 'Fearless', text: 'Fearless', value: 'fearless' },
+  { key: 'Funny', text: 'Funny', value: 'funny' },
+  { key: 'Caring', text: 'Caring', value: 'caring' },
+  { key: 'Positive', text: 'Positive', value: 'positive' },
+  { key: 'Clumsy', text: 'Clumsy', value: 'clumsy' },
+  { key: 'Smart', text: 'Smart', value: 'smart' },
+  { key: 'Perfectionist', text: 'perfectionist', value: 'perfectionist' },
+  { key: 'CuriousAdventurous', text: 'CuriousAdventurous', value: 'curiousAdventurous' },
+  { key: 'Predictable', text: 'Predictable', value: 'predictable' },
+  { key: 'Lazy', text: 'Lazy', value: 'lazy' },
+  { key: 'Helpful', text: 'Helpful', value: 'helpful' },
+  { key: 'Talkative', text: 'Talkative', value: 'talkative' },
+  { key: 'Emotional', text: 'Emotional', value: 'emotional' },
+  { key: 'Strict', text: 'Strict', value: 'strict' },
+  { key: 'Worrying', text: 'Worrying', value: 'worrying' },
+  { key: 'Organized', text: 'Organized', value: 'organized' },
+  { key: 'Imaginative', text: 'Imaginative', value: 'imaginative' },
+  { key: 'Energetic', text: 'Energetic', value: 'energetic' },
+  { key: 'Responsible', text: 'Responsible', value: 'responsible' },
+  { key: 'Sceptical', text: 'Sceptical', value: 'sceptical' },
+]
+
 const interests_options = [
-  { key: 'partying', text: 'Partying', value: 'partying' },
-  { key: 'hacking', text: 'Hacking', value: 'hacking' },
-  { key: 'sleeping', text: 'Sleeping', value: 'sleeping' },
-  { key: 'quiet', text: 'Quiet', value: 'quiet' },
-  { key: 'movie_nights', text: 'Movie nights', value: 'movie_nights' },
-  { key: 'cleanliness', text: 'Cleanliness', value: 'cleanliness' },
-  { key: 'working_out', text: 'Working out', value: 'working_out' },
+
+  { key: 'Sport', text: 'Sport', value: 'sport' },
+  { key: 'Travel', text: 'Travel', value: 'travel' },
+  { key: 'Photo', text: 'Photo', value: 'photo' },
+  { key: 'Fashion', text: 'Fashion', value: 'fashion' },
+  { key: 'Dancing', text: 'Dancing', value: 'dancing' },
+  { key: 'Training', text: 'Training', value: 'training' },
+  { key: 'OutdoorLife', text: 'Outdoor Life', value: 'outdoor Life' },
+  { key: 'Film', text: 'Film', value: 'film' },
+  { key: 'TV', text: 'TV', value: 'tv' },
+  { key: 'Series', text: 'Series', value: 'series' },
+  { key: 'Books', text: 'Books', value: 'books' },
+  { key: 'Computer', text: 'Computer', value: 'computer' },
+  { key: 'ExtremeSport', text: 'Extreme Sport', value: 'extreme Sport' },
+  { key: 'Politics', text: 'Politics', value: 'politics' },
+  { key: 'Religion', text: 'Religion', value: 'religion' },
+  { key: 'Wintersport', text: 'Wintersport', value: 'wintersport' },
+  { key: 'Cars', text: 'Cars', value: 'cars' },
+  { key: 'Food', text: 'Food', value: 'food' },
+  { key: 'Entrepreneurship', text: 'Entrepreneurship', value: 'entrepreneurship' },
+  { key: 'Shopping', text: 'Shopping', value: 'shopping' },
+  { key: 'Gaming', text: 'Gaming', value: 'gaming' },
+  { key: 'Football', text: 'Football', value: 'football' },
+  { key: 'WaterSports', text: 'Water Sports', value: 'water Sports' },
+  { key: 'Running', text: 'Running', value: 'running' },
+  { key: 'Art', text: 'Art', value: 'art' },
+  { key: 'Science', text: 'Science', value: 'science' },
+  { key: 'Fitness', text: 'Fitness', value: 'fitness' },
+  { key: 'Animals', text: 'Animals', value: 'animals' },
+  { key: 'Environment', text: 'Environment', value: 'environment' },
+  { key: 'MartialArts', text: 'Martial Arts', value: ',artial Arts' },
+  { key: 'Theater', text: 'Theater', value: 'theater' },
+  { key: 'Gambling', text: 'Gambling', value: 'gambling' },
+  { key: 'MotorSports', text: 'Motor Sports', value: 'motor Sports' },
+  { key: 'Cycling', text: 'Cycling', value: 'cycling' },
+  { key: 'Chess', text: 'Chess', value: 'chess' },
+  { key: 'Farming', text: 'Farming', value: 'farming' },
+  { key: 'Basketball', text: 'Basketball', value: 'basketball' },
+  { key: 'Volleyball', text: 'Volleyball', value: 'volleyball' },
+  { key: 'Handball', text: 'Handball', value: 'handball' },
+  { key: 'Golf', text: 'Golf', value: 'golf' },
+  { key: 'Tennis', text: 'Tennis', value: 'tennis' },
+  { key: 'History', text: 'History', value: 'history' },
+  { key: 'AmericanFootball', text: 'American Football', value: 'american Football' },
+  { key: 'Skateboard', text: 'Skateboard', value: 'skateboard' },
+  { key: 'Design', text: 'Design', value: 'design' },
+  { key: 'Climbing', text: 'Climbing', value: 'Climbing' },
+  { key: 'Walking', text: 'Walking', value: 'Walking' },
 ]
 
 const preferences_roommates_options = [
@@ -55,7 +133,8 @@ class Register extends Component {
       workplace: '',
       field_of_work: [],
       linkedIn_id: '',
-      preferences_apartment: [],
+      preferences_personality: [],
+      preferences_interests: [],
       preferences_roommates: [],
       max_rent: '',
       other_requests: '',
@@ -111,7 +190,8 @@ class Register extends Component {
       workplace: this.state.workplace,
       field_of_work: this.state.field_of_work,
       linkedIn_id: this.state.linkedIn_id,
-      preferences_apartment: this.state.preferences_apartment,
+      preferences_personality: this.state.preferences_personality,
+      preferences_interests: this.state.preferences_interests,
       preferences_roommates: this.state.preferences_roommates,
       max_rent: this.state.max_rent,
       other_requests: this.state.other_requests,
@@ -137,7 +217,8 @@ class Register extends Component {
         workplace: '',
         field_of_work: [],
         linkedIn_id: '',
-        preferences_apartment: [],
+        preferences_personality: [],
+        preferences_interests: [],
         preferences_roommates: [],
         max_rent: '',
         other_requests: '',
@@ -235,12 +316,15 @@ class Register extends Component {
       <Form onSubmit={() => (this.setState({ activeIndex: 4 }))}>
         <h1>The most important part. What makes you, you? What are you looking for in a shared accommodation</h1>
         <Form.Field>
-          <label>I am my VALUES</label>
-          <Dropdown label='Interests' placeholder='Interests' name='preferences_apartment' value={this.state.preferences_apartment} fluid multiple search selection options={interests_options} onChange={this.handleChange} />
+          <label>I am my Personality</label>
+          <Dropdown label='Personality' placeholder='Personality' name='preferences_personality' value={this.state.preferences_personality} fluid multiple search selection options={personality_options} onChange={this.handleChange} />
         </Form.Field>
         <Form.Field>
-          <label>I like my INTERESTS and HOBBIES</label>
-          <Dropdown label='Interests' placeholder='Interests' name='preferences_apartment' value={this.state.preferences_apartment} fluid multiple search selection options={interests_options} onChange={this.handleChange} />
+          <label>I like my INTERESTS</label>
+          <Dropdown label='Interests' placeholder='Interests' name='preferences_interests' value={this.state.preferences_interests} fluid multiple search selection options={interests_options} onChange={this.handleChange} />
+        </Form.Field>
+        <Form.Field>
+          My habbits are my life
         </Form.Field>
         <Form.Field>
           <label>I want to live with people who are</label>
@@ -248,6 +332,36 @@ class Register extends Component {
         </Form.Field>
         <Button type="submit" >Next section</Button>
       </Form>
+    )
+
+    const createSliderWithTooltip = Slider.createSliderWithTooltip;
+    const Handle = Slider.Handle;
+    const wrapperStyle = { width: 400, margin: 50 };
+
+    const handle = (props) => {
+      const { value, dragging, index, ...restProps } = props;
+      return (
+        <Tooltip
+          prefixCls="rc-slider-tooltip"
+          overlay={value}
+          visible={dragging}
+          placement="top"
+          key={index}
+        >
+          <Handle value={value} {...restProps} />
+        </Tooltip>
+      );
+    };
+
+    const pane045 = (
+      <Container>
+        <div style={wrapperStyle}>
+          <p>Slider with custom handle</p>
+          <Slider min={0} max={6} defaultValue={3} handle={this.handle} />
+        </div>
+        <Button content="<Back" />
+        <Button content="Continue" floated="right" />
+      </Container>
     )
 
     const pane5 = (
@@ -267,10 +381,10 @@ class Register extends Component {
         />
       </Form>
     )
-    const paneNames = ['About you', 'Education', 'Work', 'Preferences', 'Submit']
-    const panes = [pane1, pane2, pane3, pane4, pane5].map((pane, key) => ({ menuItem: paneNames[key], render: () => <Tab.Pane>{pane}</Tab.Pane> }))
+    const paneNames = ['About you', 'Education', 'Work', 'Preferences', 'Test', 'Submit']
+    const panes = [pane1, pane2, pane3, pane4, pane045, pane5].map((pane, key) => ({ menuItem: paneNames[key], render: () => <Tab.Pane>{pane}</Tab.Pane> }))
 
-    
+
     return (
       <div className="register_root">
         <AppHeader />

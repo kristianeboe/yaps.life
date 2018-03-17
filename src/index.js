@@ -6,19 +6,21 @@ import 'semantic-ui-css/semantic.min.css';
 
 import {
   BrowserRouter as Router,
-  Route,
+  Route, Switch,
 } from 'react-router-dom'
 import Home from './Home'
 import User from './User'
 import Register from './Register'
+import SignUp from './SignUp';
 
 const RouterWrapper = () => (
   <Router>
-    <div>
+    <Switch>
       <Route exact path="/" component={Home}/>
+      <Route exact path="/sign-in" component={SignUp}/>
       <Route path="/user" component={User} />
       <Route path="/register" component={Register} />
-    </div>
+    </Switch>
   </Router>
 )
 

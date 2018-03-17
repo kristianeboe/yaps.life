@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { FirebaseAuth } from 'react-firebaseui';
 import AppHeader from './AppHeader';
-import firebase, { auth, provider } from './firebase'
-import { Card, Icon, Segment, Container } from 'semantic-ui-react'
+import firebase, { auth } from './firebase'
+import { Responsive, Card, Icon, Segment, Container } from 'semantic-ui-react'
+import ChatRoom from './ChatRoom'
 
 class User extends Component {
 
@@ -15,44 +16,6 @@ class User extends Component {
       roommates: [],
       bestOrigin: '',
     };
-  }
-
-  uiConfig = {
-    // Popup signin flow rather than redirect flow.
-    signInFlow: 'popup',
-    // We will display Google and Facebook as auth providers.
-    signInOptions: [
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      // firebase.auth.FacebookAuthProvider.PROVIDER_ID
-    ],
-    // Sets the `signedIn` state property to `true` once signed in.
-    callbacks: {
-      signInSuccess: () => {
-        this.setState({ signedIn: true });
-        return false; // Avoid redirects after sign-in.
-      }
-    }
-  };
-
-  login = () => {
-    auth.signInWithPopup(provider)
-      .then((result) => {
-        console.log('login')
-        const user = result.user;
-        this.setState({
-          user
-        });
-      });
-  }
-
-  logout = () => {
-    auth.signOut()
-      .then(() => {
-        console.log('logout')
-        this.setState({
-          user: null,
-        });
-      });
   }
 
 
@@ -81,7 +44,7 @@ class User extends Component {
           })
           console.log(roommates)
           console.log(this.state)
-          this.setState({roommates})
+          this.setState({ roommates })
           console.log(this.state)
         }).catch(error => console.log(error))
       } else {
@@ -108,50 +71,49 @@ class User extends Component {
 
     // console.log(this.state.roommates[0])
     // console.log(this.state.roommates[0].photoURL)
+    console.log(Responsive.onlyMobile)
+    console.log({ ...Responsive.onlyMobile })
+    console.log({ ...Responsive.onlyComputer })
+    console.log(window)
+    const cardsPrRow = window.innerWidth < 400 ? 2 : 4
 
     return (
       <div>
         <AppHeader />
-        <Container>
+        <Container style={{ paddingTop: '5em', paddingBottom: '3em' }} >
           {
-            this.state.user ?
-              <div>
-                <h1>User</h1>
-                <p>Welcome! You are now signed-in!</p>
-                <h2>Here is your new (potential) flatmate</h2>
-                <Segment textAlign='center'>
-                  <Card.Group>
-                    {this.state.userData && (
-                      <Card
-                        image={this.state.userData.photoURL}
-                        header={this.state.userData.displayName}
-                        meta={this.state.userData.workplace}
-                      // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
-                      // extra={extra}
-                      />
-                    )}
-                    {this.state.roommates.map(roommate => (
-                      <Card
-                        image={roommate.photoURL}
-                        header={roommate.displayName}
-                        meta={roommate.workplace}
-                      // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
-                      // extra={extra}
-                      />
-                    ))}
-                  </Card.Group>
+            this.state.user &&
+            <div>
+              <Segment>
+                <h2>Here are your new (potential) flatmates</h2>
+                <Card.Group itemsPerRow={cardsPrRow}>
+                  {this.state.userData && (
+                    <Card
+                      image={this.state.userData.photoURL}
+                      header={this.state.userData.displayName}
+                      meta={this.state.userData.workplace}
+                    // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
+                    // extra={extra}
+                    />
+                  )}
+                  {this.state.roommates.map(roommate => (
+                    <Card
+                      image={roommate.photoURL}
+                      header={roommate.displayName}
+                      meta={roommate.workplace}
+                    // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
+                    // extra={extra}
+                    />
+                  ))}
+                </Card.Group>
 
-                  <h1>Your ideal origin is:</h1>
-                  <div>Address: {this.state.bestOrigin}</div>
-                  {/* {this.state.roommates[0].bestOrigin} */}
-                </Segment>
-              </div>
-              :
-              (<div>
-                <h1>User</h1>
-                <p>Please sign-in:</p>
-                <FirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()} />
-              </div>)
+              </Segment>
+              <Segment textAlign='center'>
+                <h1>Your ideal origin is:</h1>
+                <div>Address: {this.state.bestOrigin}</div>
+              </Segment>
+              <ChatRoom />
+            </div>
           }
         </Container>
       </div>

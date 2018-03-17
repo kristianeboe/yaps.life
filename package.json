@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "firebase": "^4.8.1",
+    "rc-slider": "^8.6.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-firebaseui": "^1.0.10",
