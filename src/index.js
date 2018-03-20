@@ -8,19 +8,11 @@ import {
   BrowserRouter as Router,
   Route, Switch,
 } from 'react-router-dom'
-import Home from './Home'
-import User from './User'
-import Register from './Register'
-import SignUp from './SignUp';
+import App from './App'
 
 const RouterWrapper = () => (
   <Router>
-    <Switch>
-      <Route exact path="/" component={Home}/>
-      <Route exact path="/sign-in" component={SignUp}/>
-      <Route path="/user" component={User} />
-      <Route path="/register" component={Register} />
-    </Switch>
+    <App />
   </Router>
 )
 
