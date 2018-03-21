@@ -5,7 +5,6 @@ import Tooltip from 'rc-tooltip'
 import Slider from 'rc-slider'
 
 const MatchingQuestion = props => {
-  const createSliderWithTooltip = Slider.createSliderWithTooltip
   const Handle = Slider.Handle
   const wrapperStyle = {}
 
@@ -18,16 +17,7 @@ const MatchingQuestion = props => {
     )
   }
 
-  const { question, parentState } = props
-  let defaultValue = 3
-  console.log(props.parentState)
-  console.log(parentState[question.type])
-  console.log(parentState[question.type][question.key])
-  if (parentState[question.type] && parentState[question.type][question.key]) {
-    defaultValue = parentState[question.type][question.key]
-  }
-
-  console.log(defaultValue)
+  const { question } = props
 
   return (
     <div style={wrapperStyle}>
@@ -38,9 +28,10 @@ const MatchingQuestion = props => {
         max={5}
         // defaultValue={parentState[props.type][question.key] ? parentState[props.type][question.key] : 3 }
         // value={props.value}
-        value={2}
+        value={props.value}
+        name={question.key}
         handle={handle}
-        onAfterChange={v => props.handleSliderChange(v, question.key, question.type)}
+        onChange={v => props.handleSliderChange(v, question.key, question.type)}
       />
       {/* // marks={{1: 'Highly disagree', 5: 'Highly agree'}} /> */}
     </div>

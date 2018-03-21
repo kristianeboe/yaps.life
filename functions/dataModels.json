@@ -1,0 +1,10 @@
+{
+  "user": {
+    "displayName": "string"
+  },
+  "apartment": {
+      "lat": "num",
+      "lang": "num"
+
+  }
+}

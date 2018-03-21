@@ -4,7 +4,6 @@ import {
   Container,
   Header,
   Icon,
-  Segment,
   Item,
 } from 'semantic-ui-react'
 import './App.css';

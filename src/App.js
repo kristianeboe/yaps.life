@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import AppHeader from "./AppHeader";
-import Home from "./Home";
-import User from "./User";
-import Register from "./Register";
-import SignUp from "./SignUp";
-import Matching from "./Matching";
+import React, { Component } from 'react'
+import { Route, Switch } from 'react-router-dom'
+import AppHeader from './AppHeader'
+import Home from './Home'
+import User from './User'
+import Register from './Register'
+import SignUp from './SignUp'
+import Matching from './Matching'
 
 class App extends Component {
   render() {
@@ -20,8 +20,8 @@ class App extends Component {
           <Route path="/matching" component={Matching} />
         </Switch>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App

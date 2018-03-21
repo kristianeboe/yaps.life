@@ -19,7 +19,7 @@ class ChatRoom extends Component {
       this.setState({ user })
       if (user) {
 
-        const roomId = 'RnpKGueTLPA8V0y2A23j'
+        // const roomId = 'RnpKGueTLPA8V0y2A23j'
         const chatRoomRef = firebase.firestore().collection("chatRooms").doc('RnpKGueTLPA8V0y2A23j')
         const messagesRef = chatRoomRef.collection('messages').orderBy("dateTime")
         this.unsubscribe = messagesRef.onSnapshot(snapshot => {
@@ -50,7 +50,7 @@ class ChatRoom extends Component {
 
     messagesRef.add({
       text: messageText,
-      dateTime: Date.now(),
+      dateTime,
       from: {
         uid: user.uid,
         displayName: user.displayName,
@@ -62,15 +62,6 @@ class ChatRoom extends Component {
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   render() {
-
-    const Message = ({ chat, user }) => (
-      <li className={`chat ${user === chat.username ? "right" : "left"}`}>
-        {user !== chat.username
-          && <img src={chat.img} alt={`${chat.username}'s profile pic`} />
-        }
-        {chat.content}
-      </li>
-    );
 
     const { user } = this.state
 

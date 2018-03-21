@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
 import AppHeader from './AppHeader';
 import Process from './Process';
-import Register from './Register';
 import Parallax from './Parallax';
 import './App.css';
 
 
 
 class Home extends Component {
-  state = { visible: false }
-
-  toggleVisibility = () => this.setState({ visible: !this.state.visible })
 
   render() {
-    const { visible } = this.state
 
     return (
       <div className='Home'>
