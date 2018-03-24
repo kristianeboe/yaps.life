@@ -1,0 +1,35 @@
+[debug] [2018-03-23T23:54:47.301Z] ----------------------------------------------------------------------
+[debug] [2018-03-23T23:54:47.304Z] Command:       /usr/local/Cellar/node/9.8.0/bin/node /usr/local/bin/firebase experimental:functions:shell
+[debug] [2018-03-23T23:54:47.304Z] CLI Version:   3.17.7
+[debug] [2018-03-23T23:54:47.304Z] Platform:      darwin
+[debug] [2018-03-23T23:54:47.304Z] Node Version:  v9.8.0
+[debug] [2018-03-23T23:54:47.305Z] Time:          Sat Mar 24 2018 00:54:47 GMT+0100 (CET)
+[debug] [2018-03-23T23:54:47.305Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-03-23T23:54:47.320Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-03-23T23:54:47.321Z] > authorizing via signed-in user
+[debug] [2018-03-23T23:54:47.323Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yaps-1496498804190  
+  
+ Sat Mar 24 2018 00:54:47 GMT+0100 (CET)
+[debug] [2018-03-23T23:54:48.121Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-23T23:54:48.122Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yaps-1496498804190/tokens  
+  
+ Sat Mar 24 2018 00:54:48 GMT+0100 (CET)
+[debug] [2018-03-23T23:54:48.734Z] <<< HTTP RESPONSE 200
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-03-23T23:54:49.653Z] Fetching environment
+[debug] [2018-03-23T23:54:49.655Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/yaps-1496498804190  
+  
+ Sat Mar 24 2018 00:54:49 GMT+0100 (CET)
+[debug] [2018-03-23T23:54:50.611Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-23T23:54:50.611Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/569081698642:getServerAppConfig  
+  
+ Sat Mar 24 2018 00:54:50 GMT+0100 (CET)
+[debug] [2018-03-23T23:54:51.468Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-23T23:54:51.469Z] Starting @google-cloud/functions-emulator
+[debug] [2018-03-23T23:54:53.010Z] Parsing function triggers
+[debug] [2018-03-23T23:54:53.371Z] Deploying functions locally
+[debug] [2018-03-23T23:54:53.374Z] Deploying functions locally
+[info] ✔  functions: onNewMatch
+[info] ✔  functions: getMatched
+[info] ✔  functions: populateDatabaseWithTestUsers

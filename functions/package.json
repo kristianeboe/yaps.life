@@ -4,6 +4,7 @@
   "dependencies": {
     "@google/maps": "^0.4.5",
     "axios": "^0.17.1",
+    "cheerio": "^1.0.0-rc.2",
     "compute-cosine-similarity": "^1.0.0",
     "firebase-admin": "^5.8.1",
     "firebase-functions": "^0.8.1",

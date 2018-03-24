@@ -14,7 +14,7 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 
 const genderOptions = [{ key: 'm', text: 'Gutt', value: 'Gutt' }, { key: 'f', text: 'Jente', value: 'Jente' }]
 
-class Matching extends Component {
+class Profile extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -26,10 +26,10 @@ class Matching extends Component {
       age: '',
       gender: '',
       studyProgramme: '',
+      matchLocation: '',
       workplace: '',
       workplaceLatLng: {},
       university: '',
-
       SOCIAL_HABBITS: {},
       CLEANLINESS: {},
       SOCIAL_OPENNESS: {},
@@ -85,6 +85,7 @@ class Matching extends Component {
               gender: userData.gender ? userData.gender : '',
               studyProgramme: userData.studyProgramme ? userData.studyProgramme : '',
               workplace: userData.workplace ? userData.workplace : '',
+              matchLocation: userData.matchLocation ? userData.matchLocation : '',
               workplaceLatLng: userData.workplaceLatLng ? userData.workplaceLatLng : {},
               university: userData.university ? userData.university : '',
               SOCIAL_HABBITS: userData.SOCIAL_HABBITS ? userData.SOCIAL_HABBITS : {},
@@ -135,6 +136,7 @@ class Matching extends Component {
       workplace: this.state.workplace,
       workplaceLatLng: this.state.workplaceLatLng,
       university: this.state.university,
+      matchLocation: this.state.matchLocation,
       q1: this.state.q1,
       q2: this.state.q2,
       q3: this.state.q3,
@@ -165,8 +167,11 @@ class Matching extends Component {
       .firestore()
       .collection('users')
       .doc(this.state.user.uid)
-      .set(userData)
-      .then(() => this.setState({ formLoading: false, formSuccess: true }))
+      .set(userData, { merge: true })
+      .then(docRef => {
+        console.log(docRef)
+        this.setState({ formLoading: false, formSuccess: true })
+      })
   }
 
   render() {
@@ -175,29 +180,28 @@ class Matching extends Component {
         <Redirect
           push
           to={{
-            pathname: 'login',
-            state: { redirectToMatching: true },
+            pathname: '/create',
+            state: { redirectToProfile: true },
           }}
         />
       )
     }
 
     const {
-      user,
       formLoading,
       formSuccess,
       displayName,
       age,
       gender,
       studyProgramme,
+      matchLocation,
       university,
       photoURL,
-
       readyToMatch,
       tos,
     } = this.state
 
-    if (!user) return <Redirect push to="login" />
+    // if (!user) return <Redirect push to="login" />
 
     return (
       <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
@@ -244,7 +248,16 @@ class Matching extends Component {
                     onChange={this.handleChange}
                   />
                 </Form.Group>
+                <Form.Input
+                  fluid
+                  label="Hvor skal du flytte?"
+                  placeholder="Område du vil bli matchet til"
+                  name="matchLocation"
+                  value={matchLocation}
+                  onChange={this.handleChange}
+                />
                 <Form.Field required>
+                  <label>Address of workplace</label>
                   <PlacesAutocomplete
                     styles={{ root: { zIndex: 50 } }}
                     inputProps={{
@@ -337,6 +350,7 @@ class Matching extends Component {
                 <h1>Social habbits</h1>
                 {SOCIAL_HABBITS_QUESTIONES.map(question => (
                   <MatchingQuestion
+                    key={question.key}
                     question={question}
                     handleSliderChange={this.handleSliderChange}
                     value={this.state[question.key]}
@@ -351,6 +365,7 @@ class Matching extends Component {
                 <h1>Cleanliness</h1>
                 {CLEANLINESS_QUESTIONES.map(question => (
                   <MatchingQuestion
+                    key={question.key}
                     question={question}
                     handleSliderChange={this.handleSliderChange}
                     value={this.state[question.key]}
@@ -367,6 +382,7 @@ class Matching extends Component {
                 <h1>Social openness</h1>
                 {SOCIAL_OPENNESS_QUESTIONES.map(question => (
                   <MatchingQuestion
+                    key={question.key}
                     question={question}
                     handleSliderChange={this.handleSliderChange}
                     value={this.state[question.key]}
@@ -381,6 +397,7 @@ class Matching extends Component {
                 <h1>Social flexibility</h1>
                 {SOCIAL_FLEXIBILITY_QUESTIONES.map(question => (
                   <MatchingQuestion
+                    key={question.key}
                     question={question}
                     handleSliderChange={this.handleSliderChange}
                     value={this.state[question.key]}
@@ -397,4 +414,4 @@ class Matching extends Component {
   }
 }
 
-export default Matching
+export default Profile

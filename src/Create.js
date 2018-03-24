@@ -9,14 +9,14 @@ import { Redirect } from 'react-router-dom'
 //   signUp: false,
 // }
 
-class SignUp extends Component {
+class Create extends Component {
   constructor(props) {
     super(props)
     this.state = {
       email: '',
       password: '',
       signUp: false,
-      redirectToMatching: false,
+      redirectToProfile: false,
       loading: false,
     }
     // this.state = initialState
@@ -26,10 +26,11 @@ class SignUp extends Component {
 
   googleSignIn = () => {
     auth.signInWithPopup(googleProvider).then(userSignInOperation => {
+      console.log(userSignInOperation)
       if (userSignInOperation.additionalUserInfo.isNewUser) {
-        this.createUserInDatabase(userSignInOperation.user).then(() => this.setState({ redirectToMatching: true }))
+        this.createUserInDatabase(userSignInOperation.user).then(() => this.setState({ redirectToProfile: true }))
       } else {
-        this.setState({ redirectToMatching: true })
+        this.setState({ redirectToProfile: true })
       }
     })
   }
@@ -103,10 +104,12 @@ class SignUp extends Component {
   }
 
   render() {
-    const { signUp, redirectToMatching, loading } = this.state
-    if (redirectToMatching && this.props.location.state ? this.props.location.state.redirectToMatching : false) {
-      return <Redirect push to="/matching" />
+    const { signUp, redirectToProfile, loading } = this.state
+    if (redirectToProfile && this.props.location.state ? this.props.location.state.redirectToProfile : false) {
+      return <Redirect push to="/profile" />
     }
+    console.log(this.state)
+    console.log(this.props)
 
     return (
       <Container style={{ paddingTop: '5em', width: '50em' }}>
@@ -159,4 +162,4 @@ class SignUp extends Component {
   }
 }
 
-export default SignUp
+export default Create

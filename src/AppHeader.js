@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Menu } from 'semantic-ui-react'
+import { Menu, Label, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import firebase from './firebase'
 // import SignUp from "./SignUp";
@@ -7,20 +7,41 @@ import firebase from './firebase'
 class AppHeader extends Component {
   constructor(props) {
     super(props)
-    const user = firebase.auth().currentUser
+    this.unsubscibe = null
     this.state = {
-      signedIn: user ? true : false,
+      user: null,
+      userData: null,
+      newMatch: false,
+      userRef: null,
     }
   }
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
+      this.setState({ user })
       if (user) {
-        this.setState({ signedIn: true })
-      } else {
-        this.setState({ signedIn: false })
+        this.unsubscibe = firebase
+          .firestore()
+          .collection('users')
+          .doc(user.uid)
+          .onSnapshot(user => {
+            const userData = user.data()
+            const newMatch = userData.newMatch
+            this.setState({
+              userData: user.data(),
+              newMatch,
+              userRef: user,
+            })
+          })
       }
     })
+  }
+
+  seeNewUsers = () => {
+    if (this.state.newMatch) {
+      this.state.userRef.update({ newMatch: false })
+    }
+    this.setState({ newMatch: false })
   }
 
   logout = () => {
@@ -36,34 +57,68 @@ class AppHeader extends Component {
       })
   }
 
+  componentWillUnmount() {
+    if (this.unsubscibe) {
+      this.unsubscibe()
+    }
+  }
+
   render() {
     return (
       <Menu fixed="top" inverted style={{}}>
         <Link to="/">
-          <Menu.Item as='div' header>Yaps.life</Menu.Item>
+          <Menu.Item as="div" header>
+            Yaps.life
+          </Menu.Item>
         </Link>
         <Menu.Menu position="right">
-          <Link to="/matching">
-            <Menu.Item as='div'>Matching</Menu.Item>
+          <Link to="/">
+            <Menu.Item as="div">
+              <Icon name="magic" />
+              How it works
+            </Menu.Item>
           </Link>
-          {this.state.signedIn && (
-            <Link to="/user">
-              <Menu.Item as='div'>Results</Menu.Item>
+          <Link to="/profile">
+            <Menu.Item as="div">
+              <Icon name="user" />
+              My profile
+            </Menu.Item>
+          </Link>
+          {this.state.user && (
+            <Link to="/match">
+              <Menu.Item as="div" onClick={this.seeNewUsers}>
+                <Icon name="users" />
+                Match
+                {this.state.newMatch && (
+                  <Label color="red" floating>
+                    New
+                  </Label>
+                )}
+              </Menu.Item>
             </Link>
           )}
-          {this.state.signedIn && (
+          {this.state.user && (
             <Link to="/">
-              <Menu.Item as='div' onClick={this.logout}>Log out</Menu.Item>
+              <Menu.Item as="div" onClick={this.logout}>
+                <Icon name="log out" />
+                Log out
+              </Menu.Item>
             </Link>
           )}
-          {!this.state.signedIn && (
-            <Link to="/login">
-              <Menu.Item as='div'>Log in</Menu.Item>
+          {!this.state.user && (
+            <Link to="/create">
+              <Menu.Item as="div">
+                <Icon name="sign in" />
+                Log in
+              </Menu.Item>
             </Link>
           )}
-          {!this.state.signedIn && (
-            <Link to="/login">
-              <Menu.Item as='div'>Sign up</Menu.Item>
+          {!this.state.user && (
+            <Link to="/create">
+              <Menu.Item as="div">
+                <Icon name="signup" />
+                Sign up
+              </Menu.Item>
             </Link>
           )}
         </Menu.Menu>

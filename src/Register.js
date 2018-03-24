@@ -136,10 +136,6 @@ class Register extends Component {
       activeIndex: 0,
     }
 
-    this.handleChange = this.handleChange.bind(this)
-    this.handleCompletion = this.handleCompletion.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-    this.extractUserFromState = this.extractUserFromState.bind(this)
   }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })

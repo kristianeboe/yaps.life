@@ -4,13 +4,16 @@ import firebase, { auth } from './firebase'
 import { Grid, Card, Segment, Container } from 'semantic-ui-react'
 import ChatRoom from './ChatRoom'
 
-class User extends Component {
+class Match extends Component {
   constructor(props) {
     super(props)
-
+    this.unsubscribe = null
     this.state = {
       user: null,
       userData: null,
+      flatmatesLoading: true,
+      chatLoading: true,
+      matchDoc: null,
       roommates: [],
       bestOrigin: '',
     }
@@ -41,6 +44,7 @@ class User extends Component {
                 .doc(userData.currentMatchId)
                 .get()
                 .then(match => {
+                  this.setState({ matchDoc: match })
                   return Promise.all(
                     match
                       .data()
@@ -61,12 +65,23 @@ class User extends Component {
                     roommates.push(roommate)
                   })
 
-                  this.setState({ roommates })
+                  this.setState({ roommates, flatmatesLoading: false })
                 })
                 .catch(error => console.log(error))
             }
           })
       }
+    })
+  }
+
+  createChatRoom = matchDoc => {
+    const messagesRef = matchDoc.ref.collection('messages').orderBy('dateTime')
+    this.unsubscribe = messagesRef.onSnapshot(snapshot => {
+      const messages = []
+      snapshot.forEach(doc => {
+        messages.push(doc.data())
+      })
+      this.setState({ messages })
     })
   }
 
@@ -84,30 +99,40 @@ class User extends Component {
     for (let index = 0; index < u.length; index++) {
       const ui = u[index]
       const vi = v[index]
-      sum_vector.push(ui*vi)
+      sum_vector.push(ui * vi)
     }
     const dot_sum = sum_vector.reduce((a, b) => a + b, 0)
-    
 
-    return Math.floor((dot_sum/(mag_u*mag_v))*100)
+    return Math.floor(dot_sum / (mag_u * mag_v) * 100)
   }
 
   render() {
+    const { flatmatesLoading, chatLoading, userData } = this.state
+
+    if (userData && userData.currentMatchId == null) {
+      return (
+        <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
+          <Segment>You havent been matched yet, fill in your profile and set yourself ready</Segment>
+        </Container>
+      )
+    }
+
+    console.log(this.state)
 
     return (
       <div>
         <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
           {this.state.user && (
             <div>
-              <Segment>
+              <Segment loading={flatmatesLoading}>
                 <h2>Here are your new (potential) flatmates</h2>
                 <Grid stackable columns="equal">
                   {this.state.userData && (
                     <Grid.Column>
                       <Card
-                        image={this.state.userData.photoURL}
-                        header={this.state.userData.displayName}
-                        meta={this.state.userData.workplace}
+                        image={userData.photoURL}
+                        header={userData.displayName}
+                        meta={userData.workplace.substr(0, userData.workplace.indexOf(','))}
                         description={
                           this.state.userData.displayName +
                           ' studied ' +
@@ -115,12 +140,13 @@ class User extends Component {
                           ' at ' +
                           this.state.userData.university
                         }
+                        extra={this.calculateSimScore(this.state.userData, this.state.userData) + '% match'}
                         // extra={extra}
                       />
                     </Grid.Column>
                   )}
                   {this.state.roommates.map(roommate => (
-                    <Grid.Column>
+                    <Grid.Column key={roommate.uid}>
                       <Card
                         image={roommate.photoURL}
                         header={roommate.displayName}
@@ -139,7 +165,9 @@ class User extends Component {
                 <h1>Your ideal origin is:</h1>
                 <div>Address: {this.state.bestOrigin}</div>
               </Segment>
-              <ChatRoom />
+              <Segment loading={!this.state.matchDoc}>
+                {this.state.matchDoc && <ChatRoom matchDoc={this.state.matchDoc} />}
+              </Segment>
             </div>
           )}
         </Container>
@@ -148,4 +176,4 @@ class User extends Component {
   }
 }
 
-export default User
+export default Match
