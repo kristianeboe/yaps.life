@@ -85,7 +85,7 @@ class ChatRoom extends Component {
           }
 
           return (
-            <Comment>
+            <Comment key={message.dateTime} >
               <Comment.Avatar src={message.from.photoURL} style={avatarStyle} />
               <Comment.Content style={contentStyle}>
                 <Comment.Author as="a">{message.from.displayName}</Comment.Author>

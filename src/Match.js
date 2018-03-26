@@ -3,6 +3,8 @@ import React, { Component } from 'react'
 import firebase, { auth } from './firebase'
 import { Grid, Card, Segment, Container } from 'semantic-ui-react'
 import ChatRoom from './ChatRoom'
+import signup from './assets/images/signup.jpg'
+import AddUserCard from './AddUserCard';
 
 class Match extends Component {
   constructor(props) {
@@ -16,6 +18,8 @@ class Match extends Component {
       matchDoc: null,
       roommates: [],
       bestOrigin: '',
+      currentMatchId: '',
+      showChatRoom: true,
     }
   }
 
@@ -44,16 +48,16 @@ class Match extends Component {
                 .doc(userData.currentMatchId)
                 .get()
                 .then(match => {
-                  this.setState({ matchDoc: match })
+                  this.setState({ matchDoc: match, currentMatchId: userData.currentMatchId })
                   return Promise.all(
                     match
                       .data()
-                      .flatMates.filter(mate => mate !== user.uid)
+                      .flatMates.filter(mate => console.log(mate) || mate.uid !== user.uid)
                       .map(mate =>
                         firebase
                           .firestore()
                           .collection('testUsers')
-                          .doc(mate)
+                          .doc(mate.uid)
                           .get()
                       )
                   )
@@ -68,6 +72,8 @@ class Match extends Component {
                   this.setState({ roommates, flatmatesLoading: false })
                 })
                 .catch(error => console.log(error))
+            } else {
+              this.setState({ flatmatesLoading: false, showChatRoom: false })
             }
           })
       }
@@ -109,13 +115,13 @@ class Match extends Component {
   render() {
     const { flatmatesLoading, chatLoading, userData } = this.state
 
-    if (userData && userData.currentMatchId == null) {
-      return (
-        <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
-          <Segment>You havent been matched yet, fill in your profile and set yourself ready</Segment>
-        </Container>
-      )
-    }
+    // if (userData && userData.currentMatchId == null) {
+    //   return (
+    //     <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
+    //       <Segment>You havent been matched yet, fill in your profile and set yourself ready</Segment>
+    //     </Container>
+    //   )
+    // }
 
     console.log(this.state)
 
@@ -145,29 +151,43 @@ class Match extends Component {
                       />
                     </Grid.Column>
                   )}
-                  {this.state.roommates.map(roommate => (
-                    <Grid.Column key={roommate.uid}>
-                      <Card
-                        image={roommate.photoURL}
-                        header={roommate.displayName}
-                        meta={roommate.workplace}
-                        description={
-                          roommate.displayName + ' studied ' + roommate.studyProgramme + ' at ' + roommate.university
-                        }
-                        // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
-                        extra={this.calculateSimScore(this.state.userData, roommate) + '% match'}
-                      />
+                  {this.state.roommates.map(
+                    roommate =>
+                      console.log(roommate) || (
+                        <Grid.Column key={roommate.uid}>
+                          <Card
+                            image={roommate.photoURL}
+                            header={roommate.displayName}
+                            meta={roommate.workplace}
+                            description={
+                              roommate.displayName +
+                              ' studied ' +
+                              roommate.studyProgramme +
+                              ' at ' +
+                              roommate.university
+                            }
+                            // description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
+                            extra={this.calculateSimScore(this.state.userData, roommate) + '% match'}
+                          />
+                        </Grid.Column>
+                      )
+                  )}
+                  {this.state.roommates.length < 1 && (
+                    <Grid.Column>
+                      <AddUserCard />
                     </Grid.Column>
-                  ))}
+                  )}
                 </Grid>
               </Segment>
               <Segment textAlign="center">
                 <h1>Your ideal origin is:</h1>
                 <div>Address: {this.state.bestOrigin}</div>
               </Segment>
-              <Segment loading={!this.state.matchDoc}>
-                {this.state.matchDoc && <ChatRoom matchDoc={this.state.matchDoc} />}
-              </Segment>
+              {this.state.showChatRoom && (
+                <Segment loading={!this.state.matchDoc}>
+                  {this.state.matchDoc && <ChatRoom matchDoc={this.state.matchDoc} />}
+                </Segment>
+              )}
             </div>
           )}
         </Container>

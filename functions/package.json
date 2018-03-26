@@ -7,7 +7,7 @@
     "cheerio": "^1.0.0-rc.2",
     "compute-cosine-similarity": "^1.0.0",
     "firebase-admin": "^5.8.1",
-    "firebase-functions": "^0.8.1",
+    "firebase-functions": "^0.9.1",
     "node-kmeans": "^1.1.8",
     "uuid": "^3.2.1"
   },

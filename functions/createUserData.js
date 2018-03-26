@@ -4,27 +4,28 @@ var kMeans = require('node-kmeans')
 // var similarity = require('compute-cosine-similarity')
 
 const workplaces = [
-  'Netlight AS',
-  'McKinsey',
-  'BCG',
-  'Capra Consulting',
-  'Skatteetaten',
-  'Wilhelmsen',
-  'Storebrand',
-  'Bekk',
-  'Iterate',
-  'Instagram',
-  'Facebook',
-  'Google',
-  'Airbnb',
-  'Uber',
-  'The Verge',
-  'Fuse',
-  'Bysykkel',
+  'Netlight AS Oslo',
+  'McKinsey Oslo',
+  'BCG Oslo',
+  'Capra Consulting Oslo',
+  'Wilhelmsen ASA',
+  'Arkwright consulting',
+  'Bekk Oslo',
+  'Iterate Oslo',
+  'Google Oslo',
+  'Fuse Oslo',
+  'startuplab oslo',
+  'Mesh oslo',
+  'Crux Advisers oslo',
+  'accenture oslo',
+  'veidekke asa oslo',
+  'unacast oslo',
+
 ]
 
-const universities = ['NTNU', 'UIO', 'NHH', 'Harvard', 'Stanford']
+const universities = ['NTNU', 'UIO', 'NHH', 'Harvard', 'Stanford', 'BI Oslo']
 
+const studyProgrammes = ['Datateknologi', 'IndØk', 'SivilØkonom', 'Maskin', 'EMIL', 'KomTek', 'FysMat', 'Psykologi']
 const genders = ['Gutt', 'Jente']
 
 normalize = vector => {
@@ -76,7 +77,7 @@ exports.createUsers = n => {
       tos: true,
       readyToMatch: true,
       gender: genders[Math.floor(Math.random() * Math.floor(genders.length))],
-      studyProgramme: 'Test course',
+      studyProgramme: studyProgrammes[Math.floor(Math.random() * Math.floor(studyProgrammes.length))],
     }
     for (let q = 0; q < 20; q++) {
       user['q' + (q + 1)] = vector[q]
@@ -87,7 +88,7 @@ exports.createUsers = n => {
 }
 
 exports.cluster = (users, normalizeVectors) => {
-  console.log(users[0])
+  // console.log(users[0])
   return new Promise((resolve, reject) => {
     let vectors = []
     for (let i = 0; i < users.length; i++) {
@@ -103,7 +104,7 @@ exports.cluster = (users, normalizeVectors) => {
     // distance: (a,b) => similarity(a,b)
     const k = Math.floor(users.length / 4) //users.length > 500 ? 10 : 4
     kmeans.clusterize(vectors, { k: k }, (err, res) => {
-      if (err) console.error(err)
+      if (err) reject(err)
       else {
         const clusters = []
         for (const item in res) {

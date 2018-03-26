@@ -12,7 +12,6 @@ class AppHeader extends Component {
       user: null,
       userData: null,
       newMatch: false,
-      userRef: null,
     }
   }
 
@@ -30,7 +29,6 @@ class AppHeader extends Component {
             this.setState({
               userData: user.data(),
               newMatch,
-              userRef: user,
             })
           })
       }
@@ -39,7 +37,7 @@ class AppHeader extends Component {
 
   seeNewUsers = () => {
     if (this.state.newMatch) {
-      this.state.userRef.update({ newMatch: false })
+      firebase.firestore().collection('users').doc(this.state.user.uid).update({newMatch: false})
     }
     this.setState({ newMatch: false })
   }
