@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
-import { Grid, Card, Segment, Container, Search, Header } from 'semantic-ui-react'
+import { Image, Grid, Card, Segment, Container, Search, Header } from 'semantic-ui-react'
 import signup from './assets/images/signup.jpg'
 import firebase, { auth } from './firebase'
+import _ from 'underscore'
+
 
 class AddUserCard extends Component {
   state = {
@@ -25,6 +27,7 @@ class AddUserCard extends Component {
           const user = userDoc.data()
           availableUsers.push(user)
         })
+        this.setState({ availableUsers })
       })
   }
 
@@ -38,16 +41,17 @@ class AddUserCard extends Component {
     setTimeout(() => {
       if (this.state.value.length < 1) return this.resetComponent()
 
-      const re = new RegExp(_.escapeRegExp(this.state.value), 'i')
-      const isMatch = result => re.test(result.title)
-
+      const results = this.state.availableUsers.filter(user => user.displayName.includes(this.state.value)).map(user => ({ title: user.displayName, description: user.displayName }))
+      console.log(this.state.availableUsers.filter(user => user.displayName.includes(this.state.value)))
       this.setState({
         isLoading: false,
-        results: _.filter(source, isMatch),
+        results,
       })
     }, 300)
   }
   render() {
+    const { isLoading, value, results } = this.state
+    console.log(this.state)
     return (
       <Card>
         <Image src={signup} />
