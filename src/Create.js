@@ -38,7 +38,7 @@ class Create extends Component {
   facebookLogin = () => {
     auth.signInWithPopup(facebookProvider).then(userSignInOperation => {
       if (!userSignInOperation.additionalUserInfo.isNewUser) return
-      this.createUserInDatabase(userSignInOperation.user).then(() => this.setState({ redirectUpload: true }))
+      this.createUserInDatabase(userSignInOperation.user).then(() => this.setState({ redirectToProfile: true }))
     })
   }
 
@@ -71,12 +71,12 @@ class Create extends Component {
           this.setState({
             email: '',
             password: '',
-            loading:false,
-            redirectUpload: true,
+            loading: false,
+            redirectToProfile: true,
           })
         )
       })
-      .catch(function(error) {
+      .catch(function (error) {
         // Handle Errors here.
         console.log(error)
         // ...
@@ -93,10 +93,10 @@ class Create extends Component {
         this.setState({
           email: '',
           password: '',
-          redirectUpload: true,
+          redirectToProfile: true,
         })
       })
-      .catch(function(error) {
+      .catch(function (error) {
         // Handle Errors here.
         console.log(error)
         // ...
@@ -105,7 +105,8 @@ class Create extends Component {
 
   render() {
     const { signUp, redirectToProfile, loading } = this.state
-    if (redirectToProfile && this.props.location.state ? this.props.location.state.redirectToProfile : false) {
+    // && this.props.location.state ? this.props.location.state.redirectToProfile : false
+    if (redirectToProfile) {
       return <Redirect push to="/profile" />
     }
     console.log(this.state)
@@ -148,10 +149,10 @@ class Create extends Component {
               Sign up
             </Button>
           ) : (
-            <Button onClick={this.handleSignIn} color="orange" fluid size="large">
-              Log in
+              <Button onClick={this.handleSignIn} color="orange" fluid size="large">
+                Log in
             </Button>
-          )}
+            )}
           <Message>
             {signUp ? 'Already have a user?' : 'New to us?'}{' '}
             <a onClick={() => this.setState({ signUp: !signUp })}> {signUp ? 'Log in' : 'Sign up'}</a>

@@ -26,6 +26,14 @@ const workplaces = [
 const universities = ['NTNU', 'UIO', 'NHH', 'Harvard', 'Stanford', 'BI Oslo']
 
 const studyProgrammes = ['Datateknologi', 'IndØk', 'SivilØkonom', 'Maskin', 'EMIL', 'KomTek', 'FysMat', 'Psykologi']
+const studyProgrammes2 = {
+  'NTNU': ['Datateknologi', 'IndØk','Maskin', 'EMIL', 'KomTek', 'FysMat', 'Psykologi'],
+  'UIO': ['Interaksjonsdesign', 'Jus', 'Medisin', 'ØkAd'],
+  'NHH': ['SivilØkonom', 'Revisor'],
+  'BI Oslo': ['SivilØkonom', 'Revisor', 'ØkAd'],
+  'Stanford': ['Computer Science', 'MBA'],
+  'Harvard': ['Law', 'Medicine', 'Ethics']
+}
 const genders = ['Gutt', 'Jente']
 
 normalize = vector => {
@@ -65,6 +73,8 @@ exports.createUsers = n => {
     for (let j = 0; j < 20; j++) {
       vector.push(getRandomInt(5))
     }
+    const university = universities[Math.floor(Math.random() * Math.floor(universities.length))]
+    const studyProgramme = studyProgrammes2[university][Math.floor(Math.random() * Math.floor(studyProgrammes2[university].length))]
     const user = {
       uid: uuid(),
       displayName: 'testUser' + index,
@@ -72,12 +82,12 @@ exports.createUsers = n => {
       seeNewUsers: false,
       workplace: workplaces[Math.floor(Math.random() * Math.floor(workplaces.length))],
       photoURL: 'https://placem.at/people?w=290&h=290&random=' + getRandomInt(100),
-      university: universities[Math.floor(Math.random() * Math.floor(universities.length))],
+      university,
       age: Math.floor(Math.random() * 10) + 20,
       tos: true,
       readyToMatch: true,
       gender: genders[Math.floor(Math.random() * Math.floor(genders.length))],
-      studyProgramme: studyProgrammes[Math.floor(Math.random() * Math.floor(studyProgrammes.length))],
+      studyProgramme,
     }
     for (let q = 0; q < 20; q++) {
       user['q' + (q + 1)] = vector[q]

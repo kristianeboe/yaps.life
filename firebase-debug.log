@@ -1,0 +1,51 @@
+[debug] [2018-03-27T16:15:28.032Z] ----------------------------------------------------------------------
+[debug] [2018-03-27T16:15:28.033Z] Command:       /home/kristieb/.nvm/versions/node/v9.9.0/bin/node /home/kristieb/.nvm/versions/node/v9.9.0/bin/firebase experimental:functions:shell
+[debug] [2018-03-27T16:15:28.034Z] CLI Version:   3.17.7
+[debug] [2018-03-27T16:15:28.034Z] Platform:      linux
+[debug] [2018-03-27T16:15:28.034Z] Node Version:  v9.9.0
+[debug] [2018-03-27T16:15:28.034Z] Time:          Tue Mar 27 2018 18:15:28 GMT+0200 (DST)
+[debug] [2018-03-27T16:15:28.034Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-03-27T16:15:28.043Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-03-27T16:15:28.044Z] > authorizing via signed-in user
+[debug] [2018-03-27T16:15:28.045Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yaps-1496498804190  
+  
+ Tue Mar 27 2018 18:15:28 GMT+0200 (DST)
+[debug] [2018-03-27T16:15:28.893Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-27T16:15:28.894Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yaps-1496498804190/tokens  
+  
+ Tue Mar 27 2018 18:15:28 GMT+0200 (DST)
+[debug] [2018-03-27T16:15:45.311Z] <<< HTTP RESPONSE 200
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-03-27T16:15:45.969Z] Fetching environment
+[debug] [2018-03-27T16:15:45.971Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/yaps-1496498804190  
+  
+ Tue Mar 27 2018 18:15:45 GMT+0200 (DST)
+[debug] [2018-03-27T16:15:46.873Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-27T16:15:46.873Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/569081698642:getServerAppConfig  
+  
+ Tue Mar 27 2018 18:15:46 GMT+0200 (DST)
+[debug] [2018-03-27T16:15:47.564Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-27T16:15:47.564Z] Starting @google-cloud/functions-emulator
+[debug] [2018-03-27T16:15:49.122Z] Parsing function triggers
+[debug] [2018-03-27T16:15:49.393Z] Deploying functions locally
+[info] ✔  functions: populateDatabaseWithTestUsersHTTPS
+[info] ✔  functions: getTestUsersReadyToMatch
+[info] ✔  functions: countTestUsers
+[info] ✔  functions: getBestOriginHTTPforMatch
+[info] ✔  functions: aggregateMatchInfo
+[info] ✔  functions: deleteMatchClusterCollection
+[info] ✔  functions: onMatchCreate
+[info] ✔  functions: getMatchedByCluster
+[debug] [2018-03-27T19:34:23.837Z] TypeError: Cannot read property 'setRawMode' of null
+    at ReadStream.setRawMode (tty.js:64:16)
+    at REPLServer.Interface._setRawMode (readline.js:246:16)
+    at REPLServer.Interface.close (readline.js:376:10)
+    at process.nextTick (repl.js:637:31)
+    at process._tickCallback (internal/process/next_tick.js:112:11)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2018-03-27T19:34:23.838Z] Error: write EIO
+    at WriteWrap.afterWrite [as oncomplete] (net.js:844:14)
+[error] 
+[error] Error: An unexpected error has occurred.

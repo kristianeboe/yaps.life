@@ -76,11 +76,11 @@ class ChatRoom extends Component {
           Chat
         </Header>
         {this.state.messages.map(message => {
-          let avatarStyle = {}
+          let avatarStyle = {overflow: 'hidden', maxHeight: '35px'}
           let contentStyle = {}
           const userMessage = user.uid === message.from.uid
           if (userMessage) {
-            avatarStyle = { float: 'right' }
+            avatarStyle['float'] = 'right'
             contentStyle = { marginRight: '3.5em', textAlign: 'right' }
           }
 

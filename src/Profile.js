@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Image, Container, Segment, Form, Grid, Checkbox, Message, Label } from 'semantic-ui-react'
+import { Image, Button, Container, Segment, Form, Grid, Checkbox, Message, Label } from 'semantic-ui-react'
 
 import MatchingQuestion from './MatchingQuestion'
 import {
@@ -168,8 +168,7 @@ class Profile extends Component {
       .collection('users')
       .doc(this.state.user.uid)
       .set(userData, { merge: true })
-      .then(docRef => {
-        console.log(docRef)
+      .then(() => {
         this.setState({ formLoading: false, formSuccess: true })
       })
   }
@@ -182,6 +181,18 @@ class Profile extends Component {
           to={{
             pathname: '/create',
             state: { redirectToProfile: true },
+          }}
+        />
+      )
+    }
+
+    if (this.state.redirectToMatch) {
+      return (
+        <Redirect
+          push
+          to={{
+            pathname: '/match',
+            state: { redirectToMatch: true },
           }}
         />
       )
@@ -322,6 +333,8 @@ class Profile extends Component {
                   />
                 </Form.Field>
                 <Form.Button type="submit">Save</Form.Button>
+
+                <Button onClick={() => this.setState({redirectToMatch: true})} >Create match</Button>
               </Grid.Column>
               <Grid.Column
                 style={{

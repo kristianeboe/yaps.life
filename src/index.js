@@ -15,5 +15,5 @@ const RouterWrapper = () => (
   </Router>
 )
 
-ReactDOM.render(<RouterWrapper />, document.getElementById('root'));
-registerServiceWorker();
+ReactDOM.render(<RouterWrapper />, document.getElementById('root'))
+registerServiceWorker()

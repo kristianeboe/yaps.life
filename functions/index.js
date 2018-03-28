@@ -6,8 +6,12 @@ var uuid = require('uuid')
 
 admin.initializeApp(functions.config().firebase)
 
-exports.populateDatabaseWithTestUsers = functions.https.onRequest((req, res) => {
-  const testUsers = createUserData.createUsers(500)
+exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res) => {
+  let nrOfTestUsers = 100
+  if (req.body.nrOfTestUsers) {
+    nrOfTestUsers = req.body.nrOfTestUsers
+  }
+  const testUsers = createUserData.createUsers(nrOfTestUsers)
 
   // Everything is ok
 
@@ -17,15 +21,27 @@ exports.populateDatabaseWithTestUsers = functions.https.onRequest((req, res) => 
         .firestore()
         .collection('testUsers')
         .doc(testUser.uid)
-        .set(testUser)
+        .set(testUser).catch(err => console.log("LOG: Error adding test user", err))
     })
   ).then(results => {
-    console.log(testUsers.length + ' Test users created')
+    console.log('LOG: ' + testUsers.length + ' Test users created')
     res.status(200).end()
-  }).catch(err => console.log('Error in creating users',err))
+  }).catch(err => console.log('ERROR: Error in creating users', err))
 })
 
-exports.aggregateDatabaseInfo = functions.https.onRequest((req, res) => {
+exports.countTestUsers = functions.https.onRequest((req, res) => {
+  return admin.firestore().collection('testUsers').get().then(snapshot => {
+    console.log('LOG: ' + snapshot.size)
+  }).then(() => res.status(200).end())
+})
+
+exports.getTestUsersReadyToMatch = functions.https.onRequest((req, res) => {
+  return admin.firestore().collection('testUsers').get().then(snapshot => {
+    snapshot.forEach( doc => doc.ref.update({readyToMatch: true}) )
+  })
+})
+
+exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
   let aggregateInfoObject = {}
   const matchSimilarityScores = []
   const matchSizes = {
@@ -39,6 +55,7 @@ exports.aggregateDatabaseInfo = functions.https.onRequest((req, res) => {
   let matchCounter = 0
   let matchesWithBestOrigins = 0
   let numberOfUsersCounted = 0
+  let customMatchCounter = 0
   admin
     .firestore()
     .collection('matches')
@@ -50,6 +67,9 @@ exports.aggregateDatabaseInfo = functions.https.onRequest((req, res) => {
         const numberOfFlatmates = match.flatMates.length
         numberOfUsersCounted += numberOfFlatmates
         matchSizes[numberOfFlatmates] = matchSizes[numberOfFlatmates] + 1
+        if (match.custom) {
+          customMatchCounter += 1
+        }
         if (numberOfFlatmates > 2) {
           matchSimilarityScores.push(match.flatAverageScore)
         }
@@ -60,7 +80,7 @@ exports.aggregateDatabaseInfo = functions.https.onRequest((req, res) => {
     })
     .then(() => {
       const averageScore = matchSimilarityScores.reduce((a, b) => a + b, 0) / matchSimilarityScores.length
-      let ratioOfPeopleIn3or4or5Flats = (matchSizes[3]*3 + matchSizes[4]*4 + matchSizes[5]*5) / numberOfUsersCounted
+      let ratioOfPeopleIn3or4or5Flats = (matchSizes[3] * 3 + matchSizes[4] * 4 + matchSizes[5] * 5) / numberOfUsersCounted
       let ratioOfPeopleInSingels = matchSizes[1] / numberOfUsersCounted
       aggregateInfoObject = {
         averageScore,
@@ -70,17 +90,17 @@ exports.aggregateDatabaseInfo = functions.https.onRequest((req, res) => {
         numberOfUsersCounted,
         ratioOfPeopleIn3or4or5Flats,
         ratioOfPeopleInSingels,
+        customMatchCounter,
       }
       console.log(aggregateInfoObject)
       res.status(200).end()
     })
-    .catch(err => console.log('Error in aggregating database info',err))
+    .catch(err => console.log('Error in aggregating database info', err))
   return true
 })
 
-exports.getMatched1 = functions.https.onRequest((req, res) => {
+exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
   console.log(req.body)
-  console.log(req.body.readyToMatch)
   // const userData = event.data.data()
   const readyToMatch = req.body.readyToMatch
 
@@ -95,8 +115,8 @@ matchAllAvailableUsers = () => {
   admin
     .firestore()
     .collection('testUsers')
-    // .where('matchLocation', '==', 'Oslo')
-    // .where('readyToMatch', '==', true)
+    .where('matchLocation', '==', 'Oslo')
+    .where('readyToMatch', '==', true)
     .get()
     .then(snapshot => {
       snapshot.forEach(doc => {
@@ -112,8 +132,7 @@ matchAllAvailableUsers = () => {
 
       const usersRef = admin.firestore().collection('users')
       return Promise.all([
-        usersRef.doc('hWBbCxiigfUISnJ8upb6pnUDfXG3').get(),
-        usersRef.doc('s4re9rrIFwfH3NfXh13A2HQeHuQ2').get(),
+        usersRef.doc('PmzsNVCnUSMVSMu2WGRa4omxez52').get(),
       ])
         .then(results => {
           results.forEach(doc => {
@@ -158,34 +177,35 @@ matchAllAvailableUsers = () => {
           location: 'Oslo',
           bestOrigin: '',
           flatAverageScore,
+          custom: false,
         }
         admin
           .firestore()
           .collection('matches')
           .doc(match.uid)
           .set(match)
-          // .then(() => {
-          //   admin
-          //     .firestore()
-          //     .collection('matches')
-          //     .doc(match.uid)
-          //     .collection('messages')
-          //     .add({
-          //       text: 'Stay civil in the chat guys',
-          //       dateTime: admin.firestore.FieldValue.serverTimestamp(),
-          //       from: {
-          //         uid: 'hWBbCxiigfUISnJ8upb6pnUDfXG3',
-          //         displayName: 'Admin',
-          //         photoURL:
-          //           'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg',
-          //       },
-          //     })
-          //     .catch(err => console.log('error adding original message to match', err))
-          // })
+          .then(() => {
+            admin
+              .firestore()
+              .collection('matches')
+              .doc(match.uid)
+              .collection('messages')
+              .add({
+                text: 'Stay civil in the chat guys',
+                dateTime: admin.firestore.FieldValue.serverTimestamp(),
+                from: {
+                  uid: 'hWBbCxiigfUISnJ8upb6pnUDfXG3',
+                  displayName: 'Admin',
+                  photoURL:
+                    'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg',
+                },
+              })
+              .catch(err => console.log('error adding original message to match', err))
+          })
           .catch(err => console.log('error with creating match', err)) //.then(doc => doc.ref.collection('messages').add({})
         match.flatMates.forEach(mate => {
           let collectionName = 'testUsers'
-          if (mate.uid === 'hWBbCxiigfUISnJ8upb6pnUDfXG3' || mate.uid === 's4re9rrIFwfH3NfXh13A2HQeHuQ2') {
+          if (mate.uid === 'PmzsNVCnUSMVSMu2WGRa4omxez52' || mate.uid === 's4re9rrIFwfH3NfXh13A2HQeHuQ2') {
             collectionName = 'users'
           }
           admin
@@ -248,7 +268,7 @@ function getNextDayOfWeek(date, dayOfWeek) {
   return date
 }
 
-exports.onNewMatch = functions.firestore.document('matches/{matchId}').onCreate(event => {
+exports.onMatchCreate = functions.firestore.document('matches/{matchId}').onCreate(event => {
   // const match = {
   //   flatmates: event.data.flatmates,
   //   flat: event.data.flat,
@@ -265,35 +285,59 @@ exports.onNewMatch = functions.firestore.document('matches/{matchId}').onCreate(
   //   flat: [me, user1, user2, user3],
   //   matchId: me.currentMatchId,
   // }
-  console.log('Event data data()', event.data.data())
+  console.log('LOG: Event data data()', event.data.data())
   const match = event.data.data()
 
   if (!match) {
+    console.log('LOG: No match provided to get best origin for')
     return 'No match provided to get best origin for'
   }
 
+  if (match.flatMates.length < 3) {
+    return "Not enough people to do a location match"
+  }
+
+  return getBestOriginFromMatch(match)
+})
+
+exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
+  const matchId = req.body.matchId
+
+  return admin.firestore().collection('matches').doc(matchId).get().then(matchDoc => getBestOriginFromMatch(matchDoc.data()))
+})
+getBestOriginFromMatch = (match) => {
   const origin1 = 'Holmenkollen Oslo'
   const origin2 = 'Nydalen Oslo'
   const origin3 = 'Grunerløkka Oslo'
 
   // let origins = [origin1, origin2, origin3].map(origin => encodeURI(origin))
-  const origins = [
-    'Alna Oslo',
+  const originsOslo = [
+    'Sandvika Oslo',
+    'Skøyen, Oslo',
+    'Bekkelaget Oslo',
+    'Røa Oslo',
+    'Sogn Oslo',
     'Bjerke Oslo',
-    'Frogner Oslo',
-    'Gamle Oslo Oslo',
-    'Grorud Oslo',
+    'Ekeberg Oslo',
+    'Sentrum Oslo',
+    'Majorstuen Oslo',
     'Grünerløkka Oslo',
-    'Nordre Aker Oslo',
-    'Nordstrand Oslo',
-    'Sagene Oslo',
-    'St. Hanshaugen Oslo',
-    'Stovner Oslo',
-    'Søndre Nordstrand Oslo',
-    'Ullern Oslo',
-    'Vestre Aker Oslo',
-    'Østensjø Oslo',
-  ].map(origin => encodeURI(origin))
+    'Gamle Oslo',
+    'Frogner Oslo',
+  ]
+  const originsOsloSmall1 = [
+    'Grunerløkka Oslo', //Grunerløkka - Sofienberg
+    'Majorstuen Oslo', // Majorstuen, Uranienborg, Nationaltheateret
+    'Fronger Oslo',
+    'Gamle Oslo',
+  ]
+  const originsOsloSmall = {
+    'Grunerløkka Oslo': 'location=1.20061.20511&', //Grunerløkka - Sofienberg
+    'Majorstuen Oslo': 'location=1.20061.20508&', // Majorstuen, Uranienborg, Nationaltheateret
+    'Fronger Oslo': 'location=1.20061.20507&',
+    'Gamle Oslo': 'location=1.20061.20512&',
+  }
+  const origins = Object.keys(originsOsloSmall).map(origin => encodeURI(origin))
   const destinations = match.flatMates.map(mate => encodeURI(mate.workplace))
 
   const mode = 'transit'
@@ -316,58 +360,115 @@ exports.onNewMatch = functions.firestore.document('matches/{matchId}').onCreate(
   return axios(requestUrl).then(response => {
     console.log(response.data)
     const data = response.data
-
-    if (data.status !== 'OK') {
-      return data.status
-    }
-
-    const origins = data.origin_addresses
-    const destinations = data.destination_addresses
-
-    let originsToDestinationsObject = {}
     let bestOrigin = ''
+    if (data.status == 'OK') {
+      const origins = data.origin_addresses
+      const destinations = data.destination_addresses
 
-    // for (const origin of data.rows) {
-    //   for (const destination of origin.elements) {
-    //     console.log(destination)
-    //   }
-    // }
+      let originsToDestinationsObject = {}
 
-    try {
-      for (let i = 0; i < origins.length; i++) {
-        var results = data.rows[i].elements
-        var from = origins[i]
-        originsToDestinationsObject[from] = []
-        for (let j = 0; j < results.length; j++) {
-          var element = results[j]
-          var status = element.status
-          var distance = element.distance
-          var duration = element.duration
-          var to = destinations[j]
-          // console.log(from, to, duration.value)
-          originsToDestinationsObject[from].push({
-            to,
-            status,
-            distance: status == 'OK' ? distance : '',
-            duration: status == 'OK' ? duration : '',
-          })
-          // originsToDestinationsObject[from] = [...originsToDestinationsObject[from], {to, duration:duration.value} ]
+
+      // for (const origin of data.rows) {
+      //   for (const destination of origin.elements) {
+      //     console.log(destination)
+      //   }
+      // }
+
+      try {
+        for (let i = 0; i < origins.length; i++) {
+          var results = data.rows[i].elements
+          var from = origins[i]
+          originsToDestinationsObject[from] = []
+          for (let j = 0; j < results.length; j++) {
+            var element = results[j]
+            var status = element.status
+            var distance = element.distance
+            var duration = element.duration
+            var to = destinations[j]
+            // console.log(from, to, duration.value)
+            originsToDestinationsObject[from].push({
+              to,
+              status,
+              distance: status == 'OK' ? distance : '',
+              duration: status == 'OK' ? duration : '',
+            })
+            // originsToDestinationsObject[from] = [...originsToDestinationsObject[from], {to, duration:duration.value} ]
+          }
         }
+        bestOrigin = getBestOrigin(originsToDestinationsObject)
+      } catch (error) {
+        console.log(error)
+        bestOrigin = 'Could not determine'
       }
-      bestOrigin = getBestOrigin(originsToDestinationsObject)
-    } catch (error) {
-      console.log(error)
-      bestOrigin = 'Could not determine'
+
     }
 
     // console.log(originsToDestinationsObject)
     // console.log(bestOrigin)
 
+    const nrOfFlatmates = match.flatMates.length
+
+    const finnQueryStem = "https://www.finn.no/realestate/lettings/search.html?"
+    const locationConstraintCity = match.location.toLowerCase() == 'oslo' ? "location=0.20061&" : ''
+    const locationConstraintNeighbourhood = (bestOrigin.length > 0 && bestOrigin !== 'Could not determine') ? originsOsloSmall[bestOrigin] : ''
+    const nrOfBedroomsFrom = "no_of_bedrooms_from=" + nrOfFlatmates + "&"
+    const propertyTypes = "property_type=1&property_type=3&property_type=4&property_type=2"
+
+    const finnQueryString = finnQueryStem + locationConstraintCity + locationConstraintNeighbourhood + nrOfBedroomsFrom + propertyTypes
+    const airBnBQuery = "https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=" +
+      "&adults=" + nrOfFlatmates +
+      "&min_beds=" + nrOfFlatmates +
+      "&min_bedrooms=" + nrOfFlatmates +
+      "&s_tag=2D91el1z"
+
     admin
       .firestore()
       .collection('matches')
       .doc(match.uid)
-      .update({ bestOrigin })
+      .update({ bestOrigin, finnQueryString })
   })
   return bestOrigin
+}
+
+exports.deleteMatchClusterCollection = functions.https.onRequest((req, res) => {
+  const batchSize = 100
+  const db = admin.firestore()
+  var collectionRef = admin.firestore().collection('matches');
+  var query = collectionRef.where("custom", "==", false).orderBy('__name__').limit(batchSize);
+
+  return new Promise((resolve, reject) => {
+    deleteQueryBatch(db, query, batchSize, resolve, reject);
+  });
 })
+
+function deleteQueryBatch(db, query, batchSize, resolve, reject) {
+  query.get()
+    .then((snapshot) => {
+      // When there are no documents left, we are done
+      if (snapshot.size == 0) {
+        return 0;
+      }
+
+      // Delete documents in a batch
+      var batch = db.batch();
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      return batch.commit().then(() => {
+        return snapshot.size;
+      });
+    }).then((numDeleted) => {
+      if (numDeleted === 0) {
+        resolve();
+        return;
+      }
+
+      // Recurse on the next process tick, to avoid
+      // exploding the stack.
+      process.nextTick(() => {
+        deleteQueryBatch(db, query, batchSize, resolve, reject);
+      });
+    })
+    .catch(reject);
+}

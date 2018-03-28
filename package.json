@@ -14,7 +14,8 @@
     "react-scripts": "1.0.13",
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.76.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "uuid": "^3.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -22,5 +23,9 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "yarn build && firebase deploy"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-plugin-react": "^7.7.0"
   }
 }

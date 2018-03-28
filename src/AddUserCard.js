@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Image, Grid, Card, Segment, Container, Search, Header } from 'semantic-ui-react'
-import signup from './assets/images/signup.jpg'
+import personAvatar from './assets/images/personAvatar.png'
 import firebase, { auth } from './firebase'
 import _ from 'underscore'
 
@@ -33,7 +33,14 @@ class AddUserCard extends Component {
 
   resetComponent = () => this.setState({ isLoading: false, results: [], value: '' })
 
-  handleResultSelect = (e, { result }) => this.setState({ value: result.title })
+  handleResultSelect = (e, { result }) => {
+
+    const userData = this.state.availableUsers.find(el => el.uid === result.key)
+
+    this.props.addFlatmateToMatch(userData)
+
+    this.setState({ value: result.title })
+  }
 
   handleSearchChange = (e, { value }) => {
     this.setState({ isLoading: true, value })
@@ -41,7 +48,7 @@ class AddUserCard extends Component {
     setTimeout(() => {
       if (this.state.value.length < 1) return this.resetComponent()
 
-      const results = this.state.availableUsers.filter(user => user.displayName.includes(this.state.value)).map(user => ({ title: user.displayName, description: user.displayName }))
+      const results = this.state.availableUsers.filter(user => user.displayName.toLowerCase().includes(this.state.value.toLowerCase())).map(user => ({ key: user.uid, value: user.uid, title: user.displayName, image: user.photoURL, description: user.workplace }))
       console.log(this.state.availableUsers.filter(user => user.displayName.includes(this.state.value)))
       this.setState({
         isLoading: false,
@@ -54,17 +61,19 @@ class AddUserCard extends Component {
     console.log(this.state)
     return (
       <Card>
-        <Image src={signup} />
-        <Card.Header>Add person</Card.Header>
-        <Card.Description>Search available users by email</Card.Description>
+        <Image src={personAvatar} />
+        <Card.Content>
+          <Card.Header>Add person</Card.Header>
+          <Card.Description>Search available users by email</Card.Description>
+        </Card.Content>
         <Card.Content>
           <Search
+            fluid
             loading={isLoading}
             onResultSelect={this.handleResultSelect}
             onSearchChange={_.debounce(this.handleSearchChange, 500, { leading: true })}
             results={results}
             value={value}
-            {...this.props}
           />
         </Card.Content>
       </Card>
