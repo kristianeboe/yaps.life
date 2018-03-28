@@ -1,18 +1,34 @@
 import React, { Component } from 'react'
-import { Image, Button, Container, Segment, Form, Grid, Checkbox, Message, Label } from 'semantic-ui-react'
+import {
+  Image,
+  Button,
+  Container,
+  Segment,
+  Form,
+  Grid,
+  Checkbox,
+  Message,
+  Label
+} from 'semantic-ui-react'
+import { Redirect } from 'react-router-dom'
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng
+} from 'react-places-autocomplete'
 
 import MatchingQuestion from './MatchingQuestion'
 import {
   SOCIAL_HABBITS_QUESTIONES,
   CLEANLINESS_QUESTIONES,
   SOCIAL_OPENNESS_QUESTIONES,
-  SOCIAL_FLEXIBILITY_QUESTIONES,
+  SOCIAL_FLEXIBILITY_QUESTIONES
 } from './MatchingQuestions'
-import { Redirect } from 'react-router-dom'
 import firebase, { auth } from './firebase'
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete'
 
-const genderOptions = [{ key: 'm', text: 'Gutt', value: 'Gutt' }, { key: 'f', text: 'Jente', value: 'Jente' }]
+const genderOptions = [
+  { key: 'm', text: 'Gutt', value: 'Gutt' },
+  { key: 'f', text: 'Jente', value: 'Jente' }
+]
 
 class Profile extends Component {
   constructor(props) {
@@ -56,18 +72,12 @@ class Profile extends Component {
       q20: 3,
       redirectToSignIn: false,
       readyToMatch: false,
-      tos: false,
+      tos: false
     }
   }
 
-  handleSliderChange = (value, name, type) => {
-    this.setState({
-      [name]: value,
-    })
-  }
-
   componentDidMount() {
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       this.setState({ user })
       if (user) {
         firebase
@@ -75,7 +85,7 @@ class Profile extends Component {
           .collection('users')
           .doc(user.uid)
           .get()
-          .then(doc => {
+          .then((doc) => {
             const userData = doc.data()
             this.setState({
               formLoading: false,
@@ -83,15 +93,27 @@ class Profile extends Component {
               photoURL: user.photoURL ? user.photoURL : '',
               age: userData.age ? userData.age : '',
               gender: userData.gender ? userData.gender : '',
-              studyProgramme: userData.studyProgramme ? userData.studyProgramme : '',
+              studyProgramme: userData.studyProgramme
+                ? userData.studyProgramme
+                : '',
               workplace: userData.workplace ? userData.workplace : '',
-              matchLocation: userData.matchLocation ? userData.matchLocation : '',
-              workplaceLatLng: userData.workplaceLatLng ? userData.workplaceLatLng : {},
+              matchLocation: userData.matchLocation
+                ? userData.matchLocation
+                : '',
+              workplaceLatLng: userData.workplaceLatLng
+                ? userData.workplaceLatLng
+                : {},
               university: userData.university ? userData.university : '',
-              SOCIAL_HABBITS: userData.SOCIAL_HABBITS ? userData.SOCIAL_HABBITS : {},
+              SOCIAL_HABBITS: userData.SOCIAL_HABBITS
+                ? userData.SOCIAL_HABBITS
+                : {},
               CLEANLINESS: userData.CLEANLINESS ? userData.CLEANLINESS : {},
-              SOCIAL_OPENNESS: userData.SOCIAL_OPENNESS ? userData.SOCIAL_OPENNESS : {},
-              SOCIAL_FLEXIBILITY: userData.SOCIAL_FLEXIBILITY ? userData.SOCIAL_FLEXIBILITY : {},
+              SOCIAL_OPENNESS: userData.SOCIAL_OPENNESS
+                ? userData.SOCIAL_OPENNESS
+                : {},
+              SOCIAL_FLEXIBILITY: userData.SOCIAL_FLEXIBILITY
+                ? userData.SOCIAL_FLEXIBILITY
+                : {},
               q1: userData.q1 ? userData.q1 : 3,
               q2: userData.q2 ? userData.q2 : 3,
               q3: userData.q3 ? userData.q3 : 3,
@@ -112,15 +134,23 @@ class Profile extends Component {
               q18: userData.q18 ? userData.q18 : 3,
               q19: userData.q19 ? userData.q19 : 3,
               q20: userData.q20 ? userData.q20 : 3,
-              readyToMatch: userData.readyToMatch ? userData.readyToMatch : false,
-              tos: userData.tos ? userData.tos : false,
+              readyToMatch: userData.readyToMatch
+                ? userData.readyToMatch
+                : false,
+              tos: userData.tos ? userData.tos : false
             })
           })
       } else {
         this.setState({
-          redirectToSignIn: true,
+          redirectToSignIn: true
         })
       }
+    })
+  }
+
+  handleSliderChange = (value, name, type) => {
+    this.setState({
+      [name]: value
     })
   }
 
@@ -160,7 +190,7 @@ class Profile extends Component {
       readyToMatch: this.state.readyToMatch,
       tos: this.state.tos,
       uid: this.state.user.uid,
-      photoURL: this.state.user.photoURL,
+      photoURL: this.state.user.photoURL
     }
 
     firebase
@@ -180,7 +210,7 @@ class Profile extends Component {
           push
           to={{
             pathname: '/create',
-            state: { redirectToProfile: true },
+            state: { redirectToProfile: true }
           }}
         />
       )
@@ -192,7 +222,7 @@ class Profile extends Component {
           push
           to={{
             pathname: '/match',
-            state: { redirectToMatch: true },
+            state: { redirectToMatch: true }
           }}
         />
       )
@@ -209,7 +239,7 @@ class Profile extends Component {
       university,
       photoURL,
       readyToMatch,
-      tos,
+      tos
     } = this.state
 
     // if (!user) return <Redirect push to="login" />
@@ -217,11 +247,21 @@ class Profile extends Component {
     return (
       <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
         <Segment raised className="you" loading={this.state.formLoading}>
-          <Form loading={formLoading} success={formSuccess} onSubmit={this.handleSubmit}>
+          <Form
+            loading={formLoading}
+            success={formSuccess}
+            onSubmit={this.handleSubmit}
+          >
             <Grid columns="equal" stackable>
               <Grid.Column>
                 <h1>Her er deg i dag</h1>
-                <Form.Input fluid label="Name" placeholder="Name" name="displayName" value={displayName} />
+                <Form.Input
+                  fluid
+                  label="Name"
+                  placeholder="Name"
+                  name="displayName"
+                  value={displayName}
+                />
                 <Form.Group widths="equal">
                   <Form.Input
                     fluid
@@ -275,14 +315,20 @@ class Profile extends Component {
                       name: 'workplace',
                       placeholder: 'Where are you going to work?',
                       value: this.state.workplace,
-                      onChange: workplace => {
+                      onChange: (workplace) => {
                         this.setState({
-                          workplace,
+                          workplace
                         })
-                      },
+                      }
                     }}
                     renderFooter={() => (
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                          padding: '4px'
+                        }}
+                      >
                         <div>
                           <img
                             src={require('./powered_by_google_default.png')}
@@ -292,7 +338,7 @@ class Profile extends Component {
                         </div>
                       </div>
                     )}
-                    onSelect={workplace => {
+                    onSelect={(workplace) => {
                       this.setState({ workplace })
                       geocodeByAddress(workplace)
                         .then(results => getLatLng(results[0]))
@@ -300,21 +346,21 @@ class Profile extends Component {
                           this.setState({
                             workplaceLatLng: {
                               lat,
-                              lng,
-                            },
+                              lng
+                            }
                           })
                         })
-                        .catch(error => {
+                        .catch((error) => {
                           console.log('Oh no!', error)
                           this.setState({
-                            workplaceLatLng: null, //this.renderGeocodeFailure(error),
+                            workplaceLatLng: null // this.renderGeocodeFailure(error),
                           })
                         })
                     }}
                     shouldFetchSuggestions={({ value }) => value.length > 2}
                     highlightFirstSuggestion
                     options={{
-                      types: ['establishment'],
+                      types: ['establishment']
                     }}
                   />
                 </Form.Field>
@@ -329,24 +375,32 @@ class Profile extends Component {
                   <Checkbox
                     label="Make my profile visible"
                     checked={readyToMatch}
-                    onChange={val => this.setState({ readyToMatch: !this.state.readyToMatch })}
+                    onChange={val =>
+                      this.setState({ readyToMatch: !this.state.readyToMatch })
+                    }
                   />
                 </Form.Field>
                 <Form.Button type="submit">Save</Form.Button>
 
-                <Button onClick={() => this.setState({redirectToMatch: true})} >Create match</Button>
+                <Button
+                  onClick={() => this.setState({ redirectToMatch: true })}
+                >
+                  Create match
+                </Button>
               </Grid.Column>
               <Grid.Column
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
               >
                 {/* <Image circular src={photoURL} size="medium" /> */}
                 <Image
                   circular
-                  src={photoURL ? photoURL : 'https://placem.at/people?w=250&h=250&random=1'}
+                  src={
+                    photoURL || 'https://placem.at/people?w=250&h=250&random=1'
+                  }
                   size="medium"
                 />
                 {/* <Form.Button>{photoURL ? 'Change profile image' : 'Upload profile image'}</Form.Button> */}
@@ -359,7 +413,10 @@ class Profile extends Component {
         <Grid stackable columns="equal">
           <Grid.Row>
             <Grid.Column>
-              <Segment style={{ minHeight: '35em' }} loading={this.state.formLoading}>
+              <Segment
+                style={{ minHeight: '35em' }}
+                loading={this.state.formLoading}
+              >
                 <h1>Social habbits</h1>
                 {SOCIAL_HABBITS_QUESTIONES.map(question => (
                   <MatchingQuestion
@@ -374,7 +431,10 @@ class Profile extends Component {
               </Segment>
             </Grid.Column>
             <Grid.Column>
-              <Segment style={{ minHeight: '35em' }} loading={this.state.formLoading}>
+              <Segment
+                style={{ minHeight: '35em' }}
+                loading={this.state.formLoading}
+              >
                 <h1>Cleanliness</h1>
                 {CLEANLINESS_QUESTIONES.map(question => (
                   <MatchingQuestion
@@ -391,7 +451,10 @@ class Profile extends Component {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <Segment style={{ minHeight: '35em' }} loading={this.state.formLoading}>
+              <Segment
+                style={{ minHeight: '35em' }}
+                loading={this.state.formLoading}
+              >
                 <h1>Social openness</h1>
                 {SOCIAL_OPENNESS_QUESTIONES.map(question => (
                   <MatchingQuestion
@@ -406,7 +469,10 @@ class Profile extends Component {
               </Segment>
             </Grid.Column>
             <Grid.Column>
-              <Segment style={{ minHeight: '35em' }} loading={this.state.formLoading}>
+              <Segment
+                style={{ minHeight: '35em' }}
+                loading={this.state.formLoading}
+              >
                 <h1>Social flexibility</h1>
                 {SOCIAL_FLEXIBILITY_QUESTIONES.map(question => (
                   <MatchingQuestion

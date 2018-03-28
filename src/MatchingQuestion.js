@@ -1,17 +1,25 @@
 import React from 'react'
 import 'rc-slider/assets/index.css'
-import 'rc-tooltip/assets/bootstrap.css'
+// import 'rc-tooltip/assets/bootstrap.css'
 import Tooltip from 'rc-tooltip'
 import Slider from 'rc-slider'
 
-const MatchingQuestion = props => {
-  const Handle = Slider.Handle
+const MatchingQuestion = (props) => {
+  const { Handle } = Slider
   const wrapperStyle = {}
 
-  const handle = props => {
-    const { value, dragging, index, ...restProps } = props
+  const handle = (handleProps) => {
+    const {
+      value, dragging, index, ...restProps
+    } = handleProps
     return (
-      <Tooltip prefixCls="rc-slider-tooltip" overlay={value} visible={dragging} placement="top" key={index}>
+      <Tooltip
+        prefixCls="rc-slider-tooltip"
+        overlay={value}
+        visible={dragging}
+        placement="top"
+        key={index}
+      >
         <Handle value={value} {...restProps} />
       </Tooltip>
     )
