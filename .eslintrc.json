@@ -2,6 +2,9 @@
   "parser": "babel-eslint",
   "extends": "airbnb",
   "plugins": ["react", "jsx-a11y", "import"],
+  "env": {
+    "jest": true
+  },
   "rules": {
     "semi": [2, "never"],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
@@ -10,6 +13,11 @@
     "comma-dangle": 0,
     "linebreak-style": 0,
     "react/prop-types": 0,
-    "no-mixed-operators": "off"
+    "no-mixed-operators": "off",
+    "jsx-a11y/anchor-is-valid": [ "error", {
+      "components": [ "Link" ],
+      "specialLink": [ "to" ]
+    }],
+    "import/prefer-default-export": "off"
   }
 }

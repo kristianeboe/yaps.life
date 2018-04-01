@@ -24,12 +24,13 @@ class Match extends Component {
       flatmatesLoading: true,
       chatLoading: true,
       matchDoc: null,
-      roommates: [],
+      flatmates: [],
       bestOrigin: '',
       currentMatchId: '',
       showChatRoom: true,
       showAddUserCard: false,
-      matchData: {}
+      matchData: {},
+      propertyList: [],
     }
   }
 
@@ -37,6 +38,7 @@ class Match extends Component {
     auth.onAuthStateChanged((user) => {
       this.setState({ user })
       if (user) {
+        this.subscribeToMatch(this.props.match.params.matchId)
         firebase
           .firestore()
           .collection('users')
@@ -49,17 +51,6 @@ class Match extends Component {
               bestOrigin: 'Oslo'
             })
             return userData
-          })
-          .then((userData) => {
-            if (userData.currentMatchId) {
-              this.subscribeToMatch(userData.currentMatchId)
-            } else {
-              this.setState({
-                flatmatesLoading: false,
-                showChatRoom: false,
-                roommates: [userData]
-              })
-            }
           })
       }
     })
@@ -81,13 +72,17 @@ class Match extends Component {
           matchData.bestOrigin.length > 0
             ? matchData.bestOrigin
             : matchData.location
+        const propertyList = matchData.propertyList ?
+          matchData.propertyList :
+          []
         this.setState({
           matchDoc: match,
           currentMatchId: matchId,
           bestOrigin,
-          matchData
+          matchData,
+          propertyList
         })
-        return Promise.all(matchData.flatMates.map((mate) => {
+        return Promise.all(matchData.flatmates.map((mate) => {
           let collectionName = 'testUsers'
           if (mate.uid.length === 28) {
             collectionName = 'users'
@@ -99,14 +94,14 @@ class Match extends Component {
             .get()
         }))
           .then((results) => {
-            const roommates = []
+            const flatmates = []
             results.forEach((doc) => {
-              const roommate = doc.data()
-              roommates.push(roommate)
+              const flatmate = doc.data()
+              flatmates.push(flatmate)
             })
 
             this.setState({
-              roommates,
+              flatmates,
               flatmatesLoading: false,
               showChatRoom: true
             })
@@ -147,12 +142,12 @@ class Match extends Component {
     return Math.floor(dotSum / (magU * magV) * 100)
   }
 
-  calculateFlatScore = (roommates) => {
+  calculateFlatScore = (flatmates) => {
     const simScores = []
-    for (let i = 0; i < roommates.length; i += 1) {
-      const mate1 = roommates[i]
-      for (let j = 0; j < roommates.length; j += 1) {
-        const mate2 = roommates[j]
+    for (let i = 0; i < flatmates.length; i += 1) {
+      const mate1 = flatmates[i]
+      for (let j = 0; j < flatmates.length; j += 1) {
+        const mate2 = flatmates[j]
         if (i !== j) {
           const simScore = this.calculateSimScore(mate1, mate2)
           simScores.push(simScore)
@@ -168,72 +163,18 @@ class Match extends Component {
   }
 
   addFlatmateToMatch = (userData) => {
+    const flatmates = [...this.state.flatmates, userData]
+    const { matchId } = this.props.match.params
     this.setState({
-      roommates: [...this.state.roommates, userData],
+      flatmates,
       showAddUserCard: false
     })
-  }
-
-  createNewMatchObject = () => {
-    const { roommates } = this.state
-    console.log(roommates)
-    const match = {
-      uid: uuid(),
-      flatMates: roommates,
-      location: 'Oslo',
-      bestOrigin: '',
-      flatAverageScore: this.calculateFlatScore(roommates),
-      custom: true
-    }
-    firebase
-      .firestore()
-      .collection('matches')
-      .doc(match.uid)
-      .set(match)
-      .then(() => {
-        this.subscribeToMatch(match.uid)
-        roommates.forEach((mate) => {
-          firebase
-            .firestore()
-            .collection('users')
-            .doc(mate.uid)
-            .update({ currentMatchId: match.uid, readyToMatch: false })
-        })
-      })
+    firebase.firestore().collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
+    firebase.firestore().collection('matches').doc(matchId).update({ flatmates })
   }
 
   render() {
-    const { flatmatesLoading, roommates } = this.state
-
-    // if (userData && userData.currentMatchId == null) {
-    //   return (
-    //     <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
-    //    <Segment>You havent been matched yet, fill in your profile and set yourself ready</Segment
-    //     </Container>
-    //   )
-    // }
-
-    /*
-        {this.state.userData && (
-          <Grid.Column>
-            <Card
-              image={userData.photoURL}
-              header={userData.displayName}
-              meta={userData.workplace.substr(0, userData.workplace.indexOf(','))}
-              description={
-                this.state.userData.displayName +
-                ' studied ' +
-                this.state.userData.studyProgramme +
-                ' at ' +
-                this.state.userData.university
-              }
-              extra={this.calculateSimScore(this.state.userData, this.state.userData) + '% match'}
-            // extra={extra}
-            />
-          </Grid.Column>
-        )} */
-    console.log(this.state)
-
+    const { flatmatesLoading, flatmates, propertyList } = this.state
 
     return (
       <div>
@@ -244,7 +185,7 @@ class Match extends Component {
                 <h2>Here are your new (potential) flatmates</h2>
                 <Grid stackable columns="equal">
                   <Grid.Row stretched>
-                    {roommates.map(roommate =>
+                    {flatmates.map(roommate =>
                         console.log(roommate) || (
                           <Grid.Column
                             key={roommate.uid}
@@ -299,7 +240,7 @@ class Match extends Component {
                     )}
                   </Grid.Row>
                   <Grid.Row>
-                    {this.state.roommates.length < 4 && (
+                    {this.state.flatmates.length < 5 && (
                       <Grid.Column
                         style={{
                           display: 'flex',
@@ -318,9 +259,9 @@ class Match extends Component {
                     )}
                   </Grid.Row>
                 </Grid>
-                <Button onClick={() => this.createNewMatchObject()}>
+                {/* <Button onClick={() => this.createNewMatchObject()}>
                   Create new Match Object
-                </Button>
+                </Button> */}
               </Segment>
               <Grid columns="equal">
                 <Grid.Column>
@@ -344,7 +285,7 @@ class Match extends Component {
                   </Segment>
                 </Grid.Column>
                 <Grid.Column>
-                  <FlatRank roommates={roommates} />
+                  <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} propertyList={propertyList} />
                 </Grid.Column>
               </Grid>
               {this.state.showChatRoom && (

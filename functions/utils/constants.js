@@ -1,4 +1,4 @@
-export const workplaces = [
+const WORKPLACES = [
   'Netlight AS Oslo',
   'McKinsey Oslo',
   'BCG Oslo',
@@ -17,7 +17,7 @@ export const workplaces = [
   'unacast oslo'
 ]
 
-export const universities = [
+const UNIVERSITIES = [
   'NTNU',
   'UIO',
   'NHH',
@@ -26,7 +26,7 @@ export const universities = [
   'BI Oslo'
 ]
 
-export const studyProgrammes = {
+const STUDY_PROGRAMMES = {
   NTNU: [
     'Datateknologi',
     'IndØk',
@@ -42,4 +42,9 @@ export const studyProgrammes = {
   Stanford: ['Computer Science', 'MBA'],
   Harvard: ['Law', 'Medicine', 'Ethics']
 }
-export const genders = ['Gutt', 'Jente']
+const GENDERS = ['Gutt', 'Jente']
+
+module.exports.WORKPLACES = WORKPLACES
+module.exports.UNIVERSITIES = UNIVERSITIES
+module.exports.STUDY_PROGRAMMES = STUDY_PROGRAMMES
+module.exports.GENDERS = GENDERS

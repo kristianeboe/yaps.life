@@ -21,9 +21,9 @@ class AddUserCard extends Component {
       .firestore()
       .collection('users')
       .get()
-      .then(snapshot => {
+      .then((snapshot) => {
         const availableUsers = []
-        snapshot.forEach(userDoc => {
+        snapshot.forEach((userDoc) => {
           const user = userDoc.data()
           availableUsers.push(user)
         })
@@ -34,7 +34,6 @@ class AddUserCard extends Component {
   resetComponent = () => this.setState({ isLoading: false, results: [], value: '' })
 
   handleResultSelect = (e, { result }) => {
-
     const userData = this.state.availableUsers.find(el => el.uid === result.key)
 
     this.props.addFlatmateToMatch(userData)
@@ -48,7 +47,9 @@ class AddUserCard extends Component {
     setTimeout(() => {
       if (this.state.value.length < 1) return this.resetComponent()
 
-      const results = this.state.availableUsers.filter(user => user.displayName.toLowerCase().includes(this.state.value.toLowerCase())).map(user => ({ key: user.uid, value: user.uid, title: user.displayName, image: user.photoURL, description: user.workplace }))
+      const results = this.state.availableUsers.filter(user => user.displayName.toLowerCase().includes(this.state.value.toLowerCase())).map(user => ({
+        key: user.uid, value: user.uid, title: user.displayName, image: user.photoURL, description: user.workplace
+      }))
       console.log(this.state.availableUsers.filter(user => user.displayName.includes(this.state.value)))
       this.setState({
         isLoading: false,

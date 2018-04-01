@@ -1,16 +1,16 @@
 const uuid = require('uuid')
 const {
-  workplaces,
-  universities,
-  genders,
-  studyProgrammes
+  WORKPLACES,
+  UNIVERSITIES,
+  GENDERS,
+  STUDY_PROGRAMMES
 } = require('./utils/constants')
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max)) + 1
 }
 
-export function createTestUsers(n) {
+function createTestUsers(n) {
   const users = []
 
   for (let index = 0; index < n; index += 1) {
@@ -19,24 +19,24 @@ export function createTestUsers(n) {
       vector.push(getRandomInt(5))
     }
     const university =
-      universities[Math.floor(Math.random() * Math.floor(universities.length))]
+      UNIVERSITIES[Math.floor(Math.random() * Math.floor(UNIVERSITIES.length))]
     const studyProgramme =
-      studyProgrammes[university][
-        Math.floor(Math.random() * Math.floor(studyProgrammes[university].length))
+      STUDY_PROGRAMMES[university][
+        Math.floor(Math.random() * Math.floor(STUDY_PROGRAMMES[university].length))
       ]
     const user = {
-      uid: uuid(),
+      uid: uuid.v4(),
       displayName: `testUser${index}`,
       matchLocation: 'Oslo',
       seeNewUsers: false,
       workplace:
-        workplaces[Math.floor(Math.random() * Math.floor(workplaces.length))],
+        WORKPLACES[Math.floor(Math.random() * Math.floor(WORKPLACES.length))],
       photoURL: `https://placem.at/people?w=290&h=290&random=${getRandomInt(100)}`,
       university,
       age: Math.floor(Math.random() * 10) + 20,
       tos: true,
       readyToMatch: true,
-      gender: genders[Math.floor(Math.random() * Math.floor(genders.length))],
+      gender: GENDERS[Math.floor(Math.random() * Math.floor(GENDERS.length))],
       studyProgramme
     }
     for (let q = 0; q < 20; q += 1) {
@@ -47,7 +47,7 @@ export function createTestUsers(n) {
   return users
 }
 
-export const user1 = {
+const user1 = {
   age: 28,
   currentMatchId: 'f9345ee3-58c2-4f91-a3c7-331554b7c88f',
   displayName: 'testUser24',
@@ -83,7 +83,7 @@ export const user1 = {
   workplace: 'McKinsey Oslo'
 }
 
-export const user2 = {
+const user2 = {
   age: 20,
   currentMatchId: 'f9345ee3-58c2-4f91-a3c7-331554b7c88f',
   displayName: 'testUser17',
@@ -119,7 +119,7 @@ export const user2 = {
   workplace: 'BCG Oslo'
 }
 
-export const user3 = {
+const user3 = {
   age: 27,
   currentMatchId: 'f9345ee3-58c2-4f91-a3c7-331554b7c88f',
   displayName: 'testUser126',
@@ -155,7 +155,7 @@ export const user3 = {
   workplace: 'Bekk Oslo'
 }
 
-export const me = {
+const me = {
   age: '25',
   currentMatchId: 'f9345ee3-58c2-4f91-a3c7-331554b7c88f',
   displayName: 'Kristian Elset Bø',
@@ -191,3 +191,41 @@ export const me = {
   university: 'NTNU',
   workplace: 'Netlight AS Oslo'
 }
+
+const antiKristianUser = {
+  displayName: 'Anti Kristian Elset Bø',
+  gender: 'Gutt',
+  matchLocation: 'Oslo',
+  q1: 1,
+  q2: 1,
+  q3: 1,
+  q4: 1,
+  q5: 1,
+  q6: 1,
+  q7: 1,
+  q8: 1,
+  q9: 1,
+  q10: 1,
+  q11: 5,
+  q12: 5,
+  q13: 5,
+  q14: 5,
+  q15: 5,
+  q16: 1,
+  q17: 1,
+  q18: 1,
+  q19: 1,
+  q20: 1,
+}
+
+const kristianVector = [4, 3, 3, 3, 4, 5, 4, 3, 4, 4, 1, 1, 2, 2, 2, 5, 5, 5, 5, 4]
+const antiKristianVector = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1]
+
+module.exports.createTestUsers = createTestUsers
+module.exports.user1 = user1
+module.exports.user2 = user2
+module.exports.user3 = user3
+module.exports.me = me
+module.exports.antiKristianUser = antiKristianUser
+module.exports.kristianVector = kristianVector
+module.exports.antiKristianVector = antiKristianVector

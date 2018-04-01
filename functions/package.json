@@ -6,10 +6,17 @@
     "axios": "^0.17.1",
     "cheerio": "^1.0.0-rc.2",
     "compute-cosine-similarity": "^1.0.0",
+    "cors": "^2.8.4",
     "firebase-admin": "^5.8.1",
     "firebase-functions": "^0.9.1",
     "node-kmeans": "^1.1.8",
     "uuid": "^3.2.1"
   },
-  "private": true
+  "scripts": {
+    "test": "jest"
+  },
+  "private": true,
+  "devDependencies": {
+    "jest": "^22.4.3"
+  }
 }

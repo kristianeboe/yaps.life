@@ -20,7 +20,7 @@ function getBestOrigin(originsToDestinations) {
   return bestOrigin
 }
 
-export function getOriginsToDestinationsObject(origins, flatmates) {
+function getOriginsToDestinationsObject(origins, flatmates) {
   return new Promise((resolve, reject) => {
     const destinations = flatmates.map(mate => encodeURI(mate.workplace))
     const mode = 'transit'
@@ -36,12 +36,14 @@ export function getOriginsToDestinationsObject(origins, flatmates) {
         console.log(response.data)
         const { data } = response
         const originsToDestinationsObject = {}
-
+        console.log(data)
         if (data.status === 'OK') {
+          console.log("Starting extracting data")
           const originAddresses = data.origin_addresses
           const destinationAddresses = data.destination_addresses
 
           try {
+            console.log("inside try")
             for (let i = 0; i < originAddresses.length; i += 1) {
               const results = data.rows[i].elements
               const from = originAddresses[i]
@@ -60,6 +62,7 @@ export function getOriginsToDestinationsObject(origins, flatmates) {
                 // originsToDestinationsObject[from] = [...originsToDestinationsObject[from], {to, duration:duration.value} ]
               }
             }
+            console.log(originsToDestinationsObject)
             Object.keys(originsToDestinationsObject).forEach((origin) => {
               let combinedDuration = 0
               const destinationsArray = originsToDestinationsObject[origin]
@@ -74,13 +77,14 @@ export function getOriginsToDestinationsObject(origins, flatmates) {
             console.log(error)
           }
         }
+        console.log("about to resolve")
         resolve(originsToDestinationsObject)
       })
       .catch(err => console.log('error in axios', reject(err)))
   })
 }
 
-export function getBestOriginForMatch(match) {
+function getBestOriginForMatch(match) {
   const originsOsloSmall = {
     'Grunerløkka Oslo': 'location=1.20061.20511&', // Grunerløkka - Sofienberg
     'Majorstuen Oslo': 'location=1.20061.20508&', // Majorstuen, Uranienborg, Nationaltheateret
@@ -134,3 +138,5 @@ export function getBestOriginForMatch(match) {
     })
     .catch(err => console.log('Error in getBestOriginFromMatch', err))
 }
+module.exports.getOriginsToDestinationsObject = getOriginsToDestinationsObject
+module.exports.getBestOriginForMatch = getBestOriginForMatch

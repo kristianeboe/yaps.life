@@ -1,12 +1,9 @@
 const kMeans = require('node-kmeans')
 const admin = require('firebase-admin')
 const uuid = require('uuid')
+const { calculateSimScoreFromUsers, extractVectorsFromUsers } = require('./utils/vectorFunctions')
+const knnClustering = require('./knnClustering')
 
-function normalize(vector) {
-  const magnitude = Math.sqrt(vector.map(el => el * el).reduce((a, b) => a + b, 0))
-  const normalized = vector.map(ele => ele / magnitude)
-  return normalized
-}
 function chunckArray(array, cSize) {
   const chunkArray = []
   for (let index = 0; index < array.length; index += cSize) {
@@ -16,26 +13,6 @@ function chunckArray(array, cSize) {
   return chunkArray
 }
 
-function calculateSimScore(uData, vData) {
-  const u = []
-  const v = []
-
-  for (let q = 0; q < 20; q += 1) {
-    u.push(uData[`q${q + 1}`])
-    v.push(vData[`q${q + 1}`])
-  }
-  const magU = Math.sqrt(u.map(el => el * el).reduce((a, b) => a + b, 0))
-  const magV = Math.sqrt(v.map(el => el * el).reduce((a, b) => a + b, 0))
-  const sumVector = []
-  for (let index = 0; index < u.length; index += 1) {
-    const ui = u[index]
-    const vi = v[index]
-    sumVector.push(ui * vi)
-  }
-  const dotSum = sumVector.reduce((a, b) => a + b, 0)
-
-  return Math.floor(dotSum / (magU * magV) * 100)
-}
 
 function calculateFlatAverageScore(flat) {
   const simScores = []
@@ -44,7 +21,7 @@ function calculateFlatAverageScore(flat) {
     for (let j = 0; j < flat.length; j += 1) {
       const mate2 = flat[j]
       if (i !== j) {
-        const simScore = calculateSimScore(mate1, mate2)
+        const simScore = calculateSimScoreFromUsers(mate1, mate2)
         simScores.push(simScore)
       }
     }
@@ -57,20 +34,15 @@ function calculateFlatAverageScore(flat) {
   return flatAverageScore
 }
 
-export function clusterUsers(users, normalizeVectors) {
+function clusterUsers(users, normalizeVectors) {
   // console.log(users[0])
   return new Promise((resolve, reject) => {
-    const vectors = []
-    for (let i = 0; i < users.length; i += 1) {
-      const vector = []
-      for (let j = 0; j < 20; j += 1) {
-        if (users[i][`q${j + 1}`]) {
-          vector.push(users[i][`q${j + 1}`])
-        } else {
-          vector.push(3)
-        }
-      }
-      vectors[i] = normalizeVectors ? normalize(vector) : vector
+    const vectors = extractVectorsFromUsers(users, normalizeVectors)
+
+    if (true) {
+      const clusters = knnClustering(vectors, 4)
+      resolve(clusters)
+      return
     }
 
     // console.log(vectors)
@@ -91,7 +63,7 @@ export function clusterUsers(users, normalizeVectors) {
   })
 }
 
-export function createFlatmatesFromClusters(clusters) {
+function createFlatmatesFromClusters(clusters) {
   const allFlatmates = []
   clusters.forEach((cluster) => {
     const len = cluster.length
@@ -124,7 +96,7 @@ export function createFlatmatesFromClusters(clusters) {
   return allFlatmates
 }
 
-export default function matchAllAvailableUsers() {
+function matchAllAvailableUsers() {
   const usersToBeMatched = []
   console.log('Getting test users')
   admin
@@ -156,7 +128,7 @@ export default function matchAllAvailableUsers() {
     .then(() => {
       console.log(`${usersToBeMatched.length} will be matched`)
       console.log('starting clustering')
-      return clusterUsers(usersToBeMatched, true)
+      return clusterUsers(usersToBeMatched, false)
     })
     .then((clusters) => {
       console.log('Organizing into flats')
@@ -167,7 +139,7 @@ export default function matchAllAvailableUsers() {
       allFlatmates.forEach((flatmates) => {
         const flatAverageScore = calculateFlatAverageScore(flatmates)
 
-        const matchUid = uuid()
+        const matchUid = uuid.v4()
         const match = {
           uid: matchUid,
           flatmates,
@@ -183,7 +155,7 @@ export default function matchAllAvailableUsers() {
 
         matchRef
           .set(match)
-          .then(() => {
+          /* .then(() => {
             matchRef
               .collection('messages')
               .add({
@@ -199,7 +171,7 @@ export default function matchAllAvailableUsers() {
               .catch(err =>
                 console.log('error adding original message to match', err))
           })
-          .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({})
+          .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({}) */
         match.flatmates.forEach((mate) => {
           let collectionName = 'testUsers'
           if (mate.uid === 'PmzsNVCnUSMVSMu2WGRa4omxez52') {
@@ -211,9 +183,7 @@ export default function matchAllAvailableUsers() {
             .doc(mate.uid)
             .update({
               currentMatchId: match.uid,
-              currentMatches: {
-                matchUid: Date.now()
-              },
+              [`currentMatches.${matchUid}`]: Date.now(),
               readyToMatch: false,
               newMatch: true
             })
@@ -225,3 +195,7 @@ export default function matchAllAvailableUsers() {
     })
     .catch(error => console.log('Error in creating matches', error))
 }
+
+module.exports.clusterUsers = clusterUsers
+module.exports.createFlatmatesFromClusters = createFlatmatesFromClusters
+module.exports.matchAllAvailableUsers = matchAllAvailableUsers

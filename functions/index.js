@@ -3,6 +3,7 @@ const admin = require('firebase-admin')
 const createUserData = require('./createUserData')
 const clusteringAlgorithms = require('./clusteringAlgorithms')
 const locationAlgorithms = require('./locationAlgorithms')
+const cors = require('cors')({ origin: true })
 
 admin.initializeApp(functions.config().firebase)
 
@@ -34,7 +35,7 @@ exports.countTestUsers = functions.https.onRequest((req, res) =>
     .collection('testUsers')
     .get()
     .then((snapshot) => {
-      console.log(`LOG: ${snapshot.size}`)
+      console.log(`LOG: ${snapshot.size} test users found`)
     })
     .then(() => res.status(200).end()))
 
@@ -45,6 +46,7 @@ exports.setTestUsersReadyToMatch = functions.https.onRequest((req, res) =>
     .get()
     .then((snapshot) => {
       snapshot.forEach(doc => doc.ref.update({ readyToMatch: true }))
+      console.log(`${snapshot.size} test users ready to match`)
       res.status(200).end()
     }))
 
@@ -57,7 +59,6 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
     3: 0,
     4: 0,
     5: 0,
-    6: 0
   }
   let matchCounter = 0
   let matchesWithBestOrigins = 0
@@ -71,7 +72,7 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
       snapshot.forEach((matchDoc) => {
         matchCounter += 1
         const match = matchDoc.data()
-        const numberOfFlatmates = match.flatMates.length
+        const numberOfFlatmates = match.flatmates.length
         numberOfUsersCounted += numberOfFlatmates
         matchSizes[numberOfFlatmates] += 1
         if (match.custom) {
@@ -95,7 +96,7 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
       const ratioOfPeopleIn3or4or5Flats =
         (matchSizes[3] * 3 + matchSizes[4] * 4 + matchSizes[5] * 5) /
         numberOfUsersCounted
-      const ratioOfPeopleInSingels = matchSizes[1] / numberOfUsersCounted
+      const ratioOfPeopleLessThan3 = (matchSizes[1] + matchSizes[2] * 2) / numberOfUsersCounted
       aggregateInfoObject = {
         averageScore,
         matchSizes,
@@ -103,7 +104,7 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
         matchesWithBestOrigins,
         numberOfUsersCounted,
         ratioOfPeopleIn3or4or5Flats,
-        ratioOfPeopleInSingels,
+        ratioOfPeopleLessThan3,
         customMatchCounter
       }
       console.log(aggregateInfoObject)
@@ -114,7 +115,6 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
 })
 
 exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
-  console.log(req.body)
   // const userData = event.data.data()
   // const { readyToMatch } = req.body
 
@@ -148,19 +148,32 @@ exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
     .collection('matches')
     .doc(matchId)
     .get()
-    .then(matchDoc => getBestOriginForMatch(matchDoc.data()))
+    .then(matchDoc => locationAlgorithms.getBestOriginForMatch(matchDoc.data()))
     .then(() => res.status(200).end())
     .catch(err => console.error(err))
 })
 
 exports.scoreApartment = functions.https.onRequest((req, res) => {
-  const { address, flatmates } = req.body
-  console.log(address, flatmates)
-  const origins = [address]
-  const originsToDestinationsObject = locationAlgorithms.getOriginsToDestinationsObject(
-    origins,
-    flatmates
-  )
-  const score = originsToDestinationsObject.address.combinedDuration
-  res.status(200).send({ score })
+  cors(req, res, () => {
+    // curl -H 'Content-Type: application/json' -d '{"address": "Nydalen Oslo", "flatmates": [{"workplace":"Netlight Oslo"}, {"workplace":"Capra Consulting Oslo"}]}' https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment
+    console.log(req.body)
+    const { address, flatmates } = req.body
+    console.log(address, flatmates)
+
+    if (!address || !flatmates) {
+      res.status(400).end()
+    }
+    const origins = [address]
+    locationAlgorithms.getOriginsToDestinationsObject(
+      origins,
+      flatmates
+    ).then((originsToDestinationsObject) => {
+      console.log(originsToDestinationsObject)
+      const score = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
+      res.status(200).send({ score })
+    }).catch((err) => {
+      console.log('Error in scoring apartment', err)
+      res.status(300).end()
+    })
+  })
 })

@@ -364,6 +364,16 @@ class Profile extends Component {
                     }}
                   />
                 </Form.Field>
+                <Form.Field>
+                  <label>Price </label>
+                  <Button.Group fluid >
+                    <Button >One</Button>
+                    <Button.Or />
+                    <Button >Two</Button>
+                    <Button.Or />
+                    <Button >Three</Button>
+                  </Button.Group>
+                </Form.Field>
                 <Form.Field required>
                   <Checkbox
                     label="Agree to TOS"

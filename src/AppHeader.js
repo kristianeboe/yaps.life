@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Menu, Label, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
-import firebase from './firebase'
+import firebase, { auth } from './firebase'
 // import SignUp from "./SignUp";
 
 class AppHeader extends Component {
@@ -10,49 +10,27 @@ class AppHeader extends Component {
     this.unsubscibe = null
     this.state = {
       user: null,
-      userData: null,
       newMatch: false,
     }
   }
 
   componentDidMount() {
-    firebase.auth().onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       this.setState({ user })
       if (user) {
         this.unsubscibe = firebase
           .firestore()
           .collection('users')
           .doc(user.uid)
-          .onSnapshot(user => {
-            const userData = user.data()
-            const newMatch = userData.newMatch
+          .onSnapshot((doc) => {
+            const userData = doc.data()
+            const { newMatch } = userData
             this.setState({
-              userData: user.data(),
-              newMatch,
+              newMatch
             })
           })
       }
     })
-  }
-
-  seeNewUsers = () => {
-    if (this.state.newMatch) {
-      firebase.firestore().collection('users').doc(this.state.user.uid).update({newMatch: false})
-    }
-    this.setState({ newMatch: false })
-  }
-
-  logout = () => {
-    firebase
-      .auth()
-      .signOut()
-      .then(function() {
-        // Sign-out successful.
-      })
-      .catch(function(error) {
-        console.log(error)
-        // An error happened.
-      })
   }
 
   componentWillUnmount() {
@@ -60,6 +38,25 @@ class AppHeader extends Component {
       this.unsubscibe()
     }
   }
+  seeNewUsers = () => {
+    if (this.state.newMatch) {
+      firebase.firestore().collection('users').doc(this.state.user.uid).update({ newMatch: false })
+    }
+    this.setState({ newMatch: false })
+  }
+
+  logout = () => {
+    auth()
+      .signOut()
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        console.log(error)
+        // An error happened.
+      })
+  }
+
 
   render() {
     return (
@@ -83,10 +80,10 @@ class AppHeader extends Component {
             </Menu.Item>
           </Link>
           {this.state.user && (
-            <Link to="/match">
+            <Link to="/matches">
               <Menu.Item as="div" onClick={this.seeNewUsers}>
                 <Icon name="users" />
-                Match
+                Matches
                 {this.state.newMatch && (
                   <Label color="red" floating>
                     New

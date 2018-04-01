@@ -46,3 +46,21 @@
 [info] ✔  functions: countTestUsers
 [info] ✔  functions: onMatchCreate
 [info] ✔  functions: getTestUsersReadyToMatch
+[debug] [2018-03-30T11:18:55.141Z] ----------------------------------------------------------------------
+[debug] [2018-03-30T11:18:55.144Z] Command:       /usr/local/Cellar/node/9.10.0_1/bin/node /usr/local/bin/firebase deploy
+[debug] [2018-03-30T11:18:55.144Z] CLI Version:   3.17.7
+[debug] [2018-03-30T11:18:55.144Z] Platform:      darwin
+[debug] [2018-03-30T11:18:55.144Z] Node Version:  v9.10.0
+[debug] [2018-03-30T11:18:55.145Z] Time:          Fri Mar 30 2018 13:18:55 GMT+0200 (CEST)
+[debug] [2018-03-30T11:18:55.145Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-03-30T11:18:55.159Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-03-30T11:18:55.159Z] > authorizing via signed-in user
+[debug] [2018-03-30T11:18:55.161Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yaps-1496498804190  
+  
+ Fri Mar 30 2018 13:18:55 GMT+0200 (CEST)
+[debug] [2018-03-30T11:18:55.928Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-30T11:18:55.928Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yaps-1496498804190/tokens  
+  
+ Fri Mar 30 2018 13:18:55 GMT+0200 (CEST)
+[debug] [2018-03-30T11:18:56.556Z] <<< HTTP RESPONSE 200

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Form, Segment } from 'semantic-ui-react'
 import axios from 'axios'
 import FlatList from './Containers/FlatList'
+import firebase from './firebase'
 
 class FlatRank extends Component {
   constructor(props) {
@@ -9,7 +10,8 @@ class FlatRank extends Component {
     this.state = {
       address: '',
       price: '',
-      flats: [{ address: 'Arnebråtveien 75D', price: 25000, score: 10 }]
+      // flats: [{ address: 'Arnebråtveien 75D', price: 25000, score: 10 }],
+      segmentLoading: false,
     }
   }
 
@@ -19,6 +21,7 @@ class FlatRank extends Component {
     console.log('submit')
 
     const { address, price } = this.state
+    const { propertyList, flatmates, matchDoc } = this.props
 
     if (address.length < 1 || price.length < 1) {
       console.log('address or price too short')
@@ -26,26 +29,47 @@ class FlatRank extends Component {
     }
 
     this.setState({
-      flats: [...this.state.flats, { address, price, score: 0 }]
+      // flats: [...this.state.flats, { address, price, score: 0 }],
+      segmentLoading: true,
+      address: '',
+      price: '',
     })
-    const url = ''
+    const data = {
+      address,
+      flatmates,
+    }
+    console.log(data)
+    const url = 'https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment'
     axios
-      .post(url, {
-        address,
-        flatmates: this.props.roommates
-      })
+      .post(url, data)
       .then((response) => {
         console.log(response)
+        const { score } = response.data
+        propertyList.push({
+          address,
+          price,
+          score,
+        })
+        return firebase.firestore().collection('matches').doc(matchDoc.id).update({
+          propertyList
+        })
+      }).then(() => {
+        this.setState({
+          segmentLoading: false,
+        })
       })
       .catch(err => console.log('Error in evaluating apartment axios', err))
   }
 
   render() {
-    const { address, price, flats } = this.state
+    const {
+      address, price, segmentLoading
+    } = this.state
+    const { propertyList } = this.props
 
     return (
-      <Segment>
-        <FlatList flats={flats} />
+      <Segment loading={segmentLoading} >
+        <FlatList flats={propertyList} />
         <Form onSubmit={this.handleSubmit}>
           <Form.Group widths="equal">
             <Form.Input
