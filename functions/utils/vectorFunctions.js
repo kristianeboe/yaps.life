@@ -5,7 +5,7 @@ function euclidianDistance(a, b) {
   }
   let d = 0.0
   for (let i = 0, max = a.length; i < max; i += 1) {
-    d += (a[i] - b[i]) ** 2
+    d += (a[i] - b[i]) * (a[i] - b[i])
   }
   return Math.sqrt(d)
 }
