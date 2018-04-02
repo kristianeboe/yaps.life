@@ -1,6 +1,8 @@
 const admin = require('firebase-admin')
 const uuid = require('uuid')
-const { calculateSimScoreFromUsers, extractVectorsFromUsers, euclidianDistance } = require('../utils/vectorFunctions')
+const {
+  calculateSimScoreFromUsers, extractVectorsFromUsers, euclidianDistance, cosineSimilarityNPM
+} = require('../utils/vectorFunctions')
 const knnClustering = require('./knnClustering')
 const kMeansClustering = require('./kMeansClustering')
 
@@ -114,7 +116,7 @@ function matchAllAvailableUsers() {
       console.log(`${usersToBeMatched.length} will be matched`)
       console.log('starting clustering')
       const vectors = extractVectorsFromUsers(usersToBeMatched, false)
-      if (true) {
+      if (false) {
         return knnClustering(vectors, 4, euclidianDistance, false)
       }
       return kMeansClustering(vectors, false)
@@ -133,7 +135,7 @@ function matchAllAvailableUsers() {
       // Turn flats into matches
       const matchArray = []
       allFlatmates.forEach((flatmates) => {
-        const flatAverageScore = calculateFlatAverageScore(flatmates, euclidianDistance)
+        const flatAverageScore = Math.ceil(calculateFlatAverageScore(flatmates, cosineSimilarityNPM) * 100)
 
         const matchUid = uuid.v4()
         const match = {
@@ -142,7 +144,8 @@ function matchAllAvailableUsers() {
           location: 'Oslo', // remember to change this in the future
           bestOrigin: '',
           flatAverageScore,
-          custom: false
+          custom: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
         }
 
         matchArray.push(match)
@@ -152,26 +155,26 @@ function matchAllAvailableUsers() {
           .collection('matches')
           .doc(matchUid)
 
-          // init chatroom
+        // init chatroom
         matchRef
           .set(match)
-        /* .then(() => {
-                matchRef
-                  .collection('messages')
-                  .add({
-                    text: 'Stay civil in the chat guys',
-                    dateTime: Date.now(),
-                    from: {
-                      uid: 'admin',
-                      displayName: 'Admin',
-                      photoURL:
+          .then(() => {
+            matchRef
+              .collection('messages')
+              .add({
+                text: 'Stay civil in the chat guys',
+                dateTime: Date.now(),
+                from: {
+                  uid: 'admin',
+                  displayName: 'Admin',
+                  photoURL:
                         'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
-                    }
-                  })
-                  .catch(err =>
-                    console.log('error adding original message to match', err))
+                }
               })
-              .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({}) */
+              .catch(err =>
+                console.log('error adding original message to match', err))
+          })
+          .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({})
         // Update users with new match
         match.flatmates.forEach((mate) => {
           let collectionName = 'testUsers'

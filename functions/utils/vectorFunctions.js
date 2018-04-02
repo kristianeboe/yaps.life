@@ -1,3 +1,8 @@
+const cosineSimilarityNPMfunction = require('compute-cosine-similarity')
+
+function cosineSimilarityNPM(u, v) {
+  return cosineSimilarityNPMfunction(u, v)
+}
 
 function euclidianDistance(a, b) {
   if (a.length !== b.length) {
@@ -76,3 +81,4 @@ module.exports.calculateCosineSimScore = calculateCosineSimScore
 module.exports.euclidianDistance = euclidianDistance
 module.exports.normalize = normalize
 module.exports.calculateSimScoreFromUsersCustom = calculateSimScoreFromUsersCustom
+module.exports.cosineSimilarityNPM = cosineSimilarityNPM

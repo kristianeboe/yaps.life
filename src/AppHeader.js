@@ -85,7 +85,7 @@ class AppHeader extends Component {
                 <Icon name="users" />
                 Matches
                 {this.state.newMatch && (
-                  <Label color="red" floating>
+                  <Label color="red" size="tiny" >
                     New
                   </Label>
                 )}

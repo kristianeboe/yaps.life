@@ -7,6 +7,7 @@ import {
   Segment,
   Container
 } from 'semantic-ui-react'
+import computeCosineSimilarity from 'compute-cosine-similarity'
 import axios from 'axios'
 import firebase, { auth } from './firebase'
 import ChatRoom from './ChatRoom'
@@ -129,7 +130,9 @@ class Match extends Component {
       u.push(uData[`q${q + 1}`])
       v.push(vData[`q${q + 1}`])
     }
-    const magU = Math.sqrt(u.map(el => el * el).reduce((a, b) => a + b, 0))
+
+    return Math.ceil(computeCosineSimilarity(u, v) * 100)
+    /* const magU = Math.sqrt(u.map(el => el * el).reduce((a, b) => a + b, 0))
     const magV = Math.sqrt(v.map(el => el * el).reduce((a, b) => a + b, 0))
     const sumVector = []
     for (let index = 0; index < u.length; index += 1) {
@@ -139,7 +142,7 @@ class Match extends Component {
     }
     const dotSum = sumVector.reduce((a, b) => a + b, 0)
 
-    return Math.floor(dotSum / (magU * magV) * 100)
+    return Math.floor(dotSum / (magU * magV) * 100) */
   }
 
   calculateFlatScore = (flatmates) => {
@@ -149,7 +152,14 @@ class Match extends Component {
       for (let j = 0; j < flatmates.length; j += 1) {
         const mate2 = flatmates[j]
         if (i !== j) {
-          const simScore = this.calculateSimScore(mate1, mate2)
+          const u = []
+          const v = []
+
+          for (let q = 0; q < 20; q += 1) {
+            u.push(mate1[`q${q + 1}`])
+            v.push(mate2[`q${q + 1}`])
+          }
+          const simScore = computeCosineSimilarity(u, v)
           simScores.push(simScore)
         }
       }
@@ -217,7 +227,7 @@ class Match extends Component {
                                 <Card.Header>
                                   {roommate.displayName}
                                 </Card.Header>
-                                <Card.Meta>{roommate.workplace}</Card.Meta>
+                                <Card.Meta>{roommate.workplace.split(' ')[0]}</Card.Meta>
                                 <Card.Description>
                                   {`${roommate.displayName} studied ${
                                     roommate.studyProgramme

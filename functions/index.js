@@ -12,7 +12,7 @@ exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res
   let { nrOfTestUsers } = req.body
 
   if (!nrOfTestUsers) {
-    nrOfTestUsers = 15
+    nrOfTestUsers = 100
   }
   const testUsers = createUserData.createTestUsers(nrOfTestUsers)
 
@@ -40,7 +40,7 @@ exports.countTestUsers = functions.https.onRequest((req, res) =>
     })
     .then(() => res.status(200).end()))
 
-exports.resetDatabase = functions.https.onRequest((req, res) => {
+exports.setTestUsersReadyToMatch = functions.https.onRequest((req, res) => {
   admin
     .firestore()
     .collection('testUsers')
@@ -48,7 +48,11 @@ exports.resetDatabase = functions.https.onRequest((req, res) => {
     .then((snapshot) => {
       snapshot.forEach(doc => doc.ref.update({ readyToMatch: true, currentMatches: {} }))
       console.log(`${snapshot.size} test users ready to match`)
+      res.status(200).end()
     })
+})
+exports.resetDatabase = functions.https.onRequest((req, res) => {
+  this.setTestUsersReadyToMatch()
   admin
     .firestore()
     .collection('users')
