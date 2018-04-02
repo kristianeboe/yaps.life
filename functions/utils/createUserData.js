@@ -24,13 +24,16 @@ function createTestUsers(n) {
       STUDY_PROGRAMMES[university][
         Math.floor(Math.random() * Math.floor(STUDY_PROGRAMMES[university].length))
       ]
+    const workplaceKey = Math.floor(Math.random() * Math.floor(Object.keys(WORKPLACES).length))
+    const workplace = Object.keys(WORKPLACES)[workplaceKey]
+    const workplaceLatLng = WORKPLACES[workplace]
     const user = {
       uid: uuid.v4(),
       displayName: `testUser${index}`,
       matchLocation: 'Oslo',
       seeNewUsers: false,
-      workplace:
-        WORKPLACES[Math.floor(Math.random() * Math.floor(WORKPLACES.length))],
+      workplace,
+      workplaceLatLng,
       photoURL: `https://placem.at/people?w=290&h=290&random=${getRandomInt(100)}`,
       university,
       age: Math.floor(Math.random() * 10) + 20,

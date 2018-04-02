@@ -40,33 +40,6 @@ function calculateFlatAverageScore(flat, simFunction) {
   return flatAverageScore
 }
 
-function calculateFlatAverageScoreWithEuclidianDistance(flat) {
-  const simScores = []
-  for (let i = 0; i < flat.length; i += 1) {
-    const mate1 = flat[i]
-    for (let j = 0; j < flat.length; j += 1) {
-      const mate2 = flat[j]
-      if (i !== j) {
-        const u = []
-        const v = []
-
-        for (let q = 0; q < 20; q += 1) {
-          u.push(mate1[`q${q + 1}`])
-          v.push(mate2[`q${q + 1}`])
-        }
-        const simScore = euclidianDistance(u, v)
-        simScores.push(simScore)
-      }
-    }
-  }
-
-  let flatAverageScore = 100
-  if (simScores.length > 1) {
-    flatAverageScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
-  }
-  return flatAverageScore
-}
-
 
 function createFlatmatesFromClusters(clusters) {
   const allFlatmates = []

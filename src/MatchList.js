@@ -22,7 +22,7 @@ class MatchList extends Component {
         firebase.firestore().collection('users').doc(user.uid).get()
           .then((doc) => {
             const userData = doc.data()
-            const matches = userData.currentMatches
+            const matches = userData.currentMatches ? userData.currentMatches : {}
             Promise.all(Object.keys(matches).map(matchId => (
               firebase.firestore().collection('matches').doc(matchId).get()
             ))).then(results => this.setState({

@@ -33,7 +33,7 @@ function deleteQueryBatch(db, query, batchSize, resolve, reject) {
     .catch(reject)
 }
 
-exports.deleteMatchClusterCollection = functions.https.onRequest((req, res) => {
+function deleteMatchClusterCollection() {
   const batchSize = 100
   const db = admin.firestore()
   const collectionRef = admin.firestore().collection('matches')
@@ -44,6 +44,7 @@ exports.deleteMatchClusterCollection = functions.https.onRequest((req, res) => {
 
   return new Promise((resolve, reject) => {
     deleteQueryBatch(db, query, batchSize, resolve, reject)
-    res.status(200).end()
   })
-})
+}
+
+module.exports.deleteMatchClusterCollection = deleteMatchClusterCollection

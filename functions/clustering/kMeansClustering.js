@@ -14,7 +14,6 @@ function kMeansClustering(vectors) {
         Object.keys(res).forEach((item) => {
           clusters.push(res[item].clusterInd)
         })
-        console.log(`created ${clusters.length} clusters`)
         resolve(clusters)
       }
       // console.log('clusters', clusters)

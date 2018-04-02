@@ -22,7 +22,7 @@ function getBestOrigin(originsToDestinations) {
 
 function getOriginsToDestinationsObject(origins, flatmates) {
   return new Promise((resolve, reject) => {
-    const destinations = flatmates.map(mate => encodeURI(mate.workplace))
+    const destinations = flatmates.map(mate => encodeURI(`${mate.workplaceLatLng.lat},${mate.workplaceLatLng.lng}`))
     const mode = 'transit'
     // '&departure_time=' + nextMondayAt8
     const requestUrl =
@@ -92,14 +92,14 @@ function getBestOriginForMatch(match) {
     'Gamle Oslo': 'location=1.20061.20512&'
   }
   const origins = Object.keys(originsOsloSmall).map(origin => encodeURI(origin))
-  getOriginsToDestinationsObject(origins, match.flatmates)
+  return getOriginsToDestinationsObject(origins, match.flatmates)
     .then((originsToDestinationsObject) => {
       const bestOrigin = getBestOrigin(originsToDestinationsObject)
 
       // console.log(originsToDestinationsObject)
       // console.log(bestOrigin)
 
-      const nrOfFlatmates = match.flatMates.length
+      const nrOfFlatmates = match.flatmates.length
 
       const finnQueryStem =
         'https://www.finn.no/realestate/lettings/search.html?'

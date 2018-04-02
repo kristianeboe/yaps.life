@@ -5,6 +5,8 @@
 
 
 const knnClustering = require('../clustering/knnClustering')
+const kMeansClustering = require('../clustering/kMeansClustering')
+
 const createUserData = require('../utils/createUserData')
 const {
   calculateCosineSimScore, normalize, euclidianDistance, extractVectorsFromUsers, calculateSimScoreFromUsersCustom
@@ -40,6 +42,7 @@ test('Extract vector from user', () => {
 test('Clusters vectors with kNN', () => {
   // Create test users
   const testUsers = createUserData.createTestUsers(16)
+  expect(testUsers.length).toBe(16)
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)
   expect(vectors.length).toBe(16)
@@ -48,8 +51,10 @@ test('Clusters vectors with kNN', () => {
   expect(clusters.length).toBe(16)
   // organize into flats
   let allFlatmates = createFlatmatesFromClusters(clusters)
-  console.log('flatmates length', allFlatmates.length)
   expect(allFlatmates.length).toBe(16)
+  allFlatmates.forEach((flat) => {
+    expect(flat.length).toBe(4)
+  })
   allFlatmates = allFlatmates.map(flatmates =>
     flatmates.map(id => testUsers[id]))
 
@@ -69,29 +74,41 @@ test('Clusters vectors with kNN', () => {
     }
     matchArray.push(match)
   })
-  console.log(matchArray.length)
-  console.log(matchArray[0])
-  expect(matchArray.length).toBeGreaterThan(0)
+  expect(matchArray.length).toBe(16)
+  matchArray.forEach((match) => {
+    expect(match.flatAverageScore < 10)
+  })
 })
 
 
-/* test('Clusters with kMeans', () => {
+test('Clusters with kMeans', () => {
   const testUsers = createUserData.createTestUsers(50)
   const vectors = extractVectorsFromUsers(testUsers, false)
-  clusterUsers(vectors, false).then((clusters) => {
-    console.log(clusters)
+  kMeansClustering(vectors, false).then((clusters) => {
     expect(clusters.length).toBe(5)
     let allFlatmates = createFlatmatesFromClusters(clusters)
-    console.log(allFlatmates)
-    console.log(allFlatmates.length)
     expect(allFlatmates.length).toBeGreaterThanOrEqual(5)
     allFlatmates = allFlatmates.map(flatmates =>
       flatmates.map(id => testUsers[id]))
-    allFlatmates.forEach((flat) => {
-      calculateFlatAverageScore(flat, euclidianDistance)
-      calculateFlatAverageScore(flat, calculateCosineSimScore)
+
+    const matchArray = []
+    allFlatmates.forEach((flatmates) => {
+      const flatAverageScore = calculateFlatAverageScore(flatmates, euclidianDistance)
+
+      const matchUid = uuid.v4()
+      const match = {
+        uid: matchUid,
+        flatmates,
+        location: 'Oslo', // remember to change this in the future
+        bestOrigin: '',
+        flatAverageScore,
+        custom: false
+      }
+      matchArray.push(match)
     })
-    console.log()
+    matchArray.forEach((match) => {
+      expect(match.flatAverageScore < 10)
+    })
   })
     .catch(err => console.log(err))
-}) */
+})

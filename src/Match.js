@@ -7,7 +7,7 @@ import {
   Segment,
   Container
 } from 'semantic-ui-react'
-import uuid from 'uuid'
+import axios from 'axios'
 import firebase, { auth } from './firebase'
 import ChatRoom from './ChatRoom'
 import AddUserCard from './AddUserCard'
@@ -164,13 +164,21 @@ class Match extends Component {
 
   addFlatmateToMatch = (userData) => {
     const flatmates = [...this.state.flatmates, userData]
+    const flatAverageScore = this.calculateFlatScore(flatmates)
     const { matchId } = this.props.match.params
     this.setState({
       flatmates,
       showAddUserCard: false
     })
     firebase.firestore().collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
-    firebase.firestore().collection('matches').doc(matchId).update({ flatmates })
+    firebase.firestore().collection('matches').doc(matchId).update({ flatmates, flatAverageScore })
+    if (flatmates.length > 2) {
+      axios
+        .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getBestOriginHTTPforMatch', { matchId })
+        .then((response) => {
+          console.log(response)
+        })
+    }
   }
 
   render() {

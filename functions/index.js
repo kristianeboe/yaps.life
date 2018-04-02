@@ -1,9 +1,10 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
+const cors = require('cors')({ origin: true })
 const createUserData = require('./utils/createUserData')
 const clusteringAlgorithms = require('./clustering/clusteringAlgorithms')
 const locationAlgorithms = require('./location/locationAlgorithms')
-const cors = require('cors')({ origin: true })
+const { deleteMatchClusterCollection } = require('./utils/dbCleanupFunctions')
 
 admin.initializeApp(functions.config().firebase)
 
@@ -39,16 +40,27 @@ exports.countTestUsers = functions.https.onRequest((req, res) =>
     })
     .then(() => res.status(200).end()))
 
-exports.setTestUsersReadyToMatch = functions.https.onRequest((req, res) =>
+exports.resetDatabase = functions.https.onRequest((req, res) => {
   admin
     .firestore()
     .collection('testUsers')
     .get()
     .then((snapshot) => {
-      snapshot.forEach(doc => doc.ref.update({ readyToMatch: true }))
+      snapshot.forEach(doc => doc.ref.update({ readyToMatch: true, currentMatches: {} }))
       console.log(`${snapshot.size} test users ready to match`)
-      res.status(200).end()
-    }))
+    })
+  admin
+    .firestore()
+    .collection('users')
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach(doc => doc.ref.update({ readyToMatch: true, currentMatches: {} }))
+      console.log(`${snapshot.size} real users updated`)
+    })
+  deleteMatchClusterCollection().then(() => {
+    res.status(200).end()
+  })
+})
 
 exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
   let aggregateInfoObject = {}
@@ -142,16 +154,18 @@ exports.onMatchCreate = functions.firestore
   })
 
 exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
-  const { matchId } = req.body
+  cors(req, res, () => {
+    const { matchId } = req.body
 
-  return admin
-    .firestore()
-    .collection('matches')
-    .doc(matchId)
-    .get()
-    .then(matchDoc => locationAlgorithms.getBestOriginForMatch(matchDoc.data()))
-    .then(() => res.status(200).end())
-    .catch(err => console.error(err))
+    return admin
+      .firestore()
+      .collection('matches')
+      .doc(matchId)
+      .get()
+      .then(matchDoc => locationAlgorithms.getBestOriginForMatch(matchDoc.data()))
+      .then(() => res.status(200).end())
+      .catch(err => console.error(err))
+  })
 })
 
 exports.scoreApartment = functions.https.onRequest((req, res) => {
