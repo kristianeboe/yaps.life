@@ -1,8 +1,8 @@
-const kMeans = require('node-kmeans')
 const admin = require('firebase-admin')
 const uuid = require('uuid')
-const { calculateSimScoreFromUsers, extractVectorsFromUsers } = require('./utils/vectorFunctions')
+const { calculateSimScoreFromUsers, extractVectorsFromUsers, euclidianDistance } = require('../utils/vectorFunctions')
 const knnClustering = require('./knnClustering')
+const kMeansClustering = require('./kMeansClustering')
 
 function chunckArray(array, cSize) {
   const chunkArray = []
@@ -14,14 +14,20 @@ function chunckArray(array, cSize) {
 }
 
 
-function calculateFlatAverageScore(flat) {
+function calculateFlatAverageScore(flat, simFunction) {
   const simScores = []
   for (let i = 0; i < flat.length; i += 1) {
     const mate1 = flat[i]
     for (let j = 0; j < flat.length; j += 1) {
       const mate2 = flat[j]
       if (i !== j) {
-        const simScore = calculateSimScoreFromUsers(mate1, mate2)
+        const u = []
+        const v = []
+        for (let q = 0; q < 20; q += 1) {
+          u.push(mate1[`q${q + 1}`])
+          v.push(mate2[`q${q + 1}`])
+        }
+        const simScore = simFunction(u, v)
         simScores.push(simScore)
       }
     }
@@ -34,34 +40,33 @@ function calculateFlatAverageScore(flat) {
   return flatAverageScore
 }
 
-function clusterUsers(users, normalizeVectors) {
-  // console.log(users[0])
-  return new Promise((resolve, reject) => {
-    const vectors = extractVectorsFromUsers(users, normalizeVectors)
+function calculateFlatAverageScoreWithEuclidianDistance(flat) {
+  const simScores = []
+  for (let i = 0; i < flat.length; i += 1) {
+    const mate1 = flat[i]
+    for (let j = 0; j < flat.length; j += 1) {
+      const mate2 = flat[j]
+      if (i !== j) {
+        const u = []
+        const v = []
 
-    if (true) {
-      const clusters = knnClustering(vectors, 4)
-      resolve(clusters)
-      return
-    }
-
-    // console.log(vectors)
-    // distance: (a,b) => similarity(a,b)
-    const k = Math.floor(users.length / 4) // users.length > 500 ? 10 : 4
-    kMeans.clusterize(vectors, { k }, (err, res) => {
-      if (err) reject(err)
-      else {
-        const clusters = []
-        Object.keys(res).forEach((item) => {
-          clusters.push(res[item].clusterInd)
-        })
-        console.log(`created ${clusters.length} clusters`)
-        resolve(clusters)
+        for (let q = 0; q < 20; q += 1) {
+          u.push(mate1[`q${q + 1}`])
+          v.push(mate2[`q${q + 1}`])
+        }
+        const simScore = euclidianDistance(u, v)
+        simScores.push(simScore)
       }
-      // console.log('clusters', clusters)
-    })
-  })
+    }
+  }
+
+  let flatAverageScore = 100
+  if (simScores.length > 1) {
+    flatAverageScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
+  }
+  return flatAverageScore
 }
+
 
 function createFlatmatesFromClusters(clusters) {
   const allFlatmates = []
@@ -98,6 +103,7 @@ function createFlatmatesFromClusters(clusters) {
 
 function matchAllAvailableUsers() {
   const usersToBeMatched = []
+  // Get test users
   console.log('Getting test users')
   admin
     .firestore()
@@ -111,8 +117,13 @@ function matchAllAvailableUsers() {
         usersToBeMatched.push(testUser)
       })
       console.log(`got ${usersToBeMatched.length} test users`)
+      if (usersToBeMatched.length < 10) {
+        console.log('Not enough users to do a match')
+        return false
+      }
     })
     .then(() => {
+      // Get real users
       console.log('getting real users')
       const usersRef = admin.firestore().collection('users')
       return Promise.all([usersRef.doc('PmzsNVCnUSMVSMu2WGRa4omxez52').get()])
@@ -126,18 +137,30 @@ function matchAllAvailableUsers() {
         .catch(err => err)
     })
     .then(() => {
+      // Cluster users
       console.log(`${usersToBeMatched.length} will be matched`)
       console.log('starting clustering')
-      return clusterUsers(usersToBeMatched, false)
+      const vectors = extractVectorsFromUsers(usersToBeMatched, false)
+      if (true) {
+        return knnClustering(vectors, 4, euclidianDistance, false)
+      }
+      return kMeansClustering(vectors, false)
     })
     .then((clusters) => {
+      console.log(`${clusters.length}clusters created`)
+      // Turn clusters into flats
       console.log('Organizing into flats')
       let allFlatmates = createFlatmatesFromClusters(clusters)
-      console.log('flatmates length', allFlatmates.length)
+      console.log('all flatmates length', allFlatmates.length)
       allFlatmates = allFlatmates.map(flatmates =>
         flatmates.map(id => usersToBeMatched[id]))
+      return allFlatmates
+    })
+    .then((allFlatmates) => {
+      // Turn flats into matches
+      const matchArray = []
       allFlatmates.forEach((flatmates) => {
-        const flatAverageScore = calculateFlatAverageScore(flatmates)
+        const flatAverageScore = calculateFlatAverageScore(flatmates, euclidianDistance)
 
         const matchUid = uuid.v4()
         const match = {
@@ -148,30 +171,35 @@ function matchAllAvailableUsers() {
           flatAverageScore,
           custom: false
         }
+
+        matchArray.push(match)
+
         const matchRef = admin
           .firestore()
           .collection('matches')
           .doc(matchUid)
 
+          // init chatroom
         matchRef
           .set(match)
-          /* .then(() => {
-            matchRef
-              .collection('messages')
-              .add({
-                text: 'Stay civil in the chat guys',
-                dateTime: Date.now(),
-                from: {
-                  uid: 'admin',
-                  displayName: 'Admin',
-                  photoURL:
-                    'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
-                }
+        /* .then(() => {
+                matchRef
+                  .collection('messages')
+                  .add({
+                    text: 'Stay civil in the chat guys',
+                    dateTime: Date.now(),
+                    from: {
+                      uid: 'admin',
+                      displayName: 'Admin',
+                      photoURL:
+                        'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
+                    }
+                  })
+                  .catch(err =>
+                    console.log('error adding original message to match', err))
               })
-              .catch(err =>
-                console.log('error adding original message to match', err))
-          })
-          .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({}) */
+              .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({}) */
+        // Update users with new match
         match.flatmates.forEach((mate) => {
           let collectionName = 'testUsers'
           if (mate.uid === 'PmzsNVCnUSMVSMu2WGRa4omxez52') {
@@ -191,11 +219,12 @@ function matchAllAvailableUsers() {
               console.log('error with updating user with currentMatchId', err))
         })
       })
+      console.log(`${matchArray.length}matches created`)
       return 'Operation complete'
     })
     .catch(error => console.log('Error in creating matches', error))
 }
 
-module.exports.clusterUsers = clusterUsers
 module.exports.createFlatmatesFromClusters = createFlatmatesFromClusters
 module.exports.matchAllAvailableUsers = matchAllAvailableUsers
+module.exports.calculateFlatAverageScore = calculateFlatAverageScore

@@ -4,7 +4,7 @@
  */
 
 
-const createUserData = require('../createUserData')
+const createUserData = require('../utils/createUserData')
 const {
   calculateCosineSimScore, normalize, euclidianDistance, calculateSimScoreFromUsersCustom
 } = require('../utils/vectorFunctions')

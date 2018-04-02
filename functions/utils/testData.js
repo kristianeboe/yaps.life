@@ -5,7 +5,7 @@ const destination1 = ('Netlight AS')
 const destination2 = ('Google Norge')
 const destination3 = ('Professor Kohts Vei 9, 1366 Lysaker, Norge')
 
-let user1 = {
+const user1 = {
   email: 'munx@gmail.com',
   workplace: 'Eika, Parkveien, Oslo, Norway',
   preferences_roommates: ['same_company', 'mixed', 'different_type_of_work'],
@@ -91,7 +91,7 @@ let user = {
   other_requests: ''
 }
 
-let element = {
+const element = {
   distance: { text: '7.5 km', value: 7492 },
   duration: { text: '20 mins', value: 1228 },
   status: 'OK'

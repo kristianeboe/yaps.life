@@ -38,12 +38,12 @@ function getOriginsToDestinationsObject(origins, flatmates) {
         const originsToDestinationsObject = {}
         console.log(data)
         if (data.status === 'OK') {
-          console.log("Starting extracting data")
+          console.log('Starting extracting data')
           const originAddresses = data.origin_addresses
           const destinationAddresses = data.destination_addresses
 
           try {
-            console.log("inside try")
+            console.log('inside try')
             for (let i = 0; i < originAddresses.length; i += 1) {
               const results = data.rows[i].elements
               const from = originAddresses[i]
@@ -77,7 +77,7 @@ function getOriginsToDestinationsObject(origins, flatmates) {
             console.log(error)
           }
         }
-        console.log("about to resolve")
+        console.log('about to resolve')
         resolve(originsToDestinationsObject)
       })
       .catch(err => console.log('error in axios', reject(err)))

@@ -4,7 +4,7 @@ const {
   UNIVERSITIES,
   GENDERS,
   STUDY_PROGRAMMES
-} = require('./utils/constants')
+} = require('./constants')
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max)) + 1

@@ -1,8 +1,8 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-const createUserData = require('./createUserData')
-const clusteringAlgorithms = require('./clusteringAlgorithms')
-const locationAlgorithms = require('./locationAlgorithms')
+const createUserData = require('./utils/createUserData')
+const clusteringAlgorithms = require('./clustering/clusteringAlgorithms')
+const locationAlgorithms = require('./location/locationAlgorithms')
 const cors = require('cors')({ origin: true })
 
 admin.initializeApp(functions.config().firebase)
@@ -11,7 +11,7 @@ exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res
   let { nrOfTestUsers } = req.body
 
   if (!nrOfTestUsers) {
-    nrOfTestUsers = 100
+    nrOfTestUsers = 15
   }
   const testUsers = createUserData.createTestUsers(nrOfTestUsers)
 
@@ -133,7 +133,8 @@ exports.onMatchCreate = functions.firestore
       return 'No match provided to get best origin for'
     }
 
-    if (match.flatMates.length < 3) {
+    if (match.flatmates.length < 3) {
+      console.log('LOG: Not enough people to do a location cluster match')
       return 'Not enough people to do a location cluster match'
     }
 
