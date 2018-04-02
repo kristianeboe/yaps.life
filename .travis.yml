@@ -6,7 +6,8 @@ cache:
   - node_modules
   - functions/node_modules
 before_install:
-  - yarn install -g firebase-tools
+  - yarn global add firebase-tools
+  - yarn install
   - cd functions
   - yarn install
   - cd ..
