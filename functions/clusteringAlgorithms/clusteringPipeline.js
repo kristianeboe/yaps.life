@@ -2,7 +2,7 @@ const admin = require('firebase-admin')
 const uuid = require('uuid')
 const euclidianDistanceSquared = require('euclidean-distance/squared')
 const { extractVectorsFromUsers } = require('../utils/vectorFunctions')
-const knnClustering = require('./knnClustering')
+// const knnClustering = require('./knnClustering')
 const kMeansClustering = require('./kMeansClustering')
 
 
@@ -37,7 +37,7 @@ function calculateFlatScore(flatmates) {
   if (simScores.length > 1) {
     flatScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
   }
-  return flatScore
+  return Math.floor(flatScore)
 }
 
 function chunckArray(array, cSize) {
@@ -141,9 +141,9 @@ function matchAllAvailableUsers() {
       console.log(`${usersToBeMatched.length} will be matched`)
       console.log('starting clustering')
       const vectors = extractVectorsFromUsers(usersToBeMatched, false)
-      if (false) {
+      /* if (false) {
         return knnClustering(vectors, 4)
-      }
+      } */
       return kMeansClustering(vectors, false)
     })
     .then((clusters) => {
@@ -184,7 +184,7 @@ function matchAllAvailableUsers() {
         matchRef
           .set(match)
           .then(() => {
-            // initChatRoom(matchRef)
+            initChatRoom(matchRef)
           })
           .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({})
         // Update users with new match
@@ -215,3 +215,4 @@ function matchAllAvailableUsers() {
 module.exports.createFlatmatesFromClusters = createFlatmatesFromClusters
 module.exports.matchAllAvailableUsers = matchAllAvailableUsers
 module.exports.calculateFlatScore = calculateFlatScore
+module.exports.calculateSimilarityScoreBetweenUsers = calculateSimilarityScoreBetweenUsers

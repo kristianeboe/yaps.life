@@ -1,10 +1,7 @@
-// const _ = require('underscore')
-// const { calculateCosineSimScore } = require('./utils/vectorFunctions')
 const euclidianDistance = require('euclidean-distance')
 
 function knnClustering(vectors, K) {
   const clusters = []
-  const testArrayForPrinting = []
   for (let i = 0; i < vectors.length; i += 1) {
     const u = vectors[i]
     const scores = []
@@ -15,13 +12,8 @@ function knnClustering(vectors, K) {
         scores.push({ j, score })
       }
     }
-    // const topK = _.sortBy(scores, (a, b) => b.score - a.score)
-    // flip a and b to go from high to low
-    let topK = []
 
-    topK = scores.sort((a, b) => a.score - b.score).slice(0, K).map(el => el.j)
-    testArrayForPrinting.push(scores.sort((a, b) => a.score - b.score).slice(0, K))
-
+    const topK = scores.sort((a, b) => a.score - b.score).slice(0, K).map(el => el.j)
     clusters.push(topK)
   }
   return clusters

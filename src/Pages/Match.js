@@ -96,7 +96,7 @@ class Match extends Component {
     if (simScores.length > 1) {
       flatScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
     }
-    return flatScore
+    return Math.floor(flatScore)
   }
 
   addFlatmateToMatch = (userData) => {

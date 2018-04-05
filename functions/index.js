@@ -2,7 +2,7 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const cors = require('cors')({ origin: true })
 const createUserData = require('./utils/createUserData')
-const clusteringAlgorithms = require('./clustering/clusteringAlgorithms')
+const clusteringPipeline = require('./clusteringAlgorithms/clusteringPipeline')
 const locationAlgorithms = require('./location/locationAlgorithms')
 const { deleteMatchClusterCollection } = require('./utils/dbCleanupFunctions')
 
@@ -38,9 +38,10 @@ exports.countTestUsers = functions.https.onRequest((req, res) =>
     .then((snapshot) => {
       console.log(`LOG: ${snapshot.size} test users found`)
     })
-    .then(() => res.status(200).end()))
+    .then(() => res.status(200).end())
+    .catch(err => res.status(500).send(err)))
 
-exports.setTestUsersReadyToMatch = functions.https.onRequest((req, res) => {
+exports.setTestUsersReadyToMatch = functions.https.onRequest((req, res) =>
   admin
     .firestore()
     .collection('testUsers')
@@ -50,8 +51,8 @@ exports.setTestUsersReadyToMatch = functions.https.onRequest((req, res) => {
       console.log(`${snapshot.size} test users ready to match`)
       res.status(200).end()
     })
-    .catch(err => res.status(500).send(err))
-})
+    .catch(err => res.status(500).send(err)))
+
 exports.resetDatabase = functions.https.onRequest((req, res) => {
   this.setTestUsersReadyToMatch(req, res)
   admin
@@ -135,14 +136,13 @@ exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
   // const userData = event.data.data()
   // const { readyToMatch } = req.body
 
-  clusteringAlgorithms.matchAllAvailableUsers()
+  clusteringPipeline.matchAllAvailableUsers()
   res.status(200).end()
 })
 
 exports.onMatchCreate = functions.firestore
   .document('matches/{matchId}')
   .onCreate((event) => {
-    console.log('LOG: Event data data()', event.data.data())
     const match = event.data.data()
 
     if (!match) {

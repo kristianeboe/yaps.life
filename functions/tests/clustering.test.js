@@ -4,22 +4,49 @@
  */
 
 
-const knnClustering = require('../clustering/knnClustering')
-const kMeansClustering = require('../clustering/kMeansClustering')
-
-const createUserData = require('../utils/createUserData')
-const {
-  calculateCosineSimScore, normalize, euclidianDistance, extractVectorsFromUsers, calculateSimScoreFromUsersCustom, cosineSimilarityNPM
-} = require('../utils/vectorFunctions')
-const { clusterUsers, createFlatmatesFromClusters, calculateFlatScore } = require('../clustering/clusteringAlgorithms')
 const uuid = require('uuid')
+const knnClustering = require('../clusteringAlgorithms/knnClustering')
+const kMeansClustering = require('../clusteringAlgorithms/kMeansClustering')
+const createUserData = require('../utils/createUserData')
+const { createFlatmatesFromClusters, calculateFlatScore, calculateSimilarityScoreBetweenUsers } = require('../clusteringAlgorithms/clusteringPipeline')
+const { extractVectorsFromUsers } = require('../utils/vectorFunctions')
 
 test('Create test users', () => {
   const testUsers = createUserData.createTestUsers(200)
   expect(testUsers.length).toBe(200)
 })
 
-test('Extract vector from user', () => {
+
+test('User similarity', () => {
+  const { me, antiKristianUser } = createUserData
+  const neg = { answerVector: Array(20).fill(-2) }
+  const pos = { answerVector: Array(20).fill(2) }
+  const almostPos = { answerVector: Array(20).fill(1) }
+  const mid = { answerVector: Array(20).fill(0) }
+
+  // testing completely dissimlar vectors
+  let score = calculateSimilarityScoreBetweenUsers(neg, pos)
+  expect(score).toBeLessThan(1)
+
+  // testing very dissimilar users
+  score = calculateSimilarityScoreBetweenUsers(me, antiKristianUser)
+  expect(score).toBeLessThan(40)
+
+
+  // Testing semi similar vectors
+  score = calculateSimilarityScoreBetweenUsers(mid, pos)
+  expect(score).toBeGreaterThan(70)
+
+  score = calculateSimilarityScoreBetweenUsers(almostPos, pos)
+  expect(score).toBeGreaterThan(80)
+
+  // testing equal vectors
+  score = calculateSimilarityScoreBetweenUsers(pos, pos)
+  expect(score).toBe(100)
+})
+
+
+/* test('Extract vector from user', () => {
   const testUsers = createUserData.createTestUsers(1)
   const vectorsNormalized = extractVectorsFromUsers(testUsers, true)
   expect(vectorsNormalized.length).toBe(1)
@@ -37,21 +64,21 @@ test('Extract vector from user', () => {
     expect(index).toBeGreaterThan(0)
     expect(index).toBeLessThan(6)
   })
-})
+}) */
 
 test('Clusters vectors with kNN', () => {
   // Create test users
-  const testUsers = createUserData.createTestUsers(16)
-  expect(testUsers.length).toBe(16)
+  const testUsers = createUserData.createTestUsers(500)
+  expect(testUsers.length).toBe(500)
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)
-  expect(vectors.length).toBe(16)
+  expect(vectors.length).toBe(500)
   // Cluster with kNN
-  const clusters = knnClustering(vectors, 4, euclidianDistance, false)
-  expect(clusters.length).toBe(16)
+  const clusters = knnClustering(vectors, 4)
+  expect(clusters.length).toBe(500)
   // organize into flats
   let allFlatmates = createFlatmatesFromClusters(clusters)
-  expect(allFlatmates.length).toBe(16)
+  expect(allFlatmates.length).toBe(500)
   allFlatmates.forEach((flat) => {
     expect(flat.length).toBe(4)
   })
@@ -61,7 +88,7 @@ test('Clusters vectors with kNN', () => {
   // Turn flats into matches
   const matchArray = []
   allFlatmates.forEach((flatmates) => {
-    const flatScore = calculateFlatScore(flatmates, euclidianDistance)
+    const flatScore = calculateFlatScore(flatmates)
 
     const matchUid = uuid.v4()
     const match = {
@@ -74,15 +101,19 @@ test('Clusters vectors with kNN', () => {
     }
     matchArray.push(match)
   })
-  expect(matchArray.length).toBe(16)
+  expect(matchArray.length).toBe(500)
+  let averageMatchScore = 0
   matchArray.forEach((match) => {
-    expect(match.flatScore < 10)
+    averageMatchScore += match.flatScore
   })
+  averageMatchScore /= matchArray.length
+  console.log(averageMatchScore)
+  expect(averageMatchScore).toBeGreaterThan(75)
 })
 
 
 test('Clusters with kMeans', () => {
-  const testUsers = createUserData.createTestUsers(50)
+  const testUsers = createUserData.createTestUsers(500)
   const vectors = extractVectorsFromUsers(testUsers, false)
   kMeansClustering(vectors, false).then((clusters) => {
     expect(clusters.length).toBe(5)
@@ -93,7 +124,7 @@ test('Clusters with kMeans', () => {
 
     const matchArray = []
     allFlatmates.forEach((flatmates) => {
-      const flatScore = calculateFlatScore(flatmates, euclidianDistance)
+      const flatScore = calculateFlatScore(flatmates)
 
       const matchUid = uuid.v4()
       const match = {
@@ -106,9 +137,13 @@ test('Clusters with kMeans', () => {
       }
       matchArray.push(match)
     })
+    let averageMatchScore = 0
     matchArray.forEach((match) => {
-      expect(match.flatScore < 10)
+      averageMatchScore += match.flatScore
     })
+    averageMatchScore /= matchArray.length
+    console.log(averageMatchScore)
+    expect(averageMatchScore).toBeGreaterThan(70)
   })
     .catch(err => console.log(err))
 })

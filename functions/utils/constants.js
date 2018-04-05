@@ -63,7 +63,6 @@ const WORKPLACES = {
     lat: 59.9295728,
     lng: 10.716608299999962
   }
-
 }
 
 const UNIVERSITIES = [
