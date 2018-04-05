@@ -7,7 +7,7 @@ import {
   Segment,
   Container
 } from 'semantic-ui-react'
-import computeCosineSimilarity from 'compute-cosine-similarity'
+import euclidianDistanceSquared from 'euclidean-distance/squared'
 import axios from 'axios'
 import firebase, { auth } from './firebase'
 import ChatRoom from './ChatRoom'
@@ -40,25 +40,20 @@ class Match extends Component {
       this.setState({ user })
       if (user) {
         this.subscribeToMatch(this.props.match.params.matchId)
-        firebase
-          .firestore()
-          .collection('users')
-          .doc(user.uid)
-          .get()
-          .then((doc) => {
-            const userData = doc.data()
-            this.setState({
-              userData,
-              bestOrigin: 'Oslo'
-            })
-            return userData
-          })
       }
     })
   }
 
   componentWillUnmount() {
     this.matchUnsubscribe()
+  }
+
+  setCurrentUser(flatmates) {
+    flatmates.forEach((mate) => {
+      if (mate.uid === this.state.user.uid) {
+        this.setState({ userData: mate })
+      }
+    })
   }
 
   subscribeToMatch = (matchId) => {
@@ -69,21 +64,20 @@ class Match extends Component {
       .onSnapshot((match) => {
         const matchData = match.data()
         console.log(matchData)
-        const bestOrigin =
-          matchData.bestOrigin.length > 0
-            ? matchData.bestOrigin
-            : matchData.location
         const propertyList = matchData.propertyList ?
           matchData.propertyList :
           []
         this.setState({
           matchDoc: match,
-          currentMatchId: matchId,
-          bestOrigin,
+          userData: setCurrentUser(matchData.flatmates),
+          bestOrigin: matchData.bestOrigin.length > 0 ? matchData.bestOrigin : matchData.location
+          flatmates: matchData.flatmates,
+          flatmatesLoading: false,
+          showChatRoom: true,
           matchData,
           propertyList
         })
-        return Promise.all(matchData.flatmates.map((mate) => {
+        /* return Promise.all(matchData.flatmates.map((mate) => {
           let collectionName = 'testUsers'
           if (mate.uid.length === 28) {
             collectionName = 'users'
@@ -107,7 +101,7 @@ class Match extends Component {
               showChatRoom: true
             })
           })
-          .catch(error => console.log(error))
+          .catch(error => console.log(error)) */
       })
   }
 
@@ -122,7 +116,9 @@ class Match extends Component {
     })
   }
 
-  calculateSimScore = (uData, vData) => {
+  mapSimScoreToPercentage = simScore => Math.floor((1 - (simScore / 320)) * 100)
+
+  calculateSimilarityScoreBetweenUsers = (uData, vData) => {
     const u = []
     const v = []
 
@@ -131,18 +127,7 @@ class Match extends Component {
       v.push(vData[`q${q + 1}`])
     }
 
-    return Math.ceil(computeCosineSimilarity(u, v) * 100)
-    /* const magU = Math.sqrt(u.map(el => el * el).reduce((a, b) => a + b, 0))
-    const magV = Math.sqrt(v.map(el => el * el).reduce((a, b) => a + b, 0))
-    const sumVector = []
-    for (let index = 0; index < u.length; index += 1) {
-      const ui = u[index]
-      const vi = v[index]
-      sumVector.push(ui * vi)
-    }
-    const dotSum = sumVector.reduce((a, b) => a + b, 0)
-
-    return Math.floor(dotSum / (magU * magV) * 100) */
+    return euclidianDistanceSquared(u, v)
   }
 
   calculateFlatScore = (flatmates) => {
@@ -152,14 +137,7 @@ class Match extends Component {
       for (let j = 0; j < flatmates.length; j += 1) {
         const mate2 = flatmates[j]
         if (i !== j) {
-          const u = []
-          const v = []
-
-          for (let q = 0; q < 20; q += 1) {
-            u.push(mate1[`q${q + 1}`])
-            v.push(mate2[`q${q + 1}`])
-          }
-          const simScore = computeCosineSimilarity(u, v)
+          const simScore = this.calculateSimilarityScoreBetweenUsers(mate1, mate2)
           simScores.push(simScore)
         }
       }

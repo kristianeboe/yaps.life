@@ -23,11 +23,14 @@ class AppHeader extends Component {
           .collection('users')
           .doc(user.uid)
           .onSnapshot((doc) => {
-            const userData = doc.data()
-            const { newMatch } = userData
-            this.setState({
-              newMatch
-            })
+            try {
+              const { newMatch } = doc.data()
+              this.setState({
+                newMatch
+              })
+            } catch (error) {
+              console.log(error)
+            }
           })
       }
     })
@@ -46,7 +49,7 @@ class AppHeader extends Component {
   }
 
   logout = () => {
-    auth()
+    auth
       .signOut()
       .then(() => {
         // Sign-out successful.

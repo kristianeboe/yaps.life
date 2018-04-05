@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Dimmer, Loader, Segment, Form, Comment, Header, Button } from 'semantic-ui-react'
-import firebase, { auth } from './firebase'
+import { Form, Comment, Header, Button } from 'semantic-ui-react'
+import { auth } from './firebase'
 
 class ChatRoom extends Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class ChatRoom extends Component {
   }
 
   componentDidMount() {
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       this.setState({ user })
       if (user) {
         // const roomId = 'RnpKGueTLPA8V0y2A23j'
@@ -25,9 +25,9 @@ class ChatRoom extends Component {
         //   .doc('RnpKGueTLPA8V0y2A23j')
         const matchRef = this.props.matchDoc.ref
         const messagesRef = matchRef.collection('messages').orderBy('dateTime')
-        this.unsubscribe = messagesRef.onSnapshot(snapshot => {
+        this.unsubscribe = messagesRef.onSnapshot((snapshot) => {
           const messages = []
-          snapshot.forEach(doc => {
+          snapshot.forEach((doc) => {
             messages.push(doc.data())
           })
           this.setState({ messages })
@@ -67,7 +67,6 @@ class ChatRoom extends Component {
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   render() {
-    
     const { user } = this.state
 
     return (
@@ -75,12 +74,12 @@ class ChatRoom extends Component {
         <Header as="h3" dividing>
           Chat
         </Header>
-        {this.state.messages.map(message => {
-          let avatarStyle = {overflow: 'hidden', maxHeight: '35px'}
+        {this.state.messages.map((message) => {
+          const avatarStyle = { overflow: 'hidden', maxHeight: '35px' }
           let contentStyle = {}
           const userMessage = user.uid === message.from.uid
           if (userMessage) {
-            avatarStyle['float'] = 'right'
+            avatarStyle.float = 'right'
             contentStyle = { marginRight: '3.5em', textAlign: 'right' }
           }
 

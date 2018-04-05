@@ -9,7 +9,7 @@ const kMeansClustering = require('../clustering/kMeansClustering')
 
 const createUserData = require('../utils/createUserData')
 const {
-  calculateCosineSimScore, normalize, euclidianDistance, extractVectorsFromUsers, calculateSimScoreFromUsersCustom
+  calculateCosineSimScore, normalize, euclidianDistance, extractVectorsFromUsers, calculateSimScoreFromUsersCustom, cosineSimilarityNPM
 } = require('../utils/vectorFunctions')
 const { clusterUsers, createFlatmatesFromClusters, calculateFlatAverageScore } = require('../clustering/clusteringAlgorithms')
 const uuid = require('uuid')

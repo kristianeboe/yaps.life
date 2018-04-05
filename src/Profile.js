@@ -33,6 +33,13 @@ const genderOptions = [
 class Profile extends Component {
   constructor(props) {
     super(props)
+
+    const questions = {}
+    const answerVector = new Array(20 + 1).join('0').split('').map(parseFloat)
+    for (let index = 0; index < answerVector.length; index += 1) {
+      const answer = answerVector[index]
+      questions[`q${index + 1}`] = answer + 3
+    }
     this.state = {
       user: null,
       formLoading: true,
@@ -45,31 +52,9 @@ class Profile extends Component {
       matchLocation: '',
       workplace: '',
       workplaceLatLng: {},
+      budget: 0,
       university: '',
-      SOCIAL_HABBITS: {},
-      CLEANLINESS: {},
-      SOCIAL_OPENNESS: {},
-      SOCIAL_FLEXIBILITY: {},
-      q1: 3,
-      q2: 3,
-      q3: 3,
-      q4: 3,
-      q5: 3,
-      q6: 3,
-      q7: 3,
-      q8: 3,
-      q9: 3,
-      q10: 3,
-      q11: 3,
-      q12: 3,
-      q13: 3,
-      q14: 3,
-      q15: 3,
-      q16: 3,
-      q17: 3,
-      q18: 3,
-      q19: 3,
-      q20: 3,
+      ...questions,
       redirectToSignIn: false,
       readyToMatch: false,
       tos: false
@@ -87,6 +72,12 @@ class Profile extends Component {
           .get()
           .then((doc) => {
             const userData = doc.data()
+            const questions = {}
+            const answerVector = userData.answerVector ? userData.answerVector : []
+            for (let index = 0; index < answerVector.length; index += 1) {
+              const answer = answerVector[index]
+              questions[`q${index + 1}`] = answer + 3
+            }
             this.setState({
               formLoading: false,
               displayName: user.displayName ? user.displayName : '',
@@ -97,6 +88,7 @@ class Profile extends Component {
                 ? userData.studyProgramme
                 : '',
               workplace: userData.workplace ? userData.workplace : '',
+              budget: userData.budget ? userData.budget : 0,
               matchLocation: userData.matchLocation
                 ? userData.matchLocation
                 : '',
@@ -104,40 +96,11 @@ class Profile extends Component {
                 ? userData.workplaceLatLng
                 : {},
               university: userData.university ? userData.university : '',
-              SOCIAL_HABBITS: userData.SOCIAL_HABBITS
-                ? userData.SOCIAL_HABBITS
-                : {},
-              CLEANLINESS: userData.CLEANLINESS ? userData.CLEANLINESS : {},
-              SOCIAL_OPENNESS: userData.SOCIAL_OPENNESS
-                ? userData.SOCIAL_OPENNESS
-                : {},
-              SOCIAL_FLEXIBILITY: userData.SOCIAL_FLEXIBILITY
-                ? userData.SOCIAL_FLEXIBILITY
-                : {},
-              q1: userData.q1 ? userData.q1 : 3,
-              q2: userData.q2 ? userData.q2 : 3,
-              q3: userData.q3 ? userData.q3 : 3,
-              q4: userData.q4 ? userData.q4 : 3,
-              q5: userData.q5 ? userData.q5 : 3,
-              q6: userData.q6 ? userData.q6 : 3,
-              q7: userData.q7 ? userData.q7 : 3,
-              q8: userData.q8 ? userData.q8 : 3,
-              q9: userData.q9 ? userData.q9 : 3,
-              q10: userData.q10 ? userData.q10 : 3,
-              q11: userData.q11 ? userData.q11 : 3,
-              q12: userData.q12 ? userData.q12 : 3,
-              q13: userData.q13 ? userData.q13 : 3,
-              q14: userData.q14 ? userData.q14 : 3,
-              q15: userData.q15 ? userData.q15 : 3,
-              q16: userData.q16 ? userData.q16 : 3,
-              q17: userData.q17 ? userData.q17 : 3,
-              q18: userData.q18 ? userData.q18 : 3,
-              q19: userData.q19 ? userData.q19 : 3,
-              q20: userData.q20 ? userData.q20 : 3,
+              ...questions,
               readyToMatch: userData.readyToMatch
                 ? userData.readyToMatch
                 : false,
-              tos: userData.tos ? userData.tos : false
+              tos: userData.tos ? userData.tos : false,
             })
           })
       } else {
@@ -148,16 +111,26 @@ class Profile extends Component {
     })
   }
 
-  handleSliderChange = (value, name, type) => {
+  handleSliderChange = (value, name) => {
     this.setState({
       [name]: value
     })
   }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
+  handleBudget = (e, value) => {
+    e.preventDefault()
+    this.setState({
+      budget: value
+    })
+  }
 
   handleSubmit = () => {
     this.setState({ formLoading: true })
+    const answerVector = []
+    for (let q = 0; q < 20; q += 1) {
+      answerVector.push(this.state[`q${q + 1}`] - 3)
+    }
     const userData = {
       displayName: this.state.displayName,
       age: this.state.age,
@@ -167,6 +140,7 @@ class Profile extends Component {
       workplaceLatLng: this.state.workplaceLatLng,
       university: this.state.university,
       matchLocation: this.state.matchLocation,
+      budget: this.state.budget,
       q1: this.state.q1,
       q2: this.state.q2,
       q3: this.state.q3,
@@ -190,7 +164,8 @@ class Profile extends Component {
       readyToMatch: this.state.readyToMatch,
       tos: this.state.tos,
       uid: this.state.user.uid,
-      photoURL: this.state.user.photoURL
+      photoURL: this.state.user.photoURL,
+      answerVector
     }
 
     firebase
@@ -365,13 +340,13 @@ class Profile extends Component {
                   />
                 </Form.Field>
                 <Form.Field>
-                  <label>Price </label>
+                  <label>Budget</label>
                   <Button.Group fluid >
-                    <Button >One</Button>
+                    <Button primary={this.state.budget === 1} onClick={e => this.handleBudget(e, 1)} >Cheap</Button>
                     <Button.Or />
-                    <Button >Two</Button>
+                    <Button primary={this.state.budget === 2} onClick={e => this.handleBudget(e, 2)} >Decent</Button>
                     <Button.Or />
-                    <Button >Three</Button>
+                    <Button primary={this.state.budget === 3} onClick={e => this.handleBudget(e, 3)} >Premium</Button>
                   </Button.Group>
                 </Form.Field>
                 <Form.Field required>

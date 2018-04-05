@@ -1,19 +1,11 @@
 const admin = require('firebase-admin')
 const uuid = require('uuid')
+const euclidianDistanceSquared = require('euclidean-distance/squared')
 const {
   calculateSimScoreFromUsers, extractVectorsFromUsers, euclidianDistance, cosineSimilarityNPM
 } = require('../utils/vectorFunctions')
 const knnClustering = require('./knnClustering')
 const kMeansClustering = require('./kMeansClustering')
-
-function chunckArray(array, cSize) {
-  const chunkArray = []
-  for (let index = 0; index < array.length; index += cSize) {
-    const chunck = array.slice(index, index + cSize)
-    chunkArray.push(chunck)
-  }
-  return chunkArray
-}
 
 
 function calculateFlatAverageScore(flat, simFunction) {
@@ -23,13 +15,7 @@ function calculateFlatAverageScore(flat, simFunction) {
     for (let j = 0; j < flat.length; j += 1) {
       const mate2 = flat[j]
       if (i !== j) {
-        const u = []
-        const v = []
-        for (let q = 0; q < 20; q += 1) {
-          u.push(mate1[`q${q + 1}`])
-          v.push(mate2[`q${q + 1}`])
-        }
-        const simScore = simFunction(u, v)
+        const simScore = simFunction(mate1.answerVector, mate2.answerVector)
         simScores.push(simScore)
       }
     }
@@ -40,6 +26,15 @@ function calculateFlatAverageScore(flat, simFunction) {
     flatAverageScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
   }
   return flatAverageScore
+}
+
+function chunckArray(array, cSize) {
+  const chunkArray = []
+  for (let index = 0; index < array.length; index += cSize) {
+    const chunck = array.slice(index, index + cSize)
+    chunkArray.push(chunck)
+  }
+  return chunkArray
 }
 
 
@@ -96,6 +91,7 @@ function matchAllAvailableUsers() {
         console.log('Not enough users to do a match')
         return false
       }
+      return true
     })
     .then(() => {
       // Get real users
@@ -135,7 +131,7 @@ function matchAllAvailableUsers() {
       // Turn flats into matches
       const matchArray = []
       allFlatmates.forEach((flatmates) => {
-        const flatAverageScore = Math.ceil(calculateFlatAverageScore(flatmates, cosineSimilarityNPM) * 100)
+        const flatAverageScore = calculateFlatAverageScore(flatmates, euclidianDistanceSquared)
 
         const matchUid = uuid.v4()
         const match = {

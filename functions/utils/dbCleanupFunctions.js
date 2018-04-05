@@ -13,6 +13,9 @@ function deleteQueryBatch(db, query, batchSize, resolve, reject) {
       // Delete documents in a batch
       const batch = db.batch()
       snapshot.docs.forEach((doc) => {
+        doc.ref.collection('messages').get().then((snapMatch) => {
+          snapMatch.forEach(message => batch.delete(message.ref))
+        })
         batch.delete(doc.ref)
       })
 
@@ -23,7 +26,6 @@ function deleteQueryBatch(db, query, batchSize, resolve, reject) {
         resolve()
         return
       }
-
       // Recurse on the next process tick, to avoid
       // exploding the stack.
       process.nextTick(() => {

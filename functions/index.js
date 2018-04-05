@@ -5,7 +5,6 @@ const createUserData = require('./utils/createUserData')
 const clusteringAlgorithms = require('./clustering/clusteringAlgorithms')
 const locationAlgorithms = require('./location/locationAlgorithms')
 const { deleteMatchClusterCollection } = require('./utils/dbCleanupFunctions')
-
 admin.initializeApp(functions.config().firebase)
 
 exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res) => {
@@ -50,9 +49,10 @@ exports.setTestUsersReadyToMatch = functions.https.onRequest((req, res) => {
       console.log(`${snapshot.size} test users ready to match`)
       res.status(200).end()
     })
+    .catch(err => res.status(500).send(err))
 })
 exports.resetDatabase = functions.https.onRequest((req, res) => {
-  this.setTestUsersReadyToMatch()
+  this.setTestUsersReadyToMatch(req, res)
   admin
     .firestore()
     .collection('users')
@@ -63,7 +63,7 @@ exports.resetDatabase = functions.https.onRequest((req, res) => {
     })
   deleteMatchClusterCollection().then(() => {
     res.status(200).end()
-  })
+  }).catch(err => console.log(err) || res.status(500).send(err))
 })
 
 exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
@@ -196,3 +196,27 @@ exports.scoreApartment = functions.https.onRequest((req, res) => {
     })
   })
 })
+
+exports.updateUser = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    admin.firestore().collection('users').doc('4spel7y5oJg0OarPxcHxhdwkgPF2').get()
+      .then((doc) => {
+        const data = doc.data()
+        const answerVector = []
+        for (let index = 0; index < 20; index += 1) {
+          const answer = data[`q${index + 1}`]
+          answerVector.push(answer)
+        }
+        doc.ref.update({ answerVector })
+      })
+      .then(() => {
+        console.log('User updated')
+        res.status(200).end()
+      })
+      .catch((err) => {
+        console.log('Error in updating user', err)
+        res.status(300).end()
+      })
+  })
+})
+

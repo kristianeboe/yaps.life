@@ -14,9 +14,9 @@ function createTestUsers(n) {
   const users = []
 
   for (let index = 0; index < n; index += 1) {
-    const vector = []
+    const answerVector = []
     for (let j = 0; j < 20; j += 1) {
-      vector.push(getRandomInt(5))
+      answerVector.push(getRandomInt(5) - 3)
     }
     const university =
       UNIVERSITIES[Math.floor(Math.random() * Math.floor(UNIVERSITIES.length))]
@@ -36,14 +36,13 @@ function createTestUsers(n) {
       workplaceLatLng,
       photoURL: `https://placem.at/people?w=290&h=290&random=${getRandomInt(100)}`,
       university,
+      budget: Math.floor(Math.random() * 3 + 1),
       age: Math.floor(Math.random() * 10) + 20,
       tos: true,
       readyToMatch: true,
       gender: GENDERS[Math.floor(Math.random() * Math.floor(GENDERS.length))],
-      studyProgramme
-    }
-    for (let q = 0; q < 20; q += 1) {
-      user[`q${q + 1}`] = vector[q]
+      studyProgramme,
+      answerVector
     }
     users.push(user)
   }
@@ -221,8 +220,8 @@ const antiKristianUser = {
   q20: 1,
 }
 
-const kristianVector = [4, 3, 3, 3, 4, 5, 4, 3, 4, 4, 1, 1, 2, 2, 2, 5, 5, 5, 5, 4]
-const antiKristianVector = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1]
+const kristianVector = [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1]
+const antiKristianVector = [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2]
 
 module.exports.createTestUsers = createTestUsers
 module.exports.user1 = user1

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { Image, Grid, Card, Segment, Container, Search, Header } from 'semantic-ui-react'
-import personAvatar from './assets/images/personAvatar.png'
-import firebase, { auth } from './firebase'
+import { Image, Card, Search } from 'semantic-ui-react'
 import _ from 'underscore'
+import personAvatar from './assets/images/personAvatar.png'
+import firebase from './firebase'
 
 
 class AddUserCard extends Component {

@@ -10,8 +10,11 @@ const axios = require('axios')
 
 function getBestOrigin(originsToDestinations) {
   // console.log('inside', originsToDestinations)
-
-  const bestOrigin = Object.keys(originsToDestinations).reduce((a, b) =>
+  const originKeys = Object.keys(originsToDestinations)
+  if (originKeys.length === 0) {
+    return 'Could not determine, did not receive any origins'
+  }
+  const bestOrigin = originKeys.reduce((a, b) =>
     (originsToDestinations[a].combinedDuration <
       originsToDestinations[b].combinedDuration
       ? a
@@ -74,7 +77,7 @@ function getOriginsToDestinationsObject(origins, flatmates) {
               ].combinedDuration = combinedDuration
             })
           } catch (error) {
-            console.log(error)
+            reject(error)
           }
         }
         console.log('about to resolve')

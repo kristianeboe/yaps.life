@@ -1,10 +1,74 @@
 const cosineSimilarityNPMfunction = require('compute-cosine-similarity')
+const euclidianDistance = require('euclidean-distance')
+const euclidianDistanceSquared = require('euclidean-distance/squared')
 
-function cosineSimilarityNPM(u, v) {
-  return cosineSimilarityNPMfunction(u, v)
+calculateSimilarityScoreBetweenUsers = (uData, vData) => {
+  const u = []
+  const v = []
+
+  for (let q = 0; q < 20; q += 1) {
+    u.push(uData[`q${q + 1}`])
+    v.push(vData[`q${q + 1}`])
+  }
+
+  return euclidianDistanceSquared(uData.answerVector, vData.answerVector)
 }
 
-function euclidianDistance(a, b) {
+function mapSimScoreToPercentage(simScore) {
+  return Math.floor((1 - (simScore / 320)) * 100)
+}
+
+
+calculateFlatAverageScore = (flatmates) => {
+  const simScores = []
+  for (let i = 0; i < flatmates.length; i += 1) {
+    const mate1 = flatmates[i]
+    for (let j = 0; j < flatmates.length; j += 1) {
+      const mate2 = flatmates[j]
+      if (i !== j) {
+        const simScore = this.calculateSimilarityScoreBetweenUsers(mate1, mate2)
+        simScores.push(simScore)
+      }
+    }
+  }
+
+  let flatAverageScore = 100
+  if (simScores.length > 1) {
+    flatAverageScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
+  }
+  return flatAverageScore
+}
+
+
+function normalize(vector) {
+  const magnitude = Math.sqrt(vector.map(el => el * el).reduce((a, b) => a + b, 0))
+  const normalized = vector.map(ele => ele / magnitude)
+  return normalized
+}
+
+function extractVectorsFromUsers(users, normalizeVectors) {
+  const userVectors = []
+  for (let i = 0; i < users.length; i += 1) {
+    const vector = []
+    for (let j = 0; j < 20; j += 1) {
+      if (users[i][`q${j + 1}`]) {
+        vector.push(users[i][`q${j + 1}`])
+      } else {
+        vector.push(3)
+      }
+    }
+    userVectors[i] = normalizeVectors ? normalize(vector) : vector
+  }
+  return userVectors
+}
+
+
+/* function cosineSimilarityNPM(u, v) {
+  return cosineSimilarityNPMfunction(u, v)
+}
+ */
+
+/* function euclidianDistance(a, b) {
   if (a.length !== b.length) {
     return (new Error('The vectors must have the same length'))
   }
@@ -13,14 +77,10 @@ function euclidianDistance(a, b) {
     d += (a[i] - b[i]) * (a[i] - b[i])
   }
   return Math.sqrt(d)
-}
+} */
 
-function normalize(vector) {
-  const magnitude = Math.sqrt(vector.map(el => el * el).reduce((a, b) => a + b, 0))
-  const normalized = vector.map(ele => ele / magnitude)
-  return normalized
-}
-function calculateCosineSimScore(u, v) {
+
+/* function calculateCosineSimScore(u, v) {
   const magU = Math.sqrt(u.map(el => el * el).reduce((a, b) => a + b, 0))
   const magV = Math.sqrt(v.map(el => el * el).reduce((a, b) => a + b, 0))
 
@@ -49,36 +109,20 @@ function calculateSimScoreFromUsers(uData, vData) {
   return calculateCosineSimScore(u, v)
 }
 
-function calculateSimScoreFromUsersCustom(uData, vData) {
+function calculateSimScoreFromUsersCustom(u, v) {
   let score = 0
   for (let q = 0; q < 20; q += 1) {
-    score += Math.abs(uData[`q${q + 1}`] - vData[`q${q + 1}`])
+    score += Math.abs(u[q] - v[q])
   }
 
   return score
 }
+ */
 
-
-function extractVectorsFromUsers(users, normalizeVectors) {
-  const userVectors = []
-  for (let i = 0; i < users.length; i += 1) {
-    const vector = []
-    for (let j = 0; j < 20; j += 1) {
-      if (users[i][`q${j + 1}`]) {
-        vector.push(users[i][`q${j + 1}`])
-      } else {
-        vector.push(3)
-      }
-    }
-    userVectors[i] = normalizeVectors ? normalize(vector) : vector
-  }
-  return userVectors
-}
-
+module.exports.normalize = normalize
 module.exports.calculateSimScoreFromUsers = calculateSimScoreFromUsers
 module.exports.extractVectorsFromUsers = extractVectorsFromUsers
 module.exports.calculateCosineSimScore = calculateCosineSimScore
 module.exports.euclidianDistance = euclidianDistance
-module.exports.normalize = normalize
 module.exports.calculateSimScoreFromUsersCustom = calculateSimScoreFromUsersCustom
 module.exports.cosineSimilarityNPM = cosineSimilarityNPM

@@ -1,8 +1,8 @@
-let axios = require('axios')
-let cheerio = require('cheerio')
-let fs = require('fs')
+const axios = require('axios')
+const cheerio = require('cheerio')
+const fs = require('fs')
 
-//const finnURL = 'https://www.finn.no/realestate/lettings/ad.html?finnkode=116441272'
+// const finnURL = 'https://www.finn.no/realestate/lettings/ad.html?finnkode=116441272'
 const finnURL = 'https://www.finn.no/realestate/lettings/ad.html?finnkode=116443674'
 
 const initialUrl =
@@ -12,7 +12,7 @@ const fronger =
 
 axios
   .get(fronger)
-  .then(response => {
+  .then((response) => {
     const urlList = []
     console.log(response.status)
     if (response.status === 200) {
@@ -21,67 +21,63 @@ axios
       $('div.line.flex.align-items-stretch.wrap.cols1upto480.cols2upto990.cols3from990')
         .children()
         .each((i, ele) => {
-            // console.log(ele.children)
+          // console.log(ele.children)
           ele.children.forEach((tag) => {
             if (tag.name == 'a') {
-                console.log(tag.attribs.href)
-                urlList.push(tag.attribs.href)
+              console.log(tag.attribs.href)
+              urlList.push(tag.attribs.href)
             }
           })
           // console.log(ele.children[0])
         })
     }
     return urlList
-  }).then(urlList => {
-      urlList.forEach(href => {
-          let finnURL = 'https://www.finn.no/realestate/lettings' + href
-          console.log(finnURL)
-          getListingDetails(finnURL)
-      })
+  }).then((urlList) => {
+    urlList.forEach((href) => {
+      const finnURL = `https://www.finn.no/realestate/lettings${href}`
+      console.log(finnURL)
+      getListingDetails(finnURL)
+    })
   })
   .catch(error => console.log('Erreor getting initial search page', error))
 
-getListingDetails = finnURL => {
-  return axios
-    .get(finnURL)
-    .then(
-      response => {
-        const listing = {}
-        if (response.status === 200) {
-          const html = response.data
-          const $ = cheerio.load(html)
+getListingDetails = finnURL => axios
+  .get(finnURL)
+  .then(
+    (response) => {
+      const listing = {}
+      if (response.status === 200) {
+        const html = response.data
+        const $ = cheerio.load(html)
 
-          const title = $('h1').text()
-          const address = $('.word-break p')
-            .first()
-            .text()
+        const title = $('h1').text()
+        const address = $('.word-break p')
+          .first()
+          .text()
 
-          listing['title'] = title
-          listing['address'] = address
-          const dlItems = $(
-            'dl.r-prl.mhn.multicol.col-count1upto640.col-count2upto768.col-count1upto990.col-count2from990'
-          )
-          dlItems.children().each((i, ele) => {
-            if (ele.name == 'dt') {
-              const key = ele.children[0].data.trim()
-              const value = ele.next.next.children[0].data.trim()
-              listing[key] = value
-            }
-          })
+        listing.title = title
+        listing.address = address
+        const dlItems = $('dl.r-prl.mhn.multicol.col-count1upto640.col-count2upto768.col-count1upto990.col-count2from990')
+        dlItems.children().each((i, ele) => {
+          if (ele.name == 'dt') {
+            const key = ele.children[0].data.trim()
+            const value = ele.next.next.children[0].data.trim()
+            listing[key] = value
+          }
+        })
 
-          const facilities = []
-          const facilitiesSection = $('ul.bullets.col-count1upto480.col-count2upto990.col-count2from990')
-          facilitiesSection.children().each((i, ele) => {
-            facilities.push(ele.children[0].data.trim())
-          })
-          listing['facilities'] = facilities
-          console.log(listing)
-        }
-      },
-      error => console.log(error)
-    )
-    .catch(err => console.log(err))
-}
+        const facilities = []
+        const facilitiesSection = $('ul.bullets.col-count1upto480.col-count2upto990.col-count2from990')
+        facilitiesSection.children().each((i, ele) => {
+          facilities.push(ele.children[0].data.trim())
+        })
+        listing.facilities = facilities
+        console.log(listing)
+      }
+    },
+    error => console.log(error)
+  )
+  .catch(err => console.log(err))
 
 // axios.get('https://dev.to/aurelkurtula')
 //     .then((response) => {

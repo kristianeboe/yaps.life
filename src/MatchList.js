@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
-import { Icon, Loader, Image, Dimmer, Button, Container, Segment, List } from 'semantic-ui-react'
+import { Loader, Image, Dimmer, Button, Container, Segment, List } from 'semantic-ui-react'
 import { Link, Redirect } from 'react-router-dom'
 import uuid from 'uuid'
-import firebase, { auth } from './firebase'
 import _ from 'underscore'
+import firebase, { auth } from './firebase'
 
 class MatchList extends Component {
   constructor(props) {
     super(props)
+    this.unsubscribe = null
     this.state = {
       matches: [],
       redirectToNewMatch: false,
@@ -19,20 +20,22 @@ class MatchList extends Component {
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        firebase.firestore().collection('users').doc(user.uid).get()
-          .then((doc) => {
-            const userData = doc.data()
-            const matches = userData.currentMatches ? userData.currentMatches : {}
-            Promise.all(Object.keys(matches).map(matchId => (
-              firebase.firestore().collection('matches').doc(matchId).get()
-            ))).then(results => this.setState({
-              matchesLoading: false, userData, userDoc: doc, matches: results.map(res => res.data())
-            }))
-          })
+        this.unsubscribe = firebase.firestore().collection('users').doc(user.uid).onSnapshot((doc) => {
+          const userData = doc.data()
+          const matches = userData.currentMatches ? userData.currentMatches : {}
+          Promise.all(Object.keys(matches).map(matchId => (
+            firebase.firestore().collection('matches').doc(matchId).get()
+          ))).then(results => this.setState({
+            matchesLoading: false, userData, userDoc: doc, matches: results.map(res => res.data())
+          }))
+        })
       }
     })
   }
 
+  componentWillUnmount() {
+    this.unsubscribe()
+  }
   createNewMatchAndRedirect = () => {
     const match = {
       uid: uuid.v4(),

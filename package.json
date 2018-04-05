@@ -5,8 +5,10 @@
   "dependencies": {
     "axios": "^0.18.0",
     "compute-cosine-similarity": "^1.0.0",
+    "euclidean-distance": "^1.0.0",
     "firebase": "^4.12.0",
     "google-distance-matrix": "^1.1.1",
+    "ml-distance-euclidean": "^1.0.0",
     "rc-slider": "^8.6.1",
     "rc-tooltip": "^3.7.0",
     "react": "^15.6.1",
