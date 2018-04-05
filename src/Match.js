@@ -27,7 +27,6 @@ class Match extends Component {
       matchDoc: null,
       flatmates: [],
       bestOrigin: '',
-      currentMatchId: '',
       showChatRoom: true,
       showAddUserCard: false,
       matchData: {},
@@ -48,86 +47,36 @@ class Match extends Component {
     this.matchUnsubscribe()
   }
 
-  setCurrentUser(flatmates) {
-    flatmates.forEach((mate) => {
-      if (mate.uid === this.state.user.uid) {
-        this.setState({ userData: mate })
-      }
-    })
-  }
-
   subscribeToMatch = (matchId) => {
     this.matchUnsubscribe = firebase
       .firestore()
       .collection('matches')
       .doc(matchId)
-      .onSnapshot((match) => {
-        const matchData = match.data()
-        console.log(matchData)
-        const propertyList = matchData.propertyList ?
-          matchData.propertyList :
-          []
+      .onSnapshot((matchDoc) => {
+        const match = matchDoc.data()
+        const { flatmates } = match
         this.setState({
-          matchDoc: match,
-          userData: setCurrentUser(matchData.flatmates),
-          bestOrigin: matchData.bestOrigin.length > 0 ? matchData.bestOrigin : matchData.location
-          flatmates: matchData.flatmates,
+          matchDoc,
+          userData: flatmates.find(mate => this.state.user.uid === mate.uid),
+          flatmates,
+          bestOrigin: match.bestOrigin.length > 0 ? match.bestOrigin : match.location,
+          propertyList: match.propertyList ? match.propertyList : [],
           flatmatesLoading: false,
           showChatRoom: true,
-          matchData,
-          propertyList
         })
-        /* return Promise.all(matchData.flatmates.map((mate) => {
-          let collectionName = 'testUsers'
-          if (mate.uid.length === 28) {
-            collectionName = 'users'
-          }
-          return firebase
-            .firestore()
-            .collection(collectionName)
-            .doc(mate.uid)
-            .get()
-        }))
-          .then((results) => {
-            const flatmates = []
-            results.forEach((doc) => {
-              const flatmate = doc.data()
-              flatmates.push(flatmate)
-            })
-
-            this.setState({
-              flatmates,
-              flatmatesLoading: false,
-              showChatRoom: true
-            })
-          })
-          .catch(error => console.log(error)) */
       })
-  }
-
-  createChatRoom = (matchDoc) => {
-    const messagesRef = matchDoc.ref.collection('messages').orderBy('dateTime')
-    this.unsubscribe = messagesRef.onSnapshot((snapshot) => {
-      const messages = []
-      snapshot.forEach((doc) => {
-        messages.push(doc.data())
-      })
-      this.setState({ messages })
-    })
   }
 
   mapSimScoreToPercentage = simScore => Math.floor((1 - (simScore / 320)) * 100)
 
   calculateSimilarityScoreBetweenUsers = (uData, vData) => {
-    const u = []
-    const v = []
+    const u = uData.answerVector
+    const v = vData.answerVector
 
-    for (let q = 0; q < 20; q += 1) {
-      u.push(uData[`q${q + 1}`])
-      v.push(vData[`q${q + 1}`])
-    }
+    const vectorDistance = euclidianDistanceSquared(u, v)
+    const simScore = this.mapSimScoreToPercentage(vectorDistance)
 
-    return euclidianDistanceSquared(u, v)
+    return simScore
   }
 
   calculateFlatScore = (flatmates) => {
@@ -143,23 +92,24 @@ class Match extends Component {
       }
     }
 
-    let flatAverageScore = 100
+    let flatScore = 100
     if (simScores.length > 1) {
-      flatAverageScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
+      flatScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
     }
-    return flatAverageScore
+    return flatScore
   }
 
   addFlatmateToMatch = (userData) => {
     const flatmates = [...this.state.flatmates, userData]
-    const flatAverageScore = this.calculateFlatScore(flatmates)
+    const flatScore = this.calculateFlatScore(flatmates)
+    console.log(flatScore)
     const { matchId } = this.props.match.params
     this.setState({
       flatmates,
       showAddUserCard: false
     })
     firebase.firestore().collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
-    firebase.firestore().collection('matches').doc(matchId).update({ flatmates, flatAverageScore })
+    firebase.firestore().collection('matches').doc(matchId).update({ flatmates, flatScore })
     if (flatmates.length > 2) {
       axios
         .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getBestOriginHTTPforMatch', { matchId })
@@ -181,45 +131,44 @@ class Match extends Component {
                 <h2>Here are your new (potential) flatmates</h2>
                 <Grid stackable columns="equal">
                   <Grid.Row stretched>
-                    {flatmates.map(roommate =>
-                        console.log(roommate) || (
-                          <Grid.Column
-                            key={roommate.uid}
-                            style={{
+                    {flatmates.map(roommate => (
+                      <Grid.Column
+                        key={roommate.uid}
+                        style={{
                               display: 'flex',
                               justifyContent: 'center',
                               alignItems: 'center'
                             }}
-                          >
-                            <Card>
-                              <Image
-                                src={roommate.photoURL}
-                                wrapped
-                                style={{
+                      >
+                        <Card>
+                          <Image
+                            src={roommate.photoURL}
+                            wrapped
+                            style={{
                                   maxHeight: '21em',
                                   maxWidth: '100%',
                                   overflow: 'hidden'
                                 }}
-                              />
-                              <Card.Content>
-                                <Card.Header>
-                                  {roommate.displayName}
-                                </Card.Header>
-                                <Card.Meta>{roommate.workplace.split(' ')[0]}</Card.Meta>
-                                <Card.Description>
-                                  {`${roommate.displayName} studied ${
+                          />
+                          <Card.Content>
+                            <Card.Header>
+                              {roommate.displayName}
+                            </Card.Header>
+                            <Card.Meta>{roommate.workplace.split(' ')[0]}</Card.Meta>
+                            <Card.Description>
+                              {`${roommate.displayName} studied ${
                                     roommate.studyProgramme
                                   } at ${roommate.university}`}
-                                </Card.Description>
-                              </Card.Content>
-                              <Card.Content extra>
-                                {`${this.calculateSimScore(
+                            </Card.Description>
+                          </Card.Content>
+                          <Card.Content extra>
+                            {`${this.calculateSimilarityScoreBetweenUsers(
                                   this.state.userData,
                                   roommate
                                 )}% match`}
-                              </Card.Content>
-                            </Card>
-                          </Grid.Column>
+                          </Card.Content>
+                        </Card>
+                      </Grid.Column>
                         ))}
                     {this.state.showAddUserCard && (
                       <Grid.Column

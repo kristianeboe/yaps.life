@@ -1,31 +1,43 @@
 const admin = require('firebase-admin')
 const uuid = require('uuid')
 const euclidianDistanceSquared = require('euclidean-distance/squared')
-const {
-  calculateSimScoreFromUsers, extractVectorsFromUsers, euclidianDistance, cosineSimilarityNPM
-} = require('../utils/vectorFunctions')
+const { extractVectorsFromUsers } = require('../utils/vectorFunctions')
 const knnClustering = require('./knnClustering')
 const kMeansClustering = require('./kMeansClustering')
 
 
-function calculateFlatAverageScore(flat, simFunction) {
+function mapSimScoreToPercentage(simScore) {
+  return Math.floor((1 - (simScore / 320)) * 100)
+}
+
+function calculateSimilarityScoreBetweenUsers(uData, vData) {
+  const u = uData.answerVector
+  const v = vData.answerVector
+
+  const vectorDistance = euclidianDistanceSquared(u, v)
+  const simScore = mapSimScoreToPercentage(vectorDistance)
+
+  return simScore
+}
+
+function calculateFlatScore(flatmates) {
   const simScores = []
-  for (let i = 0; i < flat.length; i += 1) {
-    const mate1 = flat[i]
-    for (let j = 0; j < flat.length; j += 1) {
-      const mate2 = flat[j]
+  for (let i = 0; i < flatmates.length; i += 1) {
+    const mate1 = flatmates[i]
+    for (let j = 0; j < flatmates.length; j += 1) {
+      const mate2 = flatmates[j]
       if (i !== j) {
-        const simScore = simFunction(mate1.answerVector, mate2.answerVector)
+        const simScore = calculateSimilarityScoreBetweenUsers(mate1, mate2)
         simScores.push(simScore)
       }
     }
   }
 
-  let flatAverageScore = 100
+  let flatScore = 100
   if (simScores.length > 1) {
-    flatAverageScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
+    flatScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
   }
-  return flatAverageScore
+  return flatScore
 }
 
 function chunckArray(array, cSize) {
@@ -71,6 +83,23 @@ function createFlatmatesFromClusters(clusters) {
   return allFlatmates
 }
 
+function initChatRoom(matchRef) {
+  matchRef
+    .collection('messages')
+    .add({
+      text: 'Stay civil in the chat guys',
+      dateTime: Date.now(),
+      from: {
+        uid: 'admin',
+        displayName: 'Admin',
+        photoURL:
+            'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
+      }
+    })
+    .catch(err =>
+      console.log('error adding original message to match', err))
+}
+
 function matchAllAvailableUsers() {
   const usersToBeMatched = []
   // Get test users
@@ -113,7 +142,7 @@ function matchAllAvailableUsers() {
       console.log('starting clustering')
       const vectors = extractVectorsFromUsers(usersToBeMatched, false)
       if (false) {
-        return knnClustering(vectors, 4, euclidianDistance, false)
+        return knnClustering(vectors, 4)
       }
       return kMeansClustering(vectors, false)
     })
@@ -131,7 +160,7 @@ function matchAllAvailableUsers() {
       // Turn flats into matches
       const matchArray = []
       allFlatmates.forEach((flatmates) => {
-        const flatAverageScore = calculateFlatAverageScore(flatmates, euclidianDistanceSquared)
+        const flatScore = calculateFlatScore(flatmates)
 
         const matchUid = uuid.v4()
         const match = {
@@ -139,7 +168,7 @@ function matchAllAvailableUsers() {
           flatmates,
           location: 'Oslo', // remember to change this in the future
           bestOrigin: '',
-          flatAverageScore,
+          flatScore,
           custom: false,
           createdAt: admin.firestore.FieldValue.serverTimestamp()
         }
@@ -155,20 +184,7 @@ function matchAllAvailableUsers() {
         matchRef
           .set(match)
           .then(() => {
-            matchRef
-              .collection('messages')
-              .add({
-                text: 'Stay civil in the chat guys',
-                dateTime: Date.now(),
-                from: {
-                  uid: 'admin',
-                  displayName: 'Admin',
-                  photoURL:
-                        'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
-                }
-              })
-              .catch(err =>
-                console.log('error adding original message to match', err))
+            // initChatRoom(matchRef)
           })
           .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({})
         // Update users with new match
@@ -182,7 +198,6 @@ function matchAllAvailableUsers() {
             .collection(collectionName)
             .doc(mate.uid)
             .update({
-              currentMatchId: match.uid,
               [`currentMatches.${matchUid}`]: Date.now(),
               readyToMatch: false,
               newMatch: true
@@ -199,4 +214,4 @@ function matchAllAvailableUsers() {
 
 module.exports.createFlatmatesFromClusters = createFlatmatesFromClusters
 module.exports.matchAllAvailableUsers = matchAllAvailableUsers
-module.exports.calculateFlatAverageScore = calculateFlatAverageScore
+module.exports.calculateFlatScore = calculateFlatScore

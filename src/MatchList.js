@@ -40,7 +40,7 @@ class MatchList extends Component {
     const match = {
       uid: uuid.v4(),
       flatmates: [this.state.userData],
-      flatAverageScore: 100,
+      flatScore: 100,
       location: 'Oslo',
       bestOrigin: '',
       custom: true,
@@ -87,7 +87,7 @@ class MatchList extends Component {
             </Link>
             <div>{match.createdAt.toDateString()}</div>
             <div>{match.bestOrigin ? match.bestOrigin : match.location}</div>
-            <div>{`Match score: ${match.flatAverageScore ? match.flatAverageScore : ''}`}</div>
+            <div>{`Match score: ${match.flatScore ? match.flatScore : ''}`}</div>
             <List horizontal>
               {match.flatmates.map(mate => (
                 <List.Item key={mate.uid} >

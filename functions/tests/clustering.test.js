@@ -11,7 +11,7 @@ const createUserData = require('../utils/createUserData')
 const {
   calculateCosineSimScore, normalize, euclidianDistance, extractVectorsFromUsers, calculateSimScoreFromUsersCustom, cosineSimilarityNPM
 } = require('../utils/vectorFunctions')
-const { clusterUsers, createFlatmatesFromClusters, calculateFlatAverageScore } = require('../clustering/clusteringAlgorithms')
+const { clusterUsers, createFlatmatesFromClusters, calculateFlatScore } = require('../clustering/clusteringAlgorithms')
 const uuid = require('uuid')
 
 test('Create test users', () => {
@@ -61,7 +61,7 @@ test('Clusters vectors with kNN', () => {
   // Turn flats into matches
   const matchArray = []
   allFlatmates.forEach((flatmates) => {
-    const flatAverageScore = calculateFlatAverageScore(flatmates, euclidianDistance)
+    const flatScore = calculateFlatScore(flatmates, euclidianDistance)
 
     const matchUid = uuid.v4()
     const match = {
@@ -69,14 +69,14 @@ test('Clusters vectors with kNN', () => {
       flatmates,
       location: 'Oslo', // remember to change this in the future
       bestOrigin: '',
-      flatAverageScore,
+      flatScore,
       custom: false
     }
     matchArray.push(match)
   })
   expect(matchArray.length).toBe(16)
   matchArray.forEach((match) => {
-    expect(match.flatAverageScore < 10)
+    expect(match.flatScore < 10)
   })
 })
 
@@ -93,7 +93,7 @@ test('Clusters with kMeans', () => {
 
     const matchArray = []
     allFlatmates.forEach((flatmates) => {
-      const flatAverageScore = calculateFlatAverageScore(flatmates, euclidianDistance)
+      const flatScore = calculateFlatScore(flatmates, euclidianDistance)
 
       const matchUid = uuid.v4()
       const match = {
@@ -101,13 +101,13 @@ test('Clusters with kMeans', () => {
         flatmates,
         location: 'Oslo', // remember to change this in the future
         bestOrigin: '',
-        flatAverageScore,
+        flatScore,
         custom: false
       }
       matchArray.push(match)
     })
     matchArray.forEach((match) => {
-      expect(match.flatAverageScore < 10)
+      expect(match.flatScore < 10)
     })
   })
     .catch(err => console.log(err))

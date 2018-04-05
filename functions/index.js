@@ -5,6 +5,7 @@ const createUserData = require('./utils/createUserData')
 const clusteringAlgorithms = require('./clustering/clusteringAlgorithms')
 const locationAlgorithms = require('./location/locationAlgorithms')
 const { deleteMatchClusterCollection } = require('./utils/dbCleanupFunctions')
+
 admin.initializeApp(functions.config().firebase)
 
 exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res) => {
@@ -95,7 +96,7 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
           customMatchCounter += 1
         }
         if (numberOfFlatmates > 2) {
-          matchSimilarityScores.push(match.flatAverageScore)
+          matchSimilarityScores.push(match.flatScore)
         }
         if (
           match.bestOrigin.length > 0 &&

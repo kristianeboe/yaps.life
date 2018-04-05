@@ -1,7 +1,29 @@
-const cosineSimilarityNPMfunction = require('compute-cosine-similarity')
+/* const cosineSimilarityNPMfunction = require('compute-cosine-similarity')
 const euclidianDistance = require('euclidean-distance')
 const euclidianDistanceSquared = require('euclidean-distance/squared')
 
+ */
+function normalize(vector) {
+  const magnitude = Math.sqrt(vector.map(el => el * el).reduce((a, b) => a + b, 0))
+  const normalized = vector.map(ele => ele / magnitude)
+  return normalized
+}
+function extractVectorsFromUsers(users, normalizeVectors) {
+  const userVectors = []
+  for (let i = 0; i < users.length; i += 1) {
+    const vector = []
+    for (let j = 0; j < 20; j += 1) {
+      if (users[i][`q${j + 1}`]) {
+        vector.push(users[i][`q${j + 1}`])
+      } else {
+        vector.push(3)
+      }
+    }
+    userVectors[i] = normalizeVectors ? normalize(vector) : vector
+  }
+  return userVectors
+}
+/*
 calculateSimilarityScoreBetweenUsers = (uData, vData) => {
   const u = []
   const v = []
@@ -39,30 +61,7 @@ calculateFlatAverageScore = (flatmates) => {
   return flatAverageScore
 }
 
-
-function normalize(vector) {
-  const magnitude = Math.sqrt(vector.map(el => el * el).reduce((a, b) => a + b, 0))
-  const normalized = vector.map(ele => ele / magnitude)
-  return normalized
-}
-
-function extractVectorsFromUsers(users, normalizeVectors) {
-  const userVectors = []
-  for (let i = 0; i < users.length; i += 1) {
-    const vector = []
-    for (let j = 0; j < 20; j += 1) {
-      if (users[i][`q${j + 1}`]) {
-        vector.push(users[i][`q${j + 1}`])
-      } else {
-        vector.push(3)
-      }
-    }
-    userVectors[i] = normalizeVectors ? normalize(vector) : vector
-  }
-  return userVectors
-}
-
-
+ */
 /* function cosineSimilarityNPM(u, v) {
   return cosineSimilarityNPMfunction(u, v)
 }
@@ -120,9 +119,11 @@ function calculateSimScoreFromUsersCustom(u, v) {
  */
 
 module.exports.normalize = normalize
-module.exports.calculateSimScoreFromUsers = calculateSimScoreFromUsers
 module.exports.extractVectorsFromUsers = extractVectorsFromUsers
+
+/* module.exports.calculateSimScoreFromUsers = calculateSimScoreFromUsers
 module.exports.calculateCosineSimScore = calculateCosineSimScore
 module.exports.euclidianDistance = euclidianDistance
 module.exports.calculateSimScoreFromUsersCustom = calculateSimScoreFromUsersCustom
 module.exports.cosineSimilarityNPM = cosineSimilarityNPM
+ */
