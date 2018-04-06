@@ -77,6 +77,8 @@ class MatchList extends Component {
     if (this.state.redirectToNewMatch) {
       return <Redirect push to={`/matches/${this.state.match.uid}`} />
     }
+
+    console.log(this.state.matches)
     return (
       <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
         {_.sortBy(this.state.matches, 'createdAt').reverse().map(match => (
@@ -94,7 +96,7 @@ class MatchList extends Component {
                   <Image avatar src={mate.photoURL} />
                   <List.Content>
                     <List.Header>{mate.displayName}</List.Header>
-                    {mate.workplace.split(' ')[0]}
+                    {mate.workplace.split(/[ ,]+/)[0]}
                   </List.Content>
                 </List.Item>
               ))}

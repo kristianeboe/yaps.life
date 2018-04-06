@@ -104,11 +104,11 @@ function matchAllAvailableUsers() {
   const usersToBeMatched = []
   // Get test users
   console.log('Getting test users')
-  admin
+  return admin
     .firestore()
     .collection('testUsers')
     .where('matchLocation', '==', 'Oslo')
-    .where('readyToMatch', '==', true)
+    // .where('readyToMatch', '==', true)
     .get()
     .then((snapshot) => {
       snapshot.forEach((doc) => {
@@ -147,7 +147,7 @@ function matchAllAvailableUsers() {
       return kMeansClustering(vectors, false)
     })
     .then((clusters) => {
-      console.log(`${clusters.length}clusters created`)
+      console.log(`${clusters.length} clusters created`)
       // Turn clusters into flats
       console.log('Organizing into flats')
       let allFlatmates = createFlatmatesFromClusters(clusters)
@@ -206,7 +206,7 @@ function matchAllAvailableUsers() {
               console.log('error with updating user with currentMatchId', err))
         })
       })
-      console.log(`${matchArray.length}matches created`)
+      console.log(`${matchArray.length} matches created`)
       return 'Operation complete'
     })
     .catch(error => console.log('Error in creating matches', error))

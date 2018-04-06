@@ -26,6 +26,8 @@ const Flatmates = (props) => {
             university={mate.university}
             gender={mate.gender}
             budget={mate.budget}
+            size={mate.size}
+            newness={mate.newness}
             matchLocation={mate.matchLocation}
             similarityScore={props.calculateSimilarityScoreBetweenUsers(userData, mate)}
           />

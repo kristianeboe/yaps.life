@@ -91,6 +91,8 @@ class Profile extends Component {
                 : '',
               workplace: userData.workplace ? userData.workplace : '',
               budget: userData.budget ? userData.budget : 0,
+              size: userData.size ? userData.size : 0,
+              newness: userData.newness ? userData.newness : 0,
               matchLocation: userData.matchLocation
                 ? userData.matchLocation
                 : '',
@@ -113,11 +115,6 @@ class Profile extends Component {
     })
   }
 
-  handleSliderChange = (value, name) => {
-    this.setState({
-      [name]: value
-    })
-  }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
@@ -158,31 +155,13 @@ class Profile extends Component {
       age: this.state.age,
       gender: this.state.gender,
       studyProgramme: this.state.studyProgramme,
+      budget: this.state.budget,
+      size: this.state.size,
+      newness: this.state.newness,
       workplace: this.state.workplace,
       workplaceLatLng: this.state.workplaceLatLng,
       university: this.state.university,
       matchLocation: this.state.matchLocation,
-      budget: this.state.budget,
-      q1: this.state.q1,
-      q2: this.state.q2,
-      q3: this.state.q3,
-      q4: this.state.q4,
-      q5: this.state.q5,
-      q6: this.state.q6,
-      q7: this.state.q7,
-      q8: this.state.q8,
-      q9: this.state.q9,
-      q10: this.state.q10,
-      q11: this.state.q11,
-      q12: this.state.q12,
-      q13: this.state.q13,
-      q14: this.state.q14,
-      q15: this.state.q15,
-      q16: this.state.q16,
-      q17: this.state.q17,
-      q18: this.state.q18,
-      q19: this.state.q19,
-      q20: this.state.q20,
       readyToMatch: this.state.readyToMatch,
       tos: this.state.tos,
       uid: this.state.user.uid,
@@ -202,12 +181,19 @@ class Profile extends Component {
 
   getMatched = (e) => {
     e.preventDefault()
+    console.log('about to match')
     axios
       .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getMatchedByClusterOnSave', {})
       .then((response) => {
         console.log(response)
         this.setState({ redirectToMatch: true })
       })
+  }
+
+  handleSliderChange = (value, name) => {
+    this.setState({
+      [name]: value
+    })
   }
 
   render() {
@@ -228,7 +214,7 @@ class Profile extends Component {
         <Redirect
           push
           to={{
-            pathname: '/match',
+            pathname: '/matches',
             state: { redirectToMatch: true }
           }}
         />
@@ -417,8 +403,10 @@ class Profile extends Component {
                     }
                   />
                 </Form.Field>
-                <Form.Button type="submit">Save</Form.Button>
-                <Form.Button onClick={this.getMatched} >Get matched demo</Form.Button>
+                <div>
+                  <Button type="submit">Save</Button>
+                  <Button onClick={this.getMatched} >Get matched demo</Button>
+                </div>
               </Grid.Column>
               <Grid.Column
                 style={{
@@ -436,6 +424,8 @@ class Profile extends Component {
                   university={this.state.university}
                   gender={this.state.gender}
                   budget={this.state.budget}
+                  size={this.state.size}
+                  newness={this.state.newness}
                   matchLocation={this.state.matchLocation}
                   similarityScore={100}
                 />

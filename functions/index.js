@@ -6,17 +6,18 @@ const clusteringPipeline = require('./clusteringAlgorithms/clusteringPipeline')
 const locationAlgorithms = require('./location/locationAlgorithms')
 const { deleteMatchClusterCollection } = require('./utils/dbCleanupFunctions')
 
-admin.initializeApp()
+admin.initializeApp(functions.config().firebase)
 
 exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res) => {
   let { nrOfTestUsers } = req.body
 
+
   if (!nrOfTestUsers) {
-    nrOfTestUsers = 100
+    nrOfTestUsers = 50
   }
   const testUsers = createUserData.createTestUsers(nrOfTestUsers)
 
-  return Promise.all(testUsers.map(testUser =>
+  Promise.all(testUsers.map(testUser =>
     admin
       .firestore()
       .collection('testUsers')
@@ -26,9 +27,11 @@ exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res
     .then(() => {
       console.log(`LOG: ${testUsers.length} Test users created`)
       res.status(200).end()
+      return testUsers.length
     })
     .catch(err => console.log('ERROR: Error in creating test users', err))
 })
+
 
 exports.countTestUsers = functions.https.onRequest((req, res) =>
   admin
@@ -72,6 +75,7 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
   let aggregateInfoObject = {}
   const matchSimilarityScores = []
   const matchSizes = {
+    0: 0,
     1: 0,
     2: 0,
     3: 0,
@@ -135,27 +139,42 @@ exports.aggregateMatchInfo = functions.https.onRequest((req, res) => {
 exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
   // const userData = event.data.data()
   // const { readyToMatch } = req.body
-
-  clusteringPipeline.matchAllAvailableUsers()
-  res.status(200).end()
+  cors(req, res, () => {
+    clusteringPipeline.matchAllAvailableUsers()
+    res.status(200).end()
+  })
 })
 
 exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
   // const userData = event.data.data()
   // const { readyToMatch } = req.body
   cors(req, res, () => {
-    this.populateDatabaseWithTestUsersHTTPS().then(() => {
-      clusteringPipeline.matchAllAvailableUsers()
-    })
-    res.status(200).end()
+    const testUsers = createUserData.createTestUsers(50)
+    Promise.all(testUsers.map(testUser =>
+      admin
+        .firestore()
+        .collection('testUsers')
+        .doc(testUser.uid)
+        .set(testUser)
+        .catch(err => console.log('LOG: Error adding test user', err))))
+      .then(() => {
+        console.log(`LOG: ${testUsers.length} Test users created`)
+        return clusteringPipeline.matchAllAvailableUsers()
+      })
+      .then((status) => {
+        console.log(status)
+        res.status(200).end()
+      })
+      .catch(err => console.log('ERROR: Error in creating test users', res.status(500).send(err)))
   })
 })
 
 
-exports.onMatchCreate = functions.firestore
+/* exports.onMatchCreate = functions.firestore
   .document('matches/{matchId}')
-  .onCreate((snap, context) => {
-    const match = snap.data()
+  // .onCreate((snap, context) => {
+  .onCreate((event) => {
+    const match = event.data.data()
 
     if (!match) {
       console.log('LOG: No match provided to get best origin for')
@@ -168,7 +187,7 @@ exports.onMatchCreate = functions.firestore
     }
 
     return locationAlgorithms.getBestOriginForMatch(match)
-  })
+  }) */
 
 exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
