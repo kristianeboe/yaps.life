@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {
-  Image,
   Button,
   Container,
   Segment,
@@ -15,6 +14,7 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng
 } from 'react-places-autocomplete'
+import axios from 'axios'
 import googleLogo from '../assets/images/powered_by_google_default.png'
 import MatchingQuestion from '../Components/MatchingQuestion'
 import {
@@ -24,6 +24,8 @@ import {
   SOCIAL_FLEXIBILITY_QUESTIONES
 } from '../assets/MatchingQuestions'
 import firebase, { auth } from '../firebase'
+import MateCard from '../Components/MateCard'
+import personAvatar from '../assets/images/personAvatar.png'
 
 const genderOptions = [
   { key: 'm', text: 'Gutt', value: 'Gutt' },
@@ -118,10 +120,30 @@ class Profile extends Component {
   }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
+
   handleBudget = (e, value) => {
     e.preventDefault()
     this.setState({
       budget: value
+    })
+  }
+  handleSize = (e, value) => {
+    e.preventDefault()
+    this.setState({
+      size: value
+    })
+  }
+  handleSize = (e, value) => {
+    e.preventDefault()
+    this.setState({
+      size: value
+    })
+  }
+
+  handleNewness = (e, value) => {
+    e.preventDefault()
+    this.setState({
+      newness: value
     })
   }
 
@@ -175,6 +197,16 @@ class Profile extends Component {
       .set(userData, { merge: true })
       .then(() => {
         this.setState({ formLoading: false, formSuccess: true })
+      })
+  }
+
+  getMatched = (e) => {
+    e.preventDefault()
+    axios
+      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getMatchedByClusterOnSave', {})
+      .then((response) => {
+        console.log(response)
+        this.setState({ redirectToMatch: true })
       })
   }
 
@@ -349,6 +381,26 @@ class Profile extends Component {
                     <Button primary={this.state.budget === 3} onClick={e => this.handleBudget(e, 3)} >Premium</Button>
                   </Button.Group>
                 </Form.Field>
+                <Form.Field>
+                  <label>Size</label>
+                  <Button.Group fluid >
+                    <Button primary={this.state.size === 1} onClick={e => this.handleSize(e, 1)} >Smallish</Button>
+                    <Button.Or />
+                    <Button primary={this.state.size === 2} onClick={e => this.handleSize(e, 2)} >Big</Button>
+                    <Button.Or />
+                    <Button primary={this.state.size === 3} onClick={e => this.handleSize(e, 3)} >Huge</Button>
+                  </Button.Group>
+                </Form.Field>
+                <Form.Field>
+                  <label>Newness</label>
+                  <Button.Group fluid >
+                    <Button primary={this.state.newness === 1} onClick={e => this.handleNewness(e, 1)} >I like classic</Button>
+                    <Button.Or />
+                    <Button primary={this.state.newness === 2} onClick={e => this.handleNewness(e, 2)} >Newish</Button>
+                    <Button.Or />
+                    <Button primary={this.state.newness === 3} onClick={e => this.handleNewness(e, 3)} >Brand new</Button>
+                  </Button.Group>
+                </Form.Field>
                 <Form.Field required>
                   <Checkbox
                     label="Agree to TOS"
@@ -366,6 +418,7 @@ class Profile extends Component {
                   />
                 </Form.Field>
                 <Form.Button type="submit">Save</Form.Button>
+                <Form.Button onClick={this.getMatched} >Get matched demo</Form.Button>
               </Grid.Column>
               <Grid.Column
                 style={{
@@ -375,14 +428,17 @@ class Profile extends Component {
                 }}
               >
                 {/* <Image circular src={photoURL} size="medium" /> */}
-                <Image
-                  circular
-                  src={
-                    photoURL || 'https://placem.at/people?w=250&h=250&random=1'
-                  }
-                  size="medium"
+                <MateCard
+                  photoURL={photoURL || personAvatar}
+                  displayName={this.state.displayName}
+                  workplace={this.state.workplace}
+                  studyProgramme={this.state.studyProgramme}
+                  university={this.state.university}
+                  gender={this.state.gender}
+                  budget={this.state.budget}
+                  matchLocation={this.state.matchLocation}
+                  similarityScore={100}
                 />
-                {/* <Form.Button>{photoURL ? 'Change profile image' : 'Upload profile image'}</Form.Button> */}
               </Grid.Column>
             </Grid>
             <Message success header="Profil oppdatert" content="Chill!" />

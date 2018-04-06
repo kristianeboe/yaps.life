@@ -92,7 +92,15 @@ const STUDY_PROGRAMMES = {
 }
 const GENDERS = ['Gutt', 'Jente']
 
+const BUDGETS = [1, 2, 3]
+const PROPERTY_SIZES = [1, 2, 3]
+const NEWNESS = [1, 2, 3]
+
+module.exports.BUDGETS = BUDGETS
+module.exports.PROPERTY_SIZES = PROPERTY_SIZES
+module.exports.NEWNESS = NEWNESS
 module.exports.WORKPLACES = WORKPLACES
 module.exports.UNIVERSITIES = UNIVERSITIES
 module.exports.STUDY_PROGRAMMES = STUDY_PROGRAMMES
 module.exports.GENDERS = GENDERS
+

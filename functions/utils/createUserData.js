@@ -3,7 +3,10 @@ const {
   WORKPLACES,
   UNIVERSITIES,
   GENDERS,
-  STUDY_PROGRAMMES
+  STUDY_PROGRAMMES,
+  BUDGETS,
+  PROPERTY_SIZES,
+  NEWNESS
 } = require('./constants')
 
 function getRandomInt(max) {
@@ -19,7 +22,7 @@ function createTestUsers(n) {
       answerVector.push(getRandomInt(5) - 3)
     }
     const university =
-      UNIVERSITIES[Math.floor(Math.random() * Math.floor(UNIVERSITIES.length))]
+      UNIVERSITIES[Math.floor(Math.random() * UNIVERSITIES.length)]
     const studyProgramme =
       STUDY_PROGRAMMES[university][
         Math.floor(Math.random() * Math.floor(STUDY_PROGRAMMES[university].length))
@@ -36,11 +39,13 @@ function createTestUsers(n) {
       workplaceLatLng,
       photoURL: `https://placem.at/people?w=290&h=290&random=${getRandomInt(100)}`,
       university,
-      budget: Math.floor(Math.random() * 3 + 1),
+      budget: BUDGETS[Math.floor(Math.random() * BUDGETS.length)],
+      propertySize: PROPERTY_SIZES[Math.floor(Math.random() * PROPERTY_SIZES.length)],
+      newness: NEWNESS[Math.floor(Math.random() * NEWNESS.length)],
       age: Math.floor(Math.random() * 10) + 20,
       tos: true,
       readyToMatch: true,
-      gender: GENDERS[Math.floor(Math.random() * Math.floor(GENDERS.length))],
+      gender: GENDERS[Math.floor(Math.random() * GENDERS.length)],
       studyProgramme,
       answerVector
     }

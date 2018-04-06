@@ -140,6 +140,18 @@ exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
   res.status(200).end()
 })
 
+exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
+  // const userData = event.data.data()
+  // const { readyToMatch } = req.body
+  cors(req, res, () => {
+    this.populateDatabaseWithTestUsersHTTPS().then(() => {
+      clusteringPipeline.matchAllAvailableUsers()
+    })
+    res.status(200).end()
+  })
+})
+
+
 exports.onMatchCreate = functions.firestore
   .document('matches/{matchId}')
   .onCreate((snap, context) => {
@@ -203,11 +215,8 @@ exports.updateUser = functions.https.onRequest((req, res) => {
     admin.firestore().collection('users').doc('4spel7y5oJg0OarPxcHxhdwkgPF2').get()
       .then((doc) => {
         const data = doc.data()
-        const answerVector = []
-        for (let index = 0; index < 20; index += 1) {
-          const answer = data[`q${index + 1}`]
-          answerVector.push(answer)
-        }
+        const oldAnswerVector = data.answerVector
+        const answerVector = oldAnswerVector.map(el => el - 3)
         doc.ref.update({ answerVector })
       })
       .then(() => {

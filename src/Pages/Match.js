@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import {
   Button,
-  Image,
   Grid,
-  Card,
   Segment,
   Container
 } from 'semantic-ui-react'

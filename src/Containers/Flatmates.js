@@ -1,10 +1,8 @@
 import React from 'react'
-import {
-  Image,
-  Grid,
-  Card,
-} from 'semantic-ui-react'
+import { Grid, } from 'semantic-ui-react'
 import AddUserCard from '../Components/AddUserCard'
+import MateCard from '../Components/MateCard'
+import personAvatar from '../assets/images/personAvatar.png'
 
 const Flatmates = (props) => {
   const { flatmates, showAddUserCard, userUid } = props
@@ -20,34 +18,17 @@ const Flatmates = (props) => {
             alignItems: 'center'
         }}
         >
-          <Card>
-            <Image
-              src={mate.photoURL}
-              wrapped
-              style={{
-                    maxHeight: '21em',
-                    maxWidth: '100%',
-                    overflow: 'hidden'
-                }}
-            />
-            <Card.Content>
-              <Card.Header>
-                {mate.displayName}
-              </Card.Header>
-              <Card.Meta>{mate.workplace.split(' ')[0]}</Card.Meta>
-              <Card.Description>
-                {`${mate.displayName} studied ${
-                                        mate.studyProgramme
-                                      } at ${mate.university}`}
-              </Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-              {`${props.calculateSimilarityScoreBetweenUsers(
-                    userData,
-                    mate
-                )}% match`}
-            </Card.Content>
-          </Card>
+          <MateCard
+            photoURL={mate.photoURL || personAvatar}
+            displayName={mate.displayName}
+            workplace={mate.workplace}
+            studyProgramme={mate.studyProgramme}
+            university={mate.university}
+            gender={mate.gender}
+            budget={mate.budget}
+            matchLocation={mate.matchLocation}
+            similarityScore={props.calculateSimilarityScoreBetweenUsers(userData, mate)}
+          />
         </Grid.Column>
     ))}
       {showAddUserCard && (
