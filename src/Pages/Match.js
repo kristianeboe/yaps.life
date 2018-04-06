@@ -9,10 +9,10 @@ import {
 } from 'semantic-ui-react'
 import euclidianDistanceSquared from 'euclidean-distance/squared'
 import axios from 'axios'
-import firebase, { auth } from './firebase'
-import ChatRoom from './ChatRoom'
-import AddUserCard from './AddUserCard'
-import FlatRank from './FlatRank'
+import firebase, { auth } from '../firebase'
+import ChatRoom from '../Components/ChatRoom'
+import FlatRank from '../Components/FlatRank'
+import Flatmates from '../Containers/Flatmates'
 
 class Match extends Component {
   constructor(props) {
@@ -21,7 +21,6 @@ class Match extends Component {
     this.matchUnsubscribe = null
     this.state = {
       user: null,
-      userData: null,
       flatmatesLoading: true,
       chatLoading: true,
       matchDoc: null,
@@ -57,7 +56,6 @@ class Match extends Component {
         const { flatmates } = match
         this.setState({
           matchDoc,
-          userData: flatmates.find(mate => this.state.user.uid === mate.uid),
           flatmates,
           bestOrigin: match.bestOrigin.length > 0 ? match.bestOrigin : match.location,
           propertyList: match.propertyList ? match.propertyList : [],
@@ -130,60 +128,13 @@ class Match extends Component {
               <Segment loading={flatmatesLoading}>
                 <h2>Here are your new (potential) flatmates</h2>
                 <Grid stackable columns="equal">
-                  <Grid.Row stretched>
-                    {flatmates.map(roommate => (
-                      <Grid.Column
-                        key={roommate.uid}
-                        style={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center'
-                            }}
-                      >
-                        <Card>
-                          <Image
-                            src={roommate.photoURL}
-                            wrapped
-                            style={{
-                                  maxHeight: '21em',
-                                  maxWidth: '100%',
-                                  overflow: 'hidden'
-                                }}
-                          />
-                          <Card.Content>
-                            <Card.Header>
-                              {roommate.displayName}
-                            </Card.Header>
-                            <Card.Meta>{roommate.workplace.split(' ')[0]}</Card.Meta>
-                            <Card.Description>
-                              {`${roommate.displayName} studied ${
-                                    roommate.studyProgramme
-                                  } at ${roommate.university}`}
-                            </Card.Description>
-                          </Card.Content>
-                          <Card.Content extra>
-                            {`${this.calculateSimilarityScoreBetweenUsers(
-                                  this.state.userData,
-                                  roommate
-                                )}% match`}
-                          </Card.Content>
-                        </Card>
-                      </Grid.Column>
-                        ))}
-                    {this.state.showAddUserCard && (
-                      <Grid.Column
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center'
-                        }}
-                      >
-                        <AddUserCard
-                          addFlatmateToMatch={this.addFlatmateToMatch}
-                        />
-                      </Grid.Column>
-                    )}
-                  </Grid.Row>
+                  <Flatmates
+                    flatmates={flatmates}
+                    calculateSimilarityScoreBetweenUsers={this.calculateSimilarityScoreBetweenUsers}
+                    addFlatmateToMatch={this.addFlatmateToMatch}
+                    showAddUserCard={this.state.showAddUserCard}
+                    userUid={this.state.user.uid}
+                  />
                   <Grid.Row>
                     {this.state.flatmates.length < 5 && (
                       <Grid.Column

@@ -15,15 +15,15 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng
 } from 'react-places-autocomplete'
-
-import MatchingQuestion from './MatchingQuestion'
+import googleLogo from '../assets/images/powered_by_google_default.png'
+import MatchingQuestion from '../Components/MatchingQuestion'
 import {
   SOCIAL_HABBITS_QUESTIONES,
   CLEANLINESS_QUESTIONES,
   SOCIAL_OPENNESS_QUESTIONES,
   SOCIAL_FLEXIBILITY_QUESTIONES
-} from './MatchingQuestions'
-import firebase, { auth } from './firebase'
+} from '../assets/MatchingQuestions'
+import firebase, { auth } from '../firebase'
 
 const genderOptions = [
   { key: 'm', text: 'Gutt', value: 'Gutt' },
@@ -306,7 +306,7 @@ class Profile extends Component {
                       >
                         <div>
                           <img
-                            src={require('./powered_by_google_default.png')}
+                            src={googleLogo}
                             style={{ display: 'inline-block', width: '150px' }}
                             alt="Powered by Google"
                           />
@@ -353,25 +353,19 @@ class Profile extends Component {
                   <Checkbox
                     label="Agree to TOS"
                     checked={tos}
-                    onChange={val => this.setState({ tos: !this.state.tos })}
+                    onChange={() => this.setState({ tos: !this.state.tos })}
                   />
                 </Form.Field>
                 <Form.Field>
                   <Checkbox
                     label="Make my profile visible"
                     checked={readyToMatch}
-                    onChange={val =>
+                    onChange={() =>
                       this.setState({ readyToMatch: !this.state.readyToMatch })
                     }
                   />
                 </Form.Field>
                 <Form.Button type="submit">Save</Form.Button>
-
-                <Button
-                  onClick={() => this.setState({ redirectToMatch: true })}
-                >
-                  Create match
-                </Button>
               </Grid.Column>
               <Grid.Column
                 style={{

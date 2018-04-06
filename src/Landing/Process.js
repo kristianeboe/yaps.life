@@ -1,8 +1,8 @@
 import React from 'react'
 import { Container, Image, Grid, Segment, Header, Card } from 'semantic-ui-react'
-import signup from './assets/images/signup.jpg'
-import match from './assets/images/match.jpg'
-import live from './assets/images/live.jpg'
+import signup from '../assets/images/signup.jpg'
+import match from '../assets/images/match.jpg'
+import live from '../assets/images/live.jpg'
 
 const Process = () => (
   <Container>

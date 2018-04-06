@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Container, Button, Form, Icon, Divider, Message } from 'semantic-ui-react'
-import firebase, { auth, googleProvider, facebookProvider } from './firebase.js'
 import { Redirect } from 'react-router-dom'
+import firebase, { auth, googleProvider, facebookProvider } from '../firebase'
 
 // const initialState = {
 //   email: 'kristian.e.boe@crux.no',
@@ -25,7 +25,7 @@ class Create extends Component {
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   googleSignIn = () => {
-    auth.signInWithPopup(googleProvider).then(userSignInOperation => {
+    auth.signInWithPopup(googleProvider).then((userSignInOperation) => {
       console.log(userSignInOperation)
       if (userSignInOperation.additionalUserInfo.isNewUser) {
         this.createUserInDatabase(userSignInOperation.user).then(() => this.setState({ redirectToProfile: true }))
@@ -36,67 +36,62 @@ class Create extends Component {
   }
 
   facebookLogin = () => {
-    auth.signInWithPopup(facebookProvider).then(userSignInOperation => {
+    auth.signInWithPopup(facebookProvider).then((userSignInOperation) => {
       if (!userSignInOperation.additionalUserInfo.isNewUser) return
       this.createUserInDatabase(userSignInOperation.user).then(() => this.setState({ redirectToProfile: true }))
     })
   }
 
-  createUserInDatabase = user => {
-    return new Promise((resolve, reject) => {
-      firebase
-        .firestore()
-        .collection('users')
-        .doc(user.uid)
-        .set({
-          uid: user.uid,
-          displayName: user.displayName ? user.displayName : '',
-          photoURL: user.photoURL ? user.photoURL : '',
-          email: user.email,
-        })
-        .then(() => resolve())
-        .catch(error => reject(error))
-    })
-  }
+  createUserInDatabase = user => new Promise((resolve, reject) => {
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(user.uid)
+      .set({
+        uid: user.uid,
+        displayName: user.displayName ? user.displayName : '',
+        photoURL: user.photoURL ? user.photoURL : '',
+        email: user.email,
+      })
+      .then(() => resolve())
+      .catch(error => reject(error))
+  })
 
-  handleSignUp = event => {
+  handleSignUp = (event) => {
     event.preventDefault()
     this.setState({ loading: true })
     const { email, password } = this.state
-    firebase
-      .auth()
+    auth
       .createUserWithEmailAndPassword(email, password)
-      .then(userSignInOperation => {
+      .then((userSignInOperation) => {
         this.createUserInDatabase(userSignInOperation.user).then(() =>
           this.setState({
             email: '',
             password: '',
             loading: false,
             redirectToProfile: true,
-          })
-        )
+          }))
       })
-      .catch(function (error) {
+      .catch((error) => {
         // Handle Errors here.
         console.log(error)
         // ...
       })
   }
 
-  handleSignIn = event => {
+  handleSignIn = (event) => {
     event.preventDefault()
     const { email, password } = this.state
-    firebase
-      .auth()
+    auth
       .signInWithEmailAndPassword(email, password)
-      .then(userSignInOperation => {
+      .then(() => {
         this.setState({
           email: '',
           password: '',
           redirectToProfile: true,
         })
       })
-      .catch(function (error) {
+      .catch((error) => {
         // Handle Errors here.
         console.log(error)
         // ...
@@ -149,13 +144,14 @@ class Create extends Component {
               Sign up
             </Button>
           ) : (
-              <Button onClick={this.handleSignIn} color="orange" fluid size="large">
+            <Button onClick={this.handleSignIn} color="orange" fluid size="large">
                 Log in
             </Button>
             )}
-          <Message>
+          <Message onClick={() => this.setState({ signUp: !signUp })} >
+            <Icon name="help" />
             {signUp ? 'Already have a user?' : 'New to us?'}{' '}
-            <a onClick={() => this.setState({ signUp: !signUp })}> {signUp ? 'Log in' : 'Sign up'}</a>
+            <a href=""> {signUp ? 'Log in' : 'Sign up'}</a>&nbsp;
           </Message>
         </Form>
       </Container>

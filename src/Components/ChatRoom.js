@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Comment, Header, Button } from 'semantic-ui-react'
-import { auth } from './firebase'
+import { auth } from '../firebase'
 
 class ChatRoom extends Component {
   constructor(props) {

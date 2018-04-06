@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Menu, Label, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
-import firebase, { auth } from './firebase'
+import firebase, { auth } from '../firebase'
 // import SignUp from "./SignUp";
 
 class AppHeader extends Component {

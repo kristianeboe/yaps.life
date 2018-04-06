@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Image, Card, Search } from 'semantic-ui-react'
 import _ from 'underscore'
-import personAvatar from './assets/images/personAvatar.png'
-import firebase from './firebase'
+import personAvatar from '../assets/images/personAvatar.png'
+import firebase from '../firebase'
 
 
 class AddUserCard extends Component {
@@ -55,6 +55,7 @@ class AddUserCard extends Component {
         isLoading: false,
         results,
       })
+      return true
     }, 300)
   }
   render() {

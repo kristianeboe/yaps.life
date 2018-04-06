@@ -6,7 +6,7 @@ const clusteringPipeline = require('./clusteringAlgorithms/clusteringPipeline')
 const locationAlgorithms = require('./location/locationAlgorithms')
 const { deleteMatchClusterCollection } = require('./utils/dbCleanupFunctions')
 
-admin.initializeApp(functions.config().firebase)
+admin.initializeApp()
 
 exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res) => {
   let { nrOfTestUsers } = req.body
@@ -142,8 +142,8 @@ exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
 
 exports.onMatchCreate = functions.firestore
   .document('matches/{matchId}')
-  .onCreate((event) => {
-    const match = event.data.data()
+  .onCreate((snap, context) => {
+    const match = snap.data()
 
     if (!match) {
       console.log('LOG: No match provided to get best origin for')

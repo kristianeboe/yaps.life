@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
-import AppHeader from './AppHeader'
+import AppHeader from './Components/AppHeader'
 import Home from './Pages/Home'
 // import Register from './Pages/Register'
 import Create from './Pages/Create'
@@ -17,7 +17,6 @@ const App = () => (
       <Route path="/matches/:matchId" component={Match} />
       <Route path="/matches" component={MatchList} />
       <Route path="/profile" component={Profile} />
-      {/* <Route path="/register" component={Register} /> */}
     </Switch>
   </div>
 )

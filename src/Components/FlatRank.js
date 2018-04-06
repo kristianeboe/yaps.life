@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Form, Segment } from 'semantic-ui-react'
 import axios from 'axios'
-import FlatList from './Containers/FlatList'
-import firebase from './firebase'
+import FlatList from '../Containers/FlatList'
+import firebase from '../firebase'
 
 class FlatRank extends Component {
   constructor(props) {

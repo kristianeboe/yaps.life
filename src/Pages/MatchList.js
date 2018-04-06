@@ -3,7 +3,7 @@ import { Loader, Image, Dimmer, Button, Container, Segment, List } from 'semanti
 import { Link, Redirect } from 'react-router-dom'
 import uuid from 'uuid'
 import _ from 'underscore'
-import firebase, { auth } from './firebase'
+import firebase, { auth } from '../firebase'
 
 class MatchList extends Component {
   constructor(props) {
@@ -97,7 +97,7 @@ class MatchList extends Component {
                     {mate.workplace.split(' ')[0]}
                   </List.Content>
                 </List.Item>
-            ))}
+              ))}
             </List>
           </Segment>
         ))}
