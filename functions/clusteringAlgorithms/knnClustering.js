@@ -19,4 +19,24 @@ function knnClustering(vectors, K) {
   return clusters
 }
 
-module.exports = knnClustering
+function knnClusteringOneMatchPerUser(vectors, K) {
+  const clusters = []
+  const vectorsWithIndex = vectors.map((v, i) => ({ v, i }))
+  while (vectorsWithIndex.length > 0) {
+    const scores = []
+    const u = vectorsWithIndex.pop()
+    vectorsWithIndex.forEach((v, j) => {
+      const score = euclidianDistance(u.v, v.v)
+      scores.push({ i: v.i, j, score })
+    })
+    const topK = scores.sort((a, b) => a.score - b.score).slice(0, K - 1)
+    topK.forEach(el => vectorsWithIndex.pop(el.j))
+    clusters.push([u.i].concat(topK.map(el => el.i)))
+  }
+
+  return clusters
+}
+
+
+module.exports.knnClustering = knnClustering
+module.exports.knnClusteringOneMatchPerUser = knnClusteringOneMatchPerUser

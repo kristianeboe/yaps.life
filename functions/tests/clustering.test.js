@@ -5,7 +5,7 @@
 
 
 const uuid = require('uuid')
-const knnClustering = require('../clusteringAlgorithms/knnClustering')
+const { knnClustering, knnClusteringOneMatchPerUser } = require('../clusteringAlgorithms/knnClustering')
 const kMeansClustering = require('../clusteringAlgorithms/kMeansClustering')
 const createTestData = require('../utils/createTestData')
 const { createFlatmatesFromClusters, calculateFlatScore, calculateSimilarityScoreBetweenUsers } = require('../clusteringAlgorithms/clusteringPipeline')
@@ -101,13 +101,14 @@ test('Clusters vectors with kNN', () => {
     }
     matchArray.push(match)
   })
+  console.log(matchArray.length)
   expect(matchArray.length).toBe(500)
   let averageMatchScore = 0
   matchArray.forEach((match) => {
     averageMatchScore += match.flatScore
   })
   averageMatchScore /= matchArray.length
-  console.log(averageMatchScore)
+  console.log('kNN all to all', averageMatchScore)
   expect(averageMatchScore).toBeGreaterThan(70)
 })
 
@@ -137,13 +138,59 @@ test('Clusters with kMeans', () => {
       }
       matchArray.push(match)
     })
+    console.log(matchArray.length)
     let averageMatchScore = 0
     matchArray.forEach((match) => {
       averageMatchScore += match.flatScore
     })
     averageMatchScore /= matchArray.length
-    console.log(averageMatchScore)
+    console.log('kMeans', averageMatchScore)
     expect(averageMatchScore).toBeGreaterThan(70)
   })
     .catch(err => console.log(err))
+})
+
+
+test('knnClusteringOneMatchPerUser', () => {
+  // Create test users
+  const testUsers = createTestData.createTestUsers(500)
+  expect(testUsers.length).toBe(500)
+  // extract question vectors
+  const vectors = extractVectorsFromUsers(testUsers, false)
+  expect(vectors.length).toBe(500)
+  // Cluster with kNN
+  const clusters = knnClusteringOneMatchPerUser(vectors, 4)
+  // organize into flats
+  let allFlatmates = createFlatmatesFromClusters(clusters)
+  allFlatmates.forEach((flat) => {
+    // expect(flat.length).toBe(4)
+  })
+  allFlatmates = allFlatmates.map(flatmates =>
+    flatmates.map(id => testUsers[id]))
+
+  // Turn flats into matches
+  const matchArray = []
+  allFlatmates.forEach((flatmates) => {
+    const flatScore = calculateFlatScore(flatmates)
+
+    const matchUid = uuid.v4()
+    const match = {
+      uid: matchUid,
+      flatmates,
+      location: 'Oslo', // remember to change this in the future
+      bestOrigin: '',
+      flatScore,
+      custom: false
+    }
+    matchArray.push(match)
+  })
+  console.log(matchArray.length)
+  // expect(matchArray.length).toBe(4)
+  let averageMatchScore = 0
+  matchArray.forEach((match) => {
+    averageMatchScore += match.flatScore
+  })
+  averageMatchScore /= matchArray.length
+  console.log('kNN one match per user', averageMatchScore)
+  expect(averageMatchScore).toBeGreaterThan(70)
 })
