@@ -32,6 +32,20 @@ const genderOptions = [
   { key: 'f', text: 'Jente', value: 'Jente' }
 ]
 
+const universityOptions = [
+  { key: 'ntnu', text: 'NTNU', value: 'NTNU' },
+  { key: 'nhh', text: 'NHH', value: 'NHH' },
+  { key: 'bi', text: 'BI Oslo', value: 'BI' },
+  { key: 'uio', text: 'UIO', value: 'UIO' },
+  { key: 'uit', text: 'UIT', value: 'UIT' },
+  { key: 'uib', text: 'UIB', value: 'UIB' },
+  { key: 'other', text: 'Other', value: 'Other' },
+]
+
+const matchLocationOptions = [
+  { key: 'oslo', text: 'Oslo', value: 'Oslo' },
+]
+
 class Profile extends Component {
   constructor(props) {
     super(props)
@@ -91,7 +105,7 @@ class Profile extends Component {
                 : '',
               workplace: userData.workplace ? userData.workplace : '',
               budget: userData.budget ? userData.budget : 0,
-              size: userData.size ? userData.size : 0,
+              propertySize: userData.propertySize ? userData.propertySize : 0,
               newness: userData.newness ? userData.newness : 0,
               matchLocation: userData.matchLocation
                 ? userData.matchLocation
@@ -127,13 +141,7 @@ class Profile extends Component {
   handleSize = (e, value) => {
     e.preventDefault()
     this.setState({
-      size: value
-    })
-  }
-  handleSize = (e, value) => {
-    e.preventDefault()
-    this.setState({
-      size: value
+      propertySize: value
     })
   }
 
@@ -150,13 +158,14 @@ class Profile extends Component {
     for (let q = 0; q < 20; q += 1) {
       answerVector.push(this.state[`q${q + 1}`] - 3)
     }
+    const propertyVector = [this.state.budget, this.state.propertySize, this.state.newness]
     const userData = {
       displayName: this.state.displayName,
       age: this.state.age,
       gender: this.state.gender,
       studyProgramme: this.state.studyProgramme,
       budget: this.state.budget,
-      size: this.state.size,
+      propertySize: this.state.propertySize,
       newness: this.state.newness,
       workplace: this.state.workplace,
       workplaceLatLng: this.state.workplaceLatLng,
@@ -166,7 +175,8 @@ class Profile extends Component {
       tos: this.state.tos,
       uid: this.state.user.uid,
       photoURL: this.state.user.photoURL,
-      answerVector
+      answerVector,
+      propertyVector
     }
 
     firebase
@@ -286,25 +296,29 @@ class Profile extends Component {
                     value={studyProgramme}
                     onChange={this.handleChange}
                   />
-                  <Form.Input
+                  <Form.Select
                     fluid
+                    style={{ zIndex: 60 }}
                     label="Universitet"
+                    options={universityOptions}
                     placeholder="Universitet"
-                    name="university"
                     value={university}
+                    name="university"
                     onChange={this.handleChange}
                   />
                 </Form.Group>
-                <Form.Input
+                <Form.Select
                   fluid
-                  label="Hvor skal du flytte?"
+                  style={{ zIndex: 60 }}
+                  label="Hvor skal du flytte?(Currently only supports Oslo)"
+                  options={matchLocationOptions}
                   placeholder="Område du vil bli matchet til"
-                  name="matchLocation"
                   value={matchLocation}
+                  name="matchLocation"
                   onChange={this.handleChange}
                 />
                 <Form.Field required>
-                  <label>Address of workplace</label>
+                  <label>Address of workplace(Please pick a location in Oslo)</label>
                   <PlacesAutocomplete
                     styles={{ root: { zIndex: 50 } }}
                     inputProps={{
@@ -365,19 +379,19 @@ class Profile extends Component {
                   <Button.Group fluid >
                     <Button primary={this.state.budget === 1} onClick={e => this.handleBudget(e, 1)} >Cheap</Button>
                     <Button.Or />
-                    <Button primary={this.state.budget === 2} onClick={e => this.handleBudget(e, 2)} >Decent</Button>
+                    <Button primary={this.state.budget === 3} onClick={e => this.handleBudget(e, 3)} >Decent</Button>
                     <Button.Or />
-                    <Button primary={this.state.budget === 3} onClick={e => this.handleBudget(e, 3)} >Premium</Button>
+                    <Button primary={this.state.budget === 5} onClick={e => this.handleBudget(e, 5)} >Premium</Button>
                   </Button.Group>
                 </Form.Field>
                 <Form.Field>
                   <label>Size</label>
                   <Button.Group fluid >
-                    <Button primary={this.state.size === 1} onClick={e => this.handleSize(e, 1)} >Smallish</Button>
+                    <Button primary={this.state.propertySize === 1} onClick={e => this.handleSize(e, 1)} >Smallish</Button>
                     <Button.Or />
-                    <Button primary={this.state.size === 2} onClick={e => this.handleSize(e, 2)} >Big</Button>
+                    <Button primary={this.state.propertySize === 3} onClick={e => this.handleSize(e, 3)} >Big</Button>
                     <Button.Or />
-                    <Button primary={this.state.size === 3} onClick={e => this.handleSize(e, 3)} >Huge</Button>
+                    <Button primary={this.state.propertySize === 5} onClick={e => this.handleSize(e, 5)} >Huge</Button>
                   </Button.Group>
                 </Form.Field>
                 <Form.Field>
@@ -385,9 +399,9 @@ class Profile extends Component {
                   <Button.Group fluid >
                     <Button primary={this.state.newness === 1} onClick={e => this.handleNewness(e, 1)} >I like classic</Button>
                     <Button.Or />
-                    <Button primary={this.state.newness === 2} onClick={e => this.handleNewness(e, 2)} >Newish</Button>
+                    <Button primary={this.state.newness === 3} onClick={e => this.handleNewness(e, 3)} >Newish</Button>
                     <Button.Or />
-                    <Button primary={this.state.newness === 3} onClick={e => this.handleNewness(e, 3)} >Brand new</Button>
+                    <Button primary={this.state.newness === 5} onClick={e => this.handleNewness(e, 5)} >Brand new</Button>
                   </Button.Group>
                 </Form.Field>
                 <Form.Field required>
@@ -427,7 +441,7 @@ class Profile extends Component {
                   university={this.state.university}
                   gender={this.state.gender}
                   budget={this.state.budget}
-                  size={this.state.size}
+                  propertySize={this.state.propertySize}
                   newness={this.state.newness}
                   matchLocation={this.state.matchLocation}
                   similarityScore={100}

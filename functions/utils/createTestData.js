@@ -30,18 +30,21 @@ function createTestUsers(n) {
     const workplaceKey = Math.floor(Math.random() * Math.floor(Object.keys(WORKPLACES).length))
     const workplace = Object.keys(WORKPLACES)[workplaceKey]
     const workplaceLatLng = WORKPLACES[workplace]
+    const budget = BUDGETS[Math.floor(Math.random() * BUDGETS.length)]
+    const propertySize = PROPERTY_SIZES[Math.floor(Math.random() * PROPERTY_SIZES.length)]
+    const newness = NEWNESS[Math.floor(Math.random() * NEWNESS.length)]
+    const propertyVector = [budget, propertySize, newness]
     const user = {
       uid: uuid.v4(),
       displayName: `testUser${index}`,
       matchLocation: 'Oslo',
       seeNewUsers: false,
       workplace,
+      propertyVector,
       workplaceLatLng,
       photoURL: `https://placem.at/people?w=290&h=290&random=${getRandomInt(100)}`,
       university,
-      budget: BUDGETS[Math.floor(Math.random() * BUDGETS.length)],
-      propertySize: PROPERTY_SIZES[Math.floor(Math.random() * PROPERTY_SIZES.length)],
-      newness: NEWNESS[Math.floor(Math.random() * NEWNESS.length)],
+
       age: Math.floor(Math.random() * 10) + 20,
       tos: true,
       readyToMatch: true,
@@ -53,6 +56,30 @@ function createTestUsers(n) {
   }
   return users
 }
+
+function createTestProperties(n) {
+  const properties = []
+
+  for (let index = 0; index < n; index += 1) {
+    const budget = BUDGETS[Math.floor(Math.random() * BUDGETS.length)]
+    const propertySize = PROPERTY_SIZES[Math.floor(Math.random() * PROPERTY_SIZES.length)]
+    const newness = NEWNESS[Math.floor(Math.random() * NEWNESS.length)]
+    const propertyVector = [budget, propertySize, newness]
+    const property = {
+      uid: uuid.v4(),
+      location: 'Oslo',
+      address: '',
+      budget,
+      propertySize,
+      newness,
+      propertyVector
+    }
+    properties.push(property)
+  }
+  return properties
+}
+
+
 const me = {
   age: '25',
   currentMatchId: 'f9345ee3-58c2-4f91-a3c7-331554b7c88f',
@@ -86,3 +113,4 @@ module.exports.me = me
 module.exports.antiKristianUser = antiKristianUser
 module.exports.kristianVector = kristianVector
 module.exports.antiKristianVector = antiKristianVector
+module.exports.createTestProperties = createTestProperties

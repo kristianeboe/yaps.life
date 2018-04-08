@@ -1,0 +1,41 @@
+[debug] [2018-04-08T12:18:57.017Z] ----------------------------------------------------------------------
+[debug] [2018-04-08T12:18:57.020Z] Command:       /usr/local/Cellar/node/9.11.1/bin/node /usr/local/bin/firebase functions:shell
+[debug] [2018-04-08T12:18:57.020Z] CLI Version:   3.18.1
+[debug] [2018-04-08T12:18:57.020Z] Platform:      darwin
+[debug] [2018-04-08T12:18:57.020Z] Node Version:  v9.11.1
+[debug] [2018-04-08T12:18:57.021Z] Time:          Sun Apr 08 2018 14:18:57 GMT+0200 (CEST)
+[debug] [2018-04-08T12:18:57.021Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-04-08T12:18:57.048Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-04-08T12:18:57.048Z] > authorizing via signed-in user
+[debug] [2018-04-08T12:18:57.051Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yaps-1496498804190  
+  
+ Sun Apr 08 2018 14:18:57 GMT+0200 (CEST)
+[debug] [2018-04-08T12:18:57.789Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-08T12:18:57.790Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yaps-1496498804190/tokens  
+  
+ Sun Apr 08 2018 14:18:57 GMT+0200 (CEST)
+[debug] [2018-04-08T12:18:58.461Z] <<< HTTP RESPONSE 200
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-04-08T12:18:59.064Z] Fetching environment
+[debug] [2018-04-08T12:18:59.065Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/yaps-1496498804190  
+  
+ Sun Apr 08 2018 14:18:59 GMT+0200 (CEST)
+[debug] [2018-04-08T12:19:00.089Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-08T12:19:00.090Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/569081698642:getServerAppConfig  
+  
+ Sun Apr 08 2018 14:19:00 GMT+0200 (CEST)
+[debug] [2018-04-08T12:19:00.713Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-08T12:19:00.713Z] Starting @google-cloud/functions-emulator
+[debug] [2018-04-08T12:19:02.283Z] Parsing function triggers
+[info] ✔  functions: deleteTestUsers
+[info] ✔  functions: populateDatabaseWithTestUsersHTTPS
+[info] ✔  functions: updateUser
+[info] ✔  functions: countTestUsers
+[info] ✔  functions: setTestUsersReadyToMatch
+[info] ✔  functions: resetDatabase
+[info] ✔  functions: aggregateMatchInfo
+[info] ✔  functions: getMatchedByCluster
+[info] ✔  functions: getMatchedByClusterOnSave
+[info] ✔  functions: getBestOriginHTTPforMatch
+[info] ✔  functions: scoreApartment

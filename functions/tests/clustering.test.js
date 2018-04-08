@@ -7,18 +7,18 @@
 const uuid = require('uuid')
 const knnClustering = require('../clusteringAlgorithms/knnClustering')
 const kMeansClustering = require('../clusteringAlgorithms/kMeansClustering')
-const createUserData = require('../utils/createUserData')
+const createTestData = require('../utils/createTestData')
 const { createFlatmatesFromClusters, calculateFlatScore, calculateSimilarityScoreBetweenUsers } = require('../clusteringAlgorithms/clusteringPipeline')
 const { extractVectorsFromUsers } = require('../utils/vectorFunctions')
 
 test('Create test users', () => {
-  const testUsers = createUserData.createTestUsers(200)
+  const testUsers = createTestData.createTestUsers(200)
   expect(testUsers.length).toBe(200)
 })
 
 
 test('User similarity', () => {
-  const { me, antiKristianUser } = createUserData
+  const { me, antiKristianUser } = createTestData
   const neg = { answerVector: Array(20).fill(-2) }
   const pos = { answerVector: Array(20).fill(2) }
   const almostPos = { answerVector: Array(20).fill(1) }
@@ -47,7 +47,7 @@ test('User similarity', () => {
 
 
 /* test('Extract vector from user', () => {
-  const testUsers = createUserData.createTestUsers(1)
+  const testUsers = createTestData.createTestUsers(1)
   const vectorsNormalized = extractVectorsFromUsers(testUsers, true)
   expect(vectorsNormalized.length).toBe(1)
   const vectorNormalized = vectorsNormalized[0]
@@ -68,7 +68,7 @@ test('User similarity', () => {
 
 test('Clusters vectors with kNN', () => {
   // Create test users
-  const testUsers = createUserData.createTestUsers(500)
+  const testUsers = createTestData.createTestUsers(500)
   expect(testUsers.length).toBe(500)
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)
@@ -108,12 +108,12 @@ test('Clusters vectors with kNN', () => {
   })
   averageMatchScore /= matchArray.length
   console.log(averageMatchScore)
-  expect(averageMatchScore).toBeGreaterThan(75)
+  expect(averageMatchScore).toBeGreaterThan(70)
 })
 
 
 test('Clusters with kMeans', () => {
-  const testUsers = createUserData.createTestUsers(500)
+  const testUsers = createTestData.createTestUsers(500)
   const vectors = extractVectorsFromUsers(testUsers, false)
   kMeansClustering(vectors, false).then((clusters) => {
     expect(clusters.length).toBe(5)

@@ -142,6 +142,7 @@ class MatchList extends Component {
               <div>{match.createdAt.toDateString()}</div>
               <div>{match.bestOrigin ? match.bestOrigin : match.location}</div>
               <div>{`Match score: ${match.flatScore ? match.flatScore : ''}`}</div>
+              <div>{`Property alignment: ${match.propertyAlignment ? match.propertyAlignment : ''}`}</div>
               <List horizontal>
                 {match.flatmates.map(mate => (
                   <List.Item key={mate.uid} >

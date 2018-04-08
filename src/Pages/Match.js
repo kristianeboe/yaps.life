@@ -27,6 +27,8 @@ class Match extends Component {
       showChatRoom: true,
       showAddUserCard: false,
       matchData: {},
+      flatScore: 0,
+      propertyAlignment: 0,
       propertyList: [],
     }
   }
@@ -55,6 +57,8 @@ class Match extends Component {
         this.setState({
           matchDoc,
           flatmates,
+          flatScore: match.flatScore,
+          propertyAlignment: match.propertyAlignment,
           bestOrigin: match.bestOrigin.length > 0 ? match.bestOrigin : match.location,
           propertyList: match.propertyList ? match.propertyList : [],
           flatmatesLoading: false,
@@ -117,7 +121,7 @@ class Match extends Component {
 
   render() {
     const { flatmatesLoading, flatmates, propertyList } = this.state
-
+    console.log(this.state)
     return (
       <div>
         <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
@@ -152,12 +156,20 @@ class Match extends Component {
                       </Grid.Column>
                     )}
                   </Grid.Row>
+                  <Grid.Row>
+                    <Grid.Column>
+                      Personality alignment {this.state.flatScore}
+                    </Grid.Column>
+                    <Grid.Column>
+                      Property alignment {this.state.propertyAlignment}
+                    </Grid.Column>
+                  </Grid.Row>
                 </Grid>
                 {/* <Button onClick={() => this.createNewMatchObject()}>
                   Create new Match Object
                 </Button> */}
               </Segment>
-              <Grid columns="equal">
+              <Grid stackable columns="equal">
                 <Grid.Column>
                   <Segment textAlign="center">
                     <h1>Your ideal origin is:</h1>

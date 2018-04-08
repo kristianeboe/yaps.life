@@ -42,6 +42,43 @@ function calculateFlatScore(flatmates) {
   return Math.floor(flatScore)
 }
 
+function createGroupPropertyVector(flatmates) {
+  const groupVector = []
+  const propertyVectors = flatmates.map(mate => mate.propertyVector)
+  for (let i = 0; i < propertyVectors[0].length; i += 1) {
+    let sum = 0
+    for (let j = 0; j < flatmates.length; j += 1) {
+      sum += propertyVectors[j][i]
+    }
+    groupVector.push(sum / propertyVectors.length)
+  }
+  return groupVector
+}
+
+function mapPropScoreToPercentage(propScore) {
+  return Math.floor((1 - (propScore / 48)) * 100)
+}
+
+function calculatePropertyAlignment(flatmates) {
+  const propScores = []
+  for (let i = 0; i < flatmates.length; i += 1) {
+    const mate1 = flatmates[i]
+    for (let j = 0; j < flatmates.length; j += 1) {
+      const mate2 = flatmates[j]
+      if (i !== j) {
+        const propScore = euclidianDistanceSquared(mate1.propertyVector, mate2.propertyVector)
+        propScores.push(mapPropScoreToPercentage(propScore))
+      }
+    }
+  }
+
+  let propertyAlignment = 100
+  if (propScores.length > 1) {
+    propertyAlignment = propScores.reduce((a, b) => a + b, 0) / propScores.length
+  }
+  return Math.floor(propertyAlignment)
+}
+
 function chunckArray(array, cSize) {
   const chunkArray = []
   for (let index = 0; index < array.length; index += cSize) {
@@ -165,6 +202,8 @@ function matchAllAvailableUsers(userUid) {
         const matchArray = []
         return Promise.all(allFlatmates.map((flatmates) => {
           const flatScore = calculateFlatScore(flatmates)
+          const propertyAlignment = calculatePropertyAlignment(flatmates)
+          const groupPropertyVector = createGroupPropertyVector(flatmates)
 
           const matchUid = uuid.v4()
           const match = {
@@ -173,6 +212,8 @@ function matchAllAvailableUsers(userUid) {
             location: 'Oslo', // remember to change this in the future
             bestOrigin: '',
             flatScore,
+            propertyAlignment,
+            groupPropertyVector,
             custom: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
           }
@@ -188,7 +229,7 @@ function matchAllAvailableUsers(userUid) {
           return matchRef
             .set(match)
             .then(() => {
-              initChatRoom(matchRef)
+              // initChatRoom(matchRef)
             }).then(() => {
               match.flatmates.forEach((mate) => {
                 let collectionName = 'testUsers'
@@ -224,3 +265,4 @@ module.exports.createFlatmatesFromClusters = createFlatmatesFromClusters
 module.exports.matchAllAvailableUsers = matchAllAvailableUsers
 module.exports.calculateFlatScore = calculateFlatScore
 module.exports.calculateSimilarityScoreBetweenUsers = calculateSimilarityScoreBetweenUsers
+module.exports.createGroupPropertyVector = createGroupPropertyVector

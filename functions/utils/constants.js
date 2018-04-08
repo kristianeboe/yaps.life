@@ -92,9 +92,9 @@ const STUDY_PROGRAMMES = {
 }
 const GENDERS = ['Gutt', 'Jente']
 
-const BUDGETS = [1, 2, 3]
-const PROPERTY_SIZES = [1, 2, 3]
-const NEWNESS = [1, 2, 3]
+const BUDGETS = [1, 3, 5]
+const PROPERTY_SIZES = [1, 3, 5]
+const NEWNESS = [1, 3, 5]
 
 module.exports.BUDGETS = BUDGETS
 module.exports.PROPERTY_SIZES = PROPERTY_SIZES

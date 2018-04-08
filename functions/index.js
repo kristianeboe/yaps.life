@@ -1,7 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const cors = require('cors')({ origin: true })
-const createUserData = require('./utils/createUserData')
+const createTestData = require('./utils/createTestData')
 const clusteringPipeline = require('./clusteringAlgorithms/clusteringPipeline')
 const locationAlgorithms = require('./location/locationAlgorithms')
 const { deleteMatchClusterCollection } = require('./utils/dbCleanupFunctions')
@@ -15,7 +15,7 @@ exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res
   if (!nrOfTestUsers) {
     nrOfTestUsers = 50
   }
-  const testUsers = createUserData.createTestUsers(nrOfTestUsers)
+  const testUsers = createTestData.createTestUsers(nrOfTestUsers)
 
   Promise.all(testUsers.map(testUser =>
     admin
@@ -177,7 +177,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
   }
 
   cors(req, res, () => {
-    const testUsers = createUserData.createTestUsers(50)
+    const testUsers = createTestData.createTestUsers(50)
     Promise.all(testUsers.map(testUser =>
       admin
         .firestore()
@@ -198,7 +198,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
 })
 
 
-exports.onMatchCreate = functions.firestore
+/* exports.onMatchCreate = functions.firestore
   .document('matches/{matchId}')
   // .onCreate((snap, context) => {
   .onCreate((event) => {
@@ -215,7 +215,7 @@ exports.onMatchCreate = functions.firestore
     }
 
     return locationAlgorithms.getBestOriginForMatch(match)
-  })
+  }) */
 
 exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
@@ -242,7 +242,7 @@ exports.scoreApartment = functions.https.onRequest((req, res) => {
     if (!address || !flatmates) {
       res.status(400).end()
     }
-    const origins = [address]
+    const origins = [encodeURI(address)]
     locationAlgorithms.getOriginsToDestinationsObject(
       origins,
       flatmates
