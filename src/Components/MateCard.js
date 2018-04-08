@@ -11,6 +11,7 @@ const MateCard = ({
   const budgetDisplay = budget > 2 ? 'premium' : 'cheaper'
   const sizeDisplay = size > 2 ? 'huge' : 'smaller'
   const newnessDisplay = newness > 2 ? 'modern, high end' : 'classical, old fashioned'
+  console.log(gender, budget, newness)
   return (
     <Card>
       <Image
@@ -34,7 +35,7 @@ const MateCard = ({
           {`Studied ${studyProgramme} at ${university}`}
         </Card.Description>
         <Card.Description>
-          {`${genderDisplay} is looking to move into a ${sizeDisplay},${budgetDisplay} apartment in ${matchLocation}. Prefers ${newnessDisplay} apartments.`}
+          {`${genderDisplay} is looking to move into a ${sizeDisplay}, ${budgetDisplay} apartment in ${matchLocation}. Prefers ${newnessDisplay} apartments.`}
         </Card.Description>
       </Card.Content>
       <Card.Content extra>

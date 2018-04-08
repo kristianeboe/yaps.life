@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Container, Button, Form, Icon, Divider, Message } from 'semantic-ui-react'
+import { Container, Button, Form, Icon, Divider, Message, Segment } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 import firebase, { auth, googleProvider, facebookProvider } from '../firebase'
 
@@ -63,8 +63,9 @@ class Create extends Component {
     const { email, password } = this.state
     auth
       .createUserWithEmailAndPassword(email, password)
-      .then((userSignInOperation) => {
-        this.createUserInDatabase(userSignInOperation.user).then(() =>
+      .then((user) => {
+        console.log(user)
+        this.createUserInDatabase(user).then(() =>
           this.setState({
             email: '',
             password: '',
@@ -104,56 +105,55 @@ class Create extends Component {
     if (redirectToProfile) {
       return <Redirect push to="/profile" />
     }
-    console.log(this.state)
-    console.log(this.props)
-
     return (
       <Container style={{ paddingTop: '5em', width: '50em' }}>
-        <Button.Group size="large" style={{ display: 'flex' }}>
-          <Button color="grey" onClick={this.googleSignIn}>
-            <Icon name="google" />
-          </Button>
-          <Button.Or />
-          <Button color="facebook" onClick={this.facebookLogin}>
-            <Icon name="facebook" />
-          </Button>
-        </Button.Group>
-        <Divider horizontal>Or</Divider>
-        <Form loading={loading} >
-          <Form.Input
-            fluid
-            icon="mail"
-            iconPosition="left"
-            placeholder="E-mail address"
-            name="email"
-            value={this.state.email}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            fluid
-            icon="lock"
-            iconPosition="left"
-            placeholder="Password"
-            type="password"
-            name="password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          {this.state.signUp ? (
-            <Button onClick={this.handleSignUp} color="orange" fluid size="large">
-              Sign up
+        <Segment>
+          <Button.Group size="large" style={{ display: 'flex' }}>
+            <Button color="grey" onClick={this.googleSignIn}>
+              <Icon name="google" />
             </Button>
+            <Button.Or />
+            <Button color="facebook" onClick={this.facebookLogin}>
+              <Icon name="facebook" />
+            </Button>
+          </Button.Group>
+          <Divider horizontal>Or</Divider>
+          <Form loading={loading} >
+            <Form.Input
+              fluid
+              icon="mail"
+              iconPosition="left"
+              placeholder="E-mail address"
+              name="email"
+              value={this.state.email}
+              onChange={this.handleChange}
+            />
+            <Form.Input
+              fluid
+              icon="lock"
+              iconPosition="left"
+              placeholder="Password"
+              type="password"
+              name="password"
+              value={this.state.password}
+              onChange={this.handleChange}
+            />
+            {this.state.signUp ? (
+              <Button onClick={this.handleSignUp} color="orange" fluid size="large">
+              Sign up
+              </Button>
           ) : (
             <Button onClick={this.handleSignIn} color="orange" fluid size="large">
                 Log in
             </Button>
             )}
-          <Message onClick={() => this.setState({ signUp: !signUp })} >
-            <Icon name="help" />
-            {signUp ? 'Already have a user?' : 'New to us?'}{' '}
-            <a href=""> {signUp ? 'Log in' : 'Sign up'}</a>&nbsp;
-          </Message>
-        </Form>
+            <Message onClick={() => this.setState({ signUp: !signUp })} >
+              <Icon name="help" />
+              {signUp ? 'Already have a user?' : 'New to us?'}{' '}
+              <a> {signUp ? 'Log in' : 'Sign up'}</a>&nbsp;
+            </Message>
+          </Form>
+        </Segment>
       </Container>
     )
   }

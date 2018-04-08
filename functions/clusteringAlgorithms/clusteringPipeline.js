@@ -1,3 +1,5 @@
+
+
 const admin = require('firebase-admin')
 const uuid = require('uuid')
 const euclidianDistanceSquared = require('euclidean-distance/squared')
@@ -100,116 +102,122 @@ function initChatRoom(matchRef) {
       console.log('error adding original message to match', err))
 }
 
-function matchAllAvailableUsers() {
-  const usersToBeMatched = []
-  // Get test users
-  console.log('Getting test users')
-  return admin
-    .firestore()
-    .collection('testUsers')
-    .where('matchLocation', '==', 'Oslo')
-    // .where('readyToMatch', '==', true)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        const testUser = doc.data()
-        usersToBeMatched.push(testUser)
-      })
-      console.log(`got ${usersToBeMatched.length} test users`)
-      if (usersToBeMatched.length < 10) {
-        console.log('Not enough users to do a match')
-        return false
-      }
-      return true
-    })
-    .then(() => {
-      // Get real users
-      console.log('getting real users')
-      const usersRef = admin.firestore().collection('users')
-      return Promise.all([usersRef.doc('PmzsNVCnUSMVSMu2WGRa4omxez52').get()])
-        .then((results) => {
-          results.forEach((doc) => {
-            const realUser = doc.data()
-            usersToBeMatched.push(realUser)
-          })
-          console.log(`got ${results.length} real users`)
+function matchAllAvailableUsers(userUid) {
+  return new Promise((resolve, reject) => {
+    const usersToBeMatched = []
+    // Get test users
+    console.log('Getting test users')
+    return admin
+      .firestore()
+      .collection('testUsers')
+      .where('matchLocation', '==', 'Oslo')
+      // .where('readyToMatch', '==', true)
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          const testUser = doc.data()
+          usersToBeMatched.push(testUser)
         })
-        .catch(err => err)
-    })
-    .then(() => {
-      // Cluster users
-      console.log(`${usersToBeMatched.length} will be matched`)
-      console.log('starting clustering')
-      const vectors = extractVectorsFromUsers(usersToBeMatched, false)
-      /* if (false) {
-        return knnClustering(vectors, 4)
-      } */
-      return kMeansClustering(vectors, false)
-    })
-    .then((clusters) => {
-      console.log(`${clusters.length} clusters created`)
-      // Turn clusters into flats
-      console.log('Organizing into flats')
-      let allFlatmates = createFlatmatesFromClusters(clusters)
-      console.log('all flatmates length', allFlatmates.length)
-      allFlatmates = allFlatmates.map(flatmates =>
-        flatmates.map(id => usersToBeMatched[id]))
-      return allFlatmates
-    })
-    .then((allFlatmates) => {
-      // Turn flats into matches
-      const matchArray = []
-      allFlatmates.forEach((flatmates) => {
-        const flatScore = calculateFlatScore(flatmates)
-
-        const matchUid = uuid.v4()
-        const match = {
-          uid: matchUid,
-          flatmates,
-          location: 'Oslo', // remember to change this in the future
-          bestOrigin: '',
-          flatScore,
-          custom: false,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        console.log(`got ${usersToBeMatched.length} test users`)
+        if (usersToBeMatched.length < 10) {
+          console.log('Not enough users to do a match')
+          return false
         }
+        return true
+      })
+      .then(() => {
+        // Get real users
+        console.log('getting real users')
+        const usersRef = admin.firestore().collection('users')
+        console.log(userUid)
+        return Promise.all([usersRef.doc(userUid).get()])
+      })
+      .then((results) => {
+        results.forEach((doc) => {
+          const realUser = doc.data()
+          usersToBeMatched.push(realUser)
+        })
+        console.log(`got ${results.length} real users`)
+        return results
+      })
+      .then(() => {
+        // Cluster users
+        console.log(`${usersToBeMatched.length} will be matched`)
+        console.log('starting clustering')
+        const vectors = extractVectorsFromUsers(usersToBeMatched, false)
+        /* if (false) {
+          return knnClustering(vectors, 4)
+        } */
+        return kMeansClustering(vectors, false)
+      })
+      .then((clusters) => {
+        console.log(`${clusters.length} clusters created`)
+        // Turn clusters into flats
+        console.log('Organizing into flats')
+        let allFlatmates = createFlatmatesFromClusters(clusters)
+        console.log('all flatmates length', allFlatmates.length)
+        allFlatmates = allFlatmates.map(flatmates =>
+          flatmates.map(id => usersToBeMatched[id]))
+        return allFlatmates
+      })
+      .then((allFlatmates) => {
+        // Turn flats into matches
+        const matchArray = []
+        return Promise.all(allFlatmates.map((flatmates) => {
+          const flatScore = calculateFlatScore(flatmates)
 
-        matchArray.push(match)
-
-        const matchRef = admin
-          .firestore()
-          .collection('matches')
-          .doc(matchUid)
-
-        // init chatroom
-        matchRef
-          .set(match)
-          .then(() => {
-            initChatRoom(matchRef)
-          })
-          .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({})
-        // Update users with new match
-        match.flatmates.forEach((mate) => {
-          let collectionName = 'testUsers'
-          if (mate.uid === 'PmzsNVCnUSMVSMu2WGRa4omxez52') {
-            collectionName = 'users'
+          const matchUid = uuid.v4()
+          const match = {
+            uid: matchUid,
+            flatmates,
+            location: 'Oslo', // remember to change this in the future
+            bestOrigin: '',
+            flatScore,
+            custom: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
           }
-          admin
+
+          matchArray.push(match)
+
+          const matchRef = admin
             .firestore()
-            .collection(collectionName)
-            .doc(mate.uid)
-            .update({
-              [`currentMatches.${matchUid}`]: Date.now(),
-              readyToMatch: false,
-              newMatch: true
+            .collection('matches')
+            .doc(matchUid)
+
+          // init chatroom
+          return matchRef
+            .set(match)
+            .then(() => {
+              initChatRoom(matchRef)
+            }).then(() => {
+              match.flatmates.forEach((mate) => {
+                let collectionName = 'testUsers'
+                if (mate.uid === userUid) {
+                  collectionName = 'users'
+                }
+                admin
+                  .firestore()
+                  .collection(collectionName)
+                  .doc(mate.uid)
+                  .update({
+                    [`currentMatches.${matchUid}`]: Date.now(),
+                    readyToMatch: false,
+                    newMatch: true,
+                    gettingCloudMatched: false,
+                  })
+                  .catch(err =>
+                    console.log('error with updating user with currentMatchId', err))
+              })
             })
-            .catch(err =>
-              console.log('error with updating user with currentMatchId', err))
+            .catch(err => console.log('error with creating match', err)) // .then(doc => doc.ref.collection('messages').add({})
+          // Update users with new match
+        })).then((results) => {
+          console.log(`${results.length} matches created`)
+          return resolve('Operation complete')
         })
       })
-      console.log(`${matchArray.length} matches created`)
-      return 'Operation complete'
-    })
-    .catch(error => console.log('Error in creating matches', error))
+      .catch(error => console.log('Error in creating matches', error) || reject(error))
+  })
 }
 
 module.exports.createFlatmatesFromClusters = createFlatmatesFromClusters

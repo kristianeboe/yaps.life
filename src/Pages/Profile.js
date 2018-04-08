@@ -82,7 +82,7 @@ class Profile extends Component {
             }
             this.setState({
               formLoading: false,
-              displayName: user.displayName ? user.displayName : '',
+              displayName: userData.displayName ? userData.displayName : '',
               photoURL: user.photoURL ? user.photoURL : '',
               age: userData.age ? userData.age : '',
               gender: userData.gender ? userData.gender : '',
@@ -182,8 +182,10 @@ class Profile extends Component {
   getMatched = (e) => {
     e.preventDefault()
     console.log('about to match')
+    firebase.firestore().collection('users').doc(this.state.user.uid).update({ gettingCloudMatched: true })
+    this.setState({ formLoading: true })
     axios
-      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getMatchedByClusterOnSave', {})
+      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getMatchedByClusterOnSave', { userUid: this.state.user.uid })
       .then((response) => {
         console.log(response)
         this.setState({ redirectToMatch: true })
@@ -197,6 +199,7 @@ class Profile extends Component {
   }
 
   render() {
+    console.log(this.state)
     if (this.state.redirectToSignIn) {
       return (
         <Redirect
@@ -241,7 +244,6 @@ class Profile extends Component {
       <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
         <Segment raised className="you" loading={this.state.formLoading}>
           <Form
-            loading={formLoading}
             success={formSuccess}
             onSubmit={this.handleSubmit}
           >
@@ -254,6 +256,7 @@ class Profile extends Component {
                   placeholder="Name"
                   name="displayName"
                   value={displayName}
+                  onChange={this.handleChange}
                 />
                 <Form.Group widths="equal">
                   <Form.Input

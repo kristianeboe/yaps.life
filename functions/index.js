@@ -32,6 +32,27 @@ exports.populateDatabaseWithTestUsersHTTPS = functions.https.onRequest((req, res
     .catch(err => console.log('ERROR: Error in creating test users', err))
 })
 
+exports.deleteTestUsers = functions.https.onRequest((req, res) => {
+  let { nrOfTestUsers } = req.body
+
+
+  if (!nrOfTestUsers) {
+    nrOfTestUsers = 200
+  }
+  const deletedUsers = []
+  admin
+    .firestore()
+    .collection('testUsers').get().then(snapshot => snapshot.forEach((doc) => {
+      deletedUsers.push(doc.data())
+      doc.ref.delete()
+    }))
+    .then(() => {
+      console.log(`${deletedUsers.length}test users deleted`)
+      res.status(200).end()
+    })
+    .catch(err => res.status(500).send(err))
+})
+
 
 exports.countTestUsers = functions.https.onRequest((req, res) =>
   admin
@@ -140,7 +161,7 @@ exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
   // const userData = event.data.data()
   // const { readyToMatch } = req.body
   cors(req, res, () => {
-    clusteringPipeline.matchAllAvailableUsers()
+    clusteringPipeline.matchAllAvailableUsers('3neRxD0eNheokKQbeN9ozlIsorJ2')
     res.status(200).end()
   })
 })
@@ -148,6 +169,13 @@ exports.getMatchedByCluster = functions.https.onRequest((req, res) => {
 exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
   // const userData = event.data.data()
   // const { readyToMatch } = req.body
+  let { userUid } = req.body
+  console.log(userUid)
+  if (!userUid) {
+    userUid = 'PmzsNVCnUSMVSMu2WGRa4omxez52'
+    console.log('default', userUid)
+  }
+
   cors(req, res, () => {
     const testUsers = createUserData.createTestUsers(50)
     Promise.all(testUsers.map(testUser =>
@@ -159,7 +187,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
         .catch(err => console.log('LOG: Error adding test user', err))))
       .then(() => {
         console.log(`LOG: ${testUsers.length} Test users created`)
-        return clusteringPipeline.matchAllAvailableUsers()
+        return clusteringPipeline.matchAllAvailableUsers(userUid)
       })
       .then((status) => {
         console.log(status)
@@ -170,7 +198,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
 })
 
 
-/* exports.onMatchCreate = functions.firestore
+exports.onMatchCreate = functions.firestore
   .document('matches/{matchId}')
   // .onCreate((snap, context) => {
   .onCreate((event) => {
@@ -187,7 +215,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
     }
 
     return locationAlgorithms.getBestOriginForMatch(match)
-  }) */
+  })
 
 exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
   cors(req, res, () => {

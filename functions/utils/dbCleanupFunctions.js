@@ -13,8 +13,8 @@ function deleteQueryBatch(db, query, batchSize, resolve, reject) {
       const batch = db.batch()
       snapshot.docs.forEach((doc) => {
         doc.ref.collection('messages').get().then((snapMatch) => {
-          snapMatch.forEach(message => batch.delete(message.ref))
-        })
+          snapMatch.forEach(message => message.ref.delete())
+        }).catch(err => console.log(err))
         batch.delete(doc.ref)
       })
 
