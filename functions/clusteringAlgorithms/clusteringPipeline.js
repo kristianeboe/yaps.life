@@ -4,7 +4,7 @@ const admin = require('firebase-admin')
 const uuid = require('uuid')
 const euclidianDistanceSquared = require('euclidean-distance/squared')
 const { extractVectorsFromUsers } = require('../utils/vectorFunctions')
-// const knnClustering = require('./knnClustering')
+const { knnClustering, knnClusteringOneMatchPerUser } = require('./knnClustering')
 const kMeansClustering = require('./kMeansClustering')
 
 
@@ -183,6 +183,7 @@ function matchAllAvailableUsers(userUid) {
         console.log('starting clustering')
         const vectors = extractVectorsFromUsers(usersToBeMatched, false)
         /* if (false) {
+          return knnClusteringOneMatchPerUser(vectors, 4)
           return knnClustering(vectors, 4)
         } */
         return kMeansClustering(vectors, false)
@@ -229,7 +230,7 @@ function matchAllAvailableUsers(userUid) {
           return matchRef
             .set(match)
             .then(() => {
-              // initChatRoom(matchRef)
+              initChatRoom(matchRef)
             }).then(() => {
               match.flatmates.forEach((mate) => {
                 let collectionName = 'testUsers'

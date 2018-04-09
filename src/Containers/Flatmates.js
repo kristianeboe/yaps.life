@@ -19,16 +19,7 @@ const Flatmates = (props) => {
         }}
         >
           <MateCard
-            photoURL={mate.photoURL || personAvatar}
-            displayName={mate.displayName}
-            workplace={mate.workplace}
-            studyProgramme={mate.studyProgramme}
-            university={mate.university}
-            gender={mate.gender}
-            budget={mate.budget}
-            propertySize={mate.propertySize}
-            newness={mate.newness}
-            matchLocation={mate.matchLocation}
+            mate={mate}
             similarityScore={props.calculateSimilarityScoreBetweenUsers(userData, mate)}
           />
         </Grid.Column>

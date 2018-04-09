@@ -65,10 +65,10 @@ test('User similarity', () => {
     expect(index).toBeLessThan(6)
   })
 }) */
+const testUsers = createTestData.createTestUsers(500)
 
 test('Clusters vectors with kNN', () => {
   // Create test users
-  const testUsers = createTestData.createTestUsers(500)
   expect(testUsers.length).toBe(500)
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)
@@ -114,7 +114,6 @@ test('Clusters vectors with kNN', () => {
 
 
 test('Clusters with kMeans', () => {
-  const testUsers = createTestData.createTestUsers(500)
   const vectors = extractVectorsFromUsers(testUsers, false)
   kMeansClustering(vectors, false).then((clusters) => {
     expect(clusters.length).toBe(5)
@@ -153,7 +152,6 @@ test('Clusters with kMeans', () => {
 
 test('knnClusteringOneMatchPerUser', () => {
   // Create test users
-  const testUsers = createTestData.createTestUsers(500)
   expect(testUsers.length).toBe(500)
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)

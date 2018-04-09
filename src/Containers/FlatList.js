@@ -9,7 +9,7 @@ const FlatList = (props) => {
     <List>
       { _.sortBy(flats, 'score').map(flat => (
         <List.Item key={flat.commuteScore} >
-          <List.Content floated="right">{flat.commuteScore}, {flat.groupScore}, {flat.price}</List.Content>
+          <List.Content floated="right">{flat.commuteScore} commute score, {flat.groupScore} group score, {flat.price} kr pr month</List.Content>
           <List.Content>
             {flat.address ? flat.address : 'Address of place'}
           </List.Content>

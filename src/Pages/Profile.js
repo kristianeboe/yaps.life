@@ -279,6 +279,7 @@ class Profile extends Component {
                   />
                   <Form.Select
                     fluid
+                    style={{ zIndex: 65 }}
                     label="Kjønn"
                     options={genderOptions}
                     placeholder="Kjønn"
@@ -298,7 +299,7 @@ class Profile extends Component {
                   />
                   <Form.Select
                     fluid
-                    style={{ zIndex: 60 }}
+                    style={{ zIndex: 61 }}
                     label="Universitet"
                     options={universityOptions}
                     placeholder="Universitet"
@@ -434,16 +435,19 @@ class Profile extends Component {
               >
                 {/* <Image circular src={photoURL} size="medium" /> */}
                 <MateCard
-                  photoURL={photoURL || personAvatar}
-                  displayName={this.state.displayName}
-                  workplace={this.state.workplace}
-                  studyProgramme={this.state.studyProgramme}
-                  university={this.state.university}
-                  gender={this.state.gender}
-                  budget={this.state.budget}
-                  propertySize={this.state.propertySize}
-                  newness={this.state.newness}
-                  matchLocation={this.state.matchLocation}
+                  mate={{
+                    photoURL: photoURL || personAvatar,
+                    age: this.state.age,
+                    displayName: this.state.displayName,
+                    workplace: this.state.workplace,
+                    studyProgramme: this.state.studyProgramme,
+                    university: this.state.university,
+                    gender: this.state.gender,
+                    budget: this.state.budget,
+                    propertySize: this.state.propertySize,
+                    newness: this.state.newness,
+                    matchLocation: this.state.matchLocation,
+                  }}
                   similarityScore={100}
                 />
               </Grid.Column>

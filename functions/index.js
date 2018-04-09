@@ -198,7 +198,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
 })
 
 
-/* exports.onMatchCreate = functions.firestore
+exports.onMatchCreate = functions.firestore
   .document('matches/{matchId}')
   // .onCreate((snap, context) => {
   .onCreate((event) => {
@@ -215,7 +215,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
     }
 
     return locationAlgorithms.getBestOriginForMatch(match)
-  }) */
+  })
 
 exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
   cors(req, res, () => {

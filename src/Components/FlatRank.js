@@ -122,6 +122,8 @@ class FlatRank extends Component {
               fluid
               onChange={this.handleChange}
               label="Price"
+              icon="dollar"
+              iconPosition="left"
               placeholder="Price of flat"
             />
           </Form.Group>

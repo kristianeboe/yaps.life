@@ -5,14 +5,17 @@ import {
 } from 'semantic-ui-react'
 
 const MateCard = ({
-  photoURL, displayName, workplace, studyProgramme, university, similarityScore, gender, budget, matchLocation, propertySize, newness,
+  mate, similarityScore
 }) => {
+  const {
+    age, photoURL, displayName, workplace, studyProgramme, university, gender, budget, matchLocation, propertySize, newness,
+  } = mate
   const genderDisplay = gender === 'Gutt' ? 'He' : 'She'
   const budgetDisplay = budget > 2 ? 'premium' : 'cheaper'
   const sizeDisplay = propertySize > 2 ? 'huge' : 'smaller'
   const newnessDisplay = newness > 2 ? 'modern, high end' : 'classical, old fashioned'
   return (
-    <Card>
+    <Card centered >
       <Image
         src={photoURL}
         wrapped
@@ -27,7 +30,7 @@ const MateCard = ({
       />
       <Card.Content>
         <Card.Header>
-          {displayName}
+          {displayName}, {age}
         </Card.Header>
         <Card.Meta>{workplace.split(/[ ,]+/)[0]}</Card.Meta>
         <Card.Description>
