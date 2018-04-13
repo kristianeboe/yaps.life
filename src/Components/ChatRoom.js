@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Comment, Header, Button } from 'semantic-ui-react'
 import { auth } from '../firebase'
+import personAvatar from '../assets/images/personAvatar.png'
 
 class ChatRoom extends Component {
   constructor(props) {
@@ -59,7 +60,7 @@ class ChatRoom extends Component {
         from: {
           uid: user.uid,
           displayName: user.displayName,
-          photoURL: user.photoURL,
+          photoURL: user.photoURL ? user.photoURL : personAvatar,
         },
       })
       .then(() => this.setState({ messageText: '' }))
@@ -71,8 +72,11 @@ class ChatRoom extends Component {
 
     return (
       <Comment.Group style={{ maxWidth: '100%' }}>
-        <Header as="h3" dividing>
+        <Header as="h3" dividing >
           Chat
+          <Header.Subheader>
+            Here you can get to know your new flatmates and discuss apartments you consider moving into
+          </Header.Subheader>
         </Header>
         {this.state.messages.map((message) => {
           const avatarStyle = { overflow: 'hidden', maxHeight: '35px' }

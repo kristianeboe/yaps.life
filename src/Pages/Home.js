@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Process from '../Landing/Process'
 import Parallax from '../Landing/Parallax'
 import FAQ from '../Landing/FAQ'
-
+import About from '../Landing/About'
 
 class Home extends Component {
   constructor(props) {
@@ -19,7 +19,7 @@ class Home extends Component {
           h3Content=""
           h2Content="Move into a share house with others in a location determined by AI, all you need to do is register and we will do the rest."
           buttonContent="Register today!"
-          buttonOnClick={() => document.getElementById('register-section').scrollIntoView()}
+          // buttonOnClick={() => document.getElementById('register-section').scrollIntoView()}
           backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'
           fullPage
         />
@@ -33,6 +33,7 @@ class Home extends Component {
           backgroundImage='url("/assets/images/yap_man_compressed.jpg")'
         />
         <FAQ />
+        <About />
       </div>
     )
   }

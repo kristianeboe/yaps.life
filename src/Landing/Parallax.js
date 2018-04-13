@@ -6,6 +6,7 @@ import {
   Icon,
   Item,
 } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
 const Parallax = (props) => {
   const {
@@ -62,10 +63,12 @@ const Parallax = (props) => {
             style={{ fontSize: '1.5em', fontWeight: 'normal' }}
           />
           {buttonContent.length > 0 && (
-            <Button primary size="huge" onClick={buttonOnClick} >
-              {buttonContent}
-              <Icon name="right arrow" />
-            </Button>
+            <Link to="/create">
+              <Button primary size="huge" onClick={buttonOnClick} >
+                {buttonContent}
+                <Icon name="right arrow" />
+              </Button>
+            </Link>
           )}
         </Container>
       </Item.Content>

@@ -265,5 +265,6 @@ function matchAllAvailableUsers(userUid) {
 module.exports.createFlatmatesFromClusters = createFlatmatesFromClusters
 module.exports.matchAllAvailableUsers = matchAllAvailableUsers
 module.exports.calculateFlatScore = calculateFlatScore
+module.exports.calculatePropertyAlignment = calculatePropertyAlignment
 module.exports.calculateSimilarityScoreBetweenUsers = calculateSimilarityScoreBetweenUsers
 module.exports.createGroupPropertyVector = createGroupPropertyVector

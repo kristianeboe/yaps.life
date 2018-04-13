@@ -3,6 +3,7 @@ import {
   Image,
   Card,
 } from 'semantic-ui-react'
+import personAvatar from '../assets/images/personAvatar.png'
 
 const MateCard = ({
   mate, similarityScore
@@ -10,14 +11,14 @@ const MateCard = ({
   const {
     age, photoURL, displayName, workplace, studyProgramme, university, gender, budget, matchLocation, propertySize, newness,
   } = mate
-  const genderDisplay = gender === 'Gutt' ? 'He' : 'She'
-  const budgetDisplay = budget > 2 ? 'premium' : 'cheaper'
-  const sizeDisplay = propertySize > 2 ? 'huge' : 'smaller'
-  const newnessDisplay = newness > 2 ? 'modern, high end' : 'classical, old fashioned'
+  const genderDisplay = gender === 'Male' ? 'He' : 'She'
+  const budgetDisplay = budget === 1 ? 'cheaper' : budget === 3 ? '' : 'premium'
+  const sizeDisplay = propertySize === 1 ? 'small' : propertySize === 3 ? '' : 'huge'
+  const newnessDisplay = newness === 1 ? 'rustic' : newness === 3 ? 'modern' : 'brand new'
   return (
     <Card centered >
       <Image
-        src={photoURL}
+        src={photoURL || personAvatar}
         wrapped
         style={{
             // width: '100%',
@@ -37,7 +38,7 @@ const MateCard = ({
           {`Studied ${studyProgramme} at ${university}`}
         </Card.Description>
         <Card.Description>
-          {`${genderDisplay} is looking to move into a ${sizeDisplay}, ${budgetDisplay} apartment in ${matchLocation}. Prefers ${newnessDisplay} apartments.`}
+          {`Looking to move into a ${sizeDisplay}, ${budgetDisplay} apartment in ${matchLocation}. Prefers ${newnessDisplay} apartments.`}
         </Card.Description>
       </Card.Content>
       <Card.Content extra>

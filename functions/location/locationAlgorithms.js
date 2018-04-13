@@ -19,7 +19,6 @@ function getBestOrigin(originsToDestinations) {
       originsToDestinations[b].combinedDuration
       ? a
       : b))
-  console.log(bestOrigin)
   return bestOrigin
 }
 
@@ -32,21 +31,16 @@ function getOriginsToDestinationsObject(origins, flatmates) {
       `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origins.join('|')}&destinations=${destinations.join('|')}&mode=${mode}&key=` +
       'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
 
-    console.log(requestUrl)
 
     return axios(requestUrl)
       .then((response) => {
-        console.log(response.data)
         const { data } = response
         const originsToDestinationsObject = {}
-        console.log(data)
         if (data.status === 'OK') {
-          console.log('Starting extracting data')
           const originAddresses = data.origin_addresses
           const destinationAddresses = data.destination_addresses
 
           try {
-            console.log('inside try')
             for (let i = 0; i < originAddresses.length; i += 1) {
               const results = data.rows[i].elements
               const from = originAddresses[i]
@@ -65,7 +59,6 @@ function getOriginsToDestinationsObject(origins, flatmates) {
                 // originsToDestinationsObject[from] = [...originsToDestinationsObject[from], {to, duration:duration.value} ]
               }
             }
-            console.log(originsToDestinationsObject)
             Object.keys(originsToDestinationsObject).forEach((origin) => {
               let combinedDuration = 0
               const destinationsArray = originsToDestinationsObject[origin]
@@ -80,7 +73,6 @@ function getOriginsToDestinationsObject(origins, flatmates) {
             reject(error)
           }
         }
-        console.log('about to resolve')
         resolve(originsToDestinationsObject)
       })
       .catch(err => console.log('error in axios', reject(err)))
@@ -130,6 +122,7 @@ function getBestOriginForMatch(match) {
         locationConstraintNeighbourhood +
         nrOfBedroomsFrom +
         propertyTypes
+
       const airBnBQueryString = `${'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=' +
         '&adults='}${nrOfFlatmates}&min_beds=${nrOfFlatmates}&min_bedrooms=${nrOfFlatmates}&s_tag=2D91el1z`
 

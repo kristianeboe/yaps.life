@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Menu, Label, Icon } from 'semantic-ui-react'
+import { HashLink } from 'react-router-hash-link'
 import { Link } from 'react-router-dom'
 import firebase, { auth } from '../firebase'
 // import SignUp from "./SignUp";
@@ -70,12 +71,12 @@ class AppHeader extends Component {
           </Menu.Item>
         </Link>
         <Menu.Menu position="right">
-          <Link to="/">
+          <HashLink smooth to="/#process">
             <Menu.Item as="div">
               <Icon name="magic" />
               How it works
             </Menu.Item>
-          </Link>
+          </HashLink>
           <Link to="/profile">
             <Menu.Item as="div">
               <Icon name="user" />

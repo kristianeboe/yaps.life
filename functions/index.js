@@ -1,3 +1,5 @@
+const { getListingDetails } = require('./location/finnScraper')
+
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const cors = require('cors')({ origin: true })
@@ -177,7 +179,7 @@ exports.getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
   }
 
   cors(req, res, () => {
-    const testUsers = createTestData.createTestUsers(50)
+    const testUsers = createTestData.createTestUsers(10)
     Promise.all(testUsers.map(testUser =>
       admin
         .firestore()
@@ -235,9 +237,7 @@ exports.getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
 exports.scoreApartment = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     // curl -H 'Content-Type: application/json' -d '{"address": "Nydalen Oslo", "flatmates": [{"workplace":"Netlight Oslo"}, {"workplace":"Capra Consulting Oslo"}]}' https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment
-    console.log(req.body)
     const { address, flatmates } = req.body
-    console.log(address, flatmates)
 
     if (!address || !flatmates) {
       res.status(400).end()
@@ -247,11 +247,28 @@ exports.scoreApartment = functions.https.onRequest((req, res) => {
       origins,
       flatmates
     ).then((originsToDestinationsObject) => {
-      console.log(originsToDestinationsObject)
       const score = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
       res.status(200).send({ score })
     }).catch((err) => {
       console.log('Error in scoring apartment', err)
+      res.status(300).end()
+    })
+  })
+})
+
+exports.getListingDetails = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    // curl -H 'Content-Type: application/json' -d '{"address": "Nydalen Oslo", "flatmates": [{"workplace":"Netlight Oslo"}, {"workplace":"Capra Consulting Oslo"}]}' https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment
+    const { finnURL } = req.body
+    console.log(finnURL)
+
+    if (!finnURL) {
+      res.status(400).end()
+    }
+    return getListingDetails(finnURL).then((listing) => {
+      res.status(200).send(listing)
+    }).catch((err) => {
+      console.log('Error in getting listing from Finn', err)
       res.status(300).end()
     })
   })

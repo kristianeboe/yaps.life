@@ -90,7 +90,7 @@ const STUDY_PROGRAMMES = {
   Stanford: ['Computer Science', 'MBA'],
   Harvard: ['Law', 'Medicine', 'Ethics']
 }
-const GENDERS = ['Gutt', 'Jente']
+const GENDERS = ['Male', 'Female']
 
 const BUDGETS = [1, 3, 5]
 const PROPERTY_SIZES = [1, 3, 5]

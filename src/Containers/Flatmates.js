@@ -1,8 +1,7 @@
 import React from 'react'
 import { Grid, } from 'semantic-ui-react'
 import AddUserCard from '../Components/AddUserCard'
-import MateCard from '../Components/MateCard'
-import personAvatar from '../assets/images/personAvatar.png'
+import MateCard from '../Containers/MateCard'
 
 const Flatmates = (props) => {
   const { flatmates, showAddUserCard, userUid } = props

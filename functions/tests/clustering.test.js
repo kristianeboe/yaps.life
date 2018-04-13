@@ -8,8 +8,11 @@ const uuid = require('uuid')
 const { knnClustering, knnClusteringOneMatchPerUser } = require('../clusteringAlgorithms/knnClustering')
 const kMeansClustering = require('../clusteringAlgorithms/kMeansClustering')
 const createTestData = require('../utils/createTestData')
-const { createFlatmatesFromClusters, calculateFlatScore, calculateSimilarityScoreBetweenUsers } = require('../clusteringAlgorithms/clusteringPipeline')
+const {
+  createFlatmatesFromClusters, calculateFlatScore, calculateSimilarityScoreBetweenUsers, calculatePropertyAlignment
+} = require('../clusteringAlgorithms/clusteringPipeline')
 const { extractVectorsFromUsers } = require('../utils/vectorFunctions')
+
 
 test('Create test users', () => {
   const testUsers = createTestData.createTestUsers(200)
@@ -32,7 +35,6 @@ test('User similarity', () => {
   score = calculateSimilarityScoreBetweenUsers(me, antiKristianUser)
   expect(score).toBeLessThan(40)
 
-
   // Testing semi similar vectors
   score = calculateSimilarityScoreBetweenUsers(mid, pos)
   expect(score).toBeGreaterThan(70)
@@ -46,69 +48,20 @@ test('User similarity', () => {
 })
 
 
-/* test('Extract vector from user', () => {
-  const testUsers = createTestData.createTestUsers(1)
-  const vectorsNormalized = extractVectorsFromUsers(testUsers, true)
-  expect(vectorsNormalized.length).toBe(1)
-  const vectorNormalized = vectorsNormalized[0]
-  expect(vectorNormalized.length).toBe(20)
-  vectorNormalized.forEach((index) => {
-    expect(index).toBeGreaterThan(0)
-    expect(index).toBeLessThan(1)
-  })
-  const vectors = extractVectorsFromUsers(testUsers, false)
-  expect(vectors.length).toBe(1)
-  const vector = vectors[0]
-  expect(vector.length).toBe(20)
-  vector.forEach((index) => {
-    expect(index).toBeGreaterThan(0)
-    expect(index).toBeLessThan(6)
-  })
-}) */
-const testUsers = createTestData.createTestUsers(500)
+const testUsers = createTestData.createTestUsers(16)
 
 test('Clusters vectors with kNN', () => {
   // Create test users
-  expect(testUsers.length).toBe(500)
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)
-  expect(vectors.length).toBe(500)
   // Cluster with kNN
   const clusters = knnClustering(vectors, 4)
-  expect(clusters.length).toBe(500)
+  expect(clusters.length).toBe(testUsers.length)
   // organize into flats
-  let allFlatmates = createFlatmatesFromClusters(clusters)
-  expect(allFlatmates.length).toBe(500)
-  allFlatmates.forEach((flat) => {
-    expect(flat.length).toBe(4)
-  })
-  allFlatmates = allFlatmates.map(flatmates =>
-    flatmates.map(id => testUsers[id]))
-
-  // Turn flats into matches
-  const matchArray = []
-  allFlatmates.forEach((flatmates) => {
-    const flatScore = calculateFlatScore(flatmates)
-
-    const matchUid = uuid.v4()
-    const match = {
-      uid: matchUid,
-      flatmates,
-      location: 'Oslo', // remember to change this in the future
-      bestOrigin: '',
-      flatScore,
-      custom: false
-    }
-    matchArray.push(match)
-  })
-  console.log(matchArray.length)
-  expect(matchArray.length).toBe(500)
-  let averageMatchScore = 0
-  matchArray.forEach((match) => {
-    averageMatchScore += match.flatScore
-  })
-  averageMatchScore /= matchArray.length
-  console.log('kNN all to all', averageMatchScore)
+  const matches = createMatches(clusters, 'kNN')
+  const averageMatchScore = getAverageMatchScore(matches, 'kNN')
+  const averagePropertyAlignment = getAveragePropertyAlignment(matches, 'kNN')
+  console.log(printScoreCard('Clusters vectors with kNN', matches, averageMatchScore, averagePropertyAlignment))
   expect(averageMatchScore).toBeGreaterThan(70)
 })
 
@@ -117,33 +70,11 @@ test('Clusters with kMeans', () => {
   const vectors = extractVectorsFromUsers(testUsers, false)
   kMeansClustering(vectors, false).then((clusters) => {
     expect(clusters.length).toBe(5)
-    let allFlatmates = createFlatmatesFromClusters(clusters)
-    expect(allFlatmates.length).toBeGreaterThanOrEqual(5)
-    allFlatmates = allFlatmates.map(flatmates =>
-      flatmates.map(id => testUsers[id]))
 
-    const matchArray = []
-    allFlatmates.forEach((flatmates) => {
-      const flatScore = calculateFlatScore(flatmates)
-
-      const matchUid = uuid.v4()
-      const match = {
-        uid: matchUid,
-        flatmates,
-        location: 'Oslo', // remember to change this in the future
-        bestOrigin: '',
-        flatScore,
-        custom: false
-      }
-      matchArray.push(match)
-    })
-    console.log(matchArray.length)
-    let averageMatchScore = 0
-    matchArray.forEach((match) => {
-      averageMatchScore += match.flatScore
-    })
-    averageMatchScore /= matchArray.length
-    console.log('kMeans', averageMatchScore)
+    const matches = createMatches(clusters, 'kMeans')
+    const averageMatchScore = getAverageMatchScore(matches, 'kMeans')
+    const averagePropertyAlignment = getAveragePropertyAlignment(matches, 'kMeans')
+    console.log(printScoreCard('Clusters with kMeans', matches, averageMatchScore, averagePropertyAlignment))
     expect(averageMatchScore).toBeGreaterThan(70)
   })
     .catch(err => console.log(err))
@@ -151,18 +82,21 @@ test('Clusters with kMeans', () => {
 
 
 test('knnClusteringOneMatchPerUser', () => {
-  // Create test users
-  expect(testUsers.length).toBe(500)
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)
-  expect(vectors.length).toBe(500)
   // Cluster with kNN
   const clusters = knnClusteringOneMatchPerUser(vectors, 4)
   // organize into flats
+  const matches = createMatches(clusters)
+  const averageMatchScore = getAverageMatchScore(matches)
+  const averagePropertyAlignment = getAveragePropertyAlignment(matches)
+  console.log(printScoreCard('knnClusteringOneMatchPerUser', matches, averageMatchScore, averagePropertyAlignment))
+  expect(averageMatchScore).toBeGreaterThan(70)
+})
+
+
+function createMatches(clusters) {
   let allFlatmates = createFlatmatesFromClusters(clusters)
-  allFlatmates.forEach((flat) => {
-    // expect(flat.length).toBe(4)
-  })
   allFlatmates = allFlatmates.map(flatmates =>
     flatmates.map(id => testUsers[id]))
 
@@ -170,7 +104,7 @@ test('knnClusteringOneMatchPerUser', () => {
   const matchArray = []
   allFlatmates.forEach((flatmates) => {
     const flatScore = calculateFlatScore(flatmates)
-
+    const propertyAlignment = calculatePropertyAlignment(flatmates)
     const matchUid = uuid.v4()
     const match = {
       uid: matchUid,
@@ -178,17 +112,33 @@ test('knnClusteringOneMatchPerUser', () => {
       location: 'Oslo', // remember to change this in the future
       bestOrigin: '',
       flatScore,
+      propertyAlignment,
       custom: false
     }
     matchArray.push(match)
   })
-  console.log(matchArray.length)
+  return matchArray
   // expect(matchArray.length).toBe(4)
+}
+
+function getAverageMatchScore(matchArray) {
   let averageMatchScore = 0
   matchArray.forEach((match) => {
     averageMatchScore += match.flatScore
   })
   averageMatchScore /= matchArray.length
-  console.log('kNN one match per user', averageMatchScore)
-  expect(averageMatchScore).toBeGreaterThan(70)
-})
+  return averageMatchScore
+}
+
+function getAveragePropertyAlignment(matchArray) {
+  let averagePropertyAlignment = 0
+  matchArray.forEach((match) => {
+    averagePropertyAlignment += match.propertyAlignment
+  })
+  averagePropertyAlignment /= matchArray.length
+  return averagePropertyAlignment
+}
+
+function printScoreCard(algorithmName, matches, averageMatchScore, averagePropertyAlignment) {
+  return `${algorithmName}\n Nr of matches: ${matches.length}\n Average mach score: ${averageMatchScore}\n Average property alignment: ${averagePropertyAlignment}`
+}

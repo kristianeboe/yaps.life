@@ -1,11 +1,11 @@
 import React from 'react'
-import { Container, Image, Grid, Segment, Header, Card } from 'semantic-ui-react'
+import { Container, Image, Segment, Header, Card } from 'semantic-ui-react'
 import signup from '../assets/images/signup.jpg'
 import match from '../assets/images/match.jpg'
 import live from '../assets/images/live.jpg'
 
 const Process = () => (
-  <Container>
+  <Container id="process">
     <Segment vertical textAlign="center" style={{ padding: '5em 0em' }}>
       <Header as="h3" style={{ fontSize: '2em' }}>
         HVOR DU BOR OG HVEM DU BOR MED HAR UTROLIG MYE Å SI
@@ -34,7 +34,7 @@ const Process = () => (
                   Get matched
             </Card.Header>
             <Card.Description>
-                  Our AI algorithm matches you with one or several flatmates looking to move to the same location and
+                  Our AI algorithm matches you with several flatmates looking to move to the same location and
                   recommends you where in the city you should start looking. You can also evaluate individual addresses for you and your potential new flatmates.
             </Card.Description>
           </Card.Content>

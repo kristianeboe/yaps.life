@@ -3,7 +3,8 @@ import {
   Button,
   Grid,
   Segment,
-  Container
+  Container,
+  Header
 } from 'semantic-ui-react'
 import euclidianDistanceSquared from 'euclidean-distance/squared'
 import axios from 'axios'
@@ -11,6 +12,8 @@ import firebase, { auth } from '../firebase'
 import ChatRoom from '../Components/ChatRoom'
 import FlatRank from '../Components/FlatRank'
 import Flatmates from '../Containers/Flatmates'
+import visitOslo from '../assets/images/visit_oslo.jpg'
+import FlatList from '../Containers/FlatList'
 
 class Match extends Component {
   constructor(props) {
@@ -59,7 +62,7 @@ class Match extends Component {
           flatmates,
           flatScore: match.flatScore,
           propertyAlignment: match.propertyAlignment,
-          bestOrigin: match.bestOrigin.length > 0 ? match.bestOrigin : match.location,
+          bestOrigin: match.bestOrigin.length > 0 && match.bestOrigin !== 'Could not determine, did not receive any origins' ? match.bestOrigin : match.location,
           propertyList: match.propertyList ? match.propertyList : [],
           flatmatesLoading: false,
           showChatRoom: true,
@@ -120,11 +123,25 @@ class Match extends Component {
   }
 
   render() {
-    const { flatmatesLoading, flatmates, propertyList } = this.state
+    const {
+      flatmatesLoading, flatmates, propertyList, finnQueryString, airBnBQueryString
+    } = this.state
     console.log(this.state)
     return (
-      <div>
-        <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
+      <div style={{
+    backgroundAttachment: 'fixed',
+      backgroundPosition: 'center center',
+      // backgroundImage: 'url("/assets/images/yap_landing_compressed.jpg")',
+      backgroundImage: 'url("/assets/images/yap_landing_compressed.jpg")',
+      backgroundSize: 'cover',
+      boxShadow: 'inset 0 0 0 2000px rgba(0,0,0,0.4)',
+      }}
+      >
+        <Container style={{
+          paddingTop: '5em',
+          paddingBottom: '3em',
+          }}
+        >
           {this.state.user && (
             <div>
               <Segment loading={flatmatesLoading}>
@@ -171,24 +188,39 @@ class Match extends Component {
               </Segment>
               <Grid stackable columns="equal">
                 <Grid.Column>
-                  <Segment textAlign="center">
-                    <h1>Your ideal origin is:</h1>
-                    <div>Address: {this.state.bestOrigin}</div>
-                    <h2>
-                      <a
-                        target="_blank"
-                        href={this.state.matchData.finnQueryString}
-                      >
-                        Finn.no query
-                      </a>
-                    </h2>
-                    <a
-                      target="_blank"
-                      href={this.state.matchData.airBnBQueryString}
-                    >
-                      <h2>AirBnB Query</h2>
-                    </a>
+                  <Segment>
+                    <Header as="h3" dividing >
+                        1. Get inspired!
+                      <Header.Subheader>
+                        Find cool apartments on finn.no or AirBnB
+                      </Header.Subheader>
+                    </Header>
+
+                    <div>Based on your profiles you should narrow your search to: <h3> {this.state.bestOrigin}</h3></div>
+                    <Grid columns="equal" >
+                      <Grid.Column>
+                        <h2>
+                          <a
+                            target="_blank"
+                            href={finnQueryString || `https://www.finn.no/realestate/lettings/search.html?location=0.20061&no_of_bedrooms_from=${flatmates.length}&property_type=3`}
+                          >
+                        Finn.no
+                          </a>
+                        </h2>
+                      </Grid.Column>
+                      <Grid.Column>
+                        <h2>
+                          <a
+                            target="_blank"
+                            href={airBnBQueryString || `https://www.airbnb.com/s/Oslo--Norway/homes?refinement_paths%5B%5D=%2Fhomes&place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&allow_override%5B%5D=&min_bedrooms=${flatmates.length}`}
+                          >
+                      AirBnB
+                          </a>
+                        </h2>
+                      </Grid.Column>
+                    </Grid>
                   </Segment>
+                  <FlatList flats={propertyList} />
                 </Grid.Column>
                 <Grid.Column>
                   <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} propertyList={propertyList} />

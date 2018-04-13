@@ -84,7 +84,7 @@ const me = {
   age: '25',
   currentMatchId: 'f9345ee3-58c2-4f91-a3c7-331554b7c88f',
   displayName: 'Kristian Elset Bø',
-  gender: 'Gutt',
+  gender: 'Male',
   matchLocation: 'Oslo',
   seeNewUsers: false,
   photoURL:
@@ -100,7 +100,7 @@ const me = {
 
 const antiKristianUser = {
   displayName: 'Anti Kristian Elset Bø',
-  gender: 'Gutt',
+  gender: 'Male',
   matchLocation: 'Oslo',
   answerVector: [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2]
 }
