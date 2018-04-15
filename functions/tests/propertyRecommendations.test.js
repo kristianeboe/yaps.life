@@ -4,7 +4,7 @@
  */
 
 
-const { createGroupPropertyVector } = require('../clusteringAlgorithms/clusteringPipeline')
+const { createGroupPropertyVector } = require('../lib/clusteringAlgorithms/clusteringPipeline')
 
 test('GroupPropertyVector', () => {
   const flatmates = [{ propertyVector: [3, 3, 3] }, { propertyVector: [1, 3, 5] }, { propertyVector: [3, 5, 3] }, { propertyVector: [3, 3, 3] }]

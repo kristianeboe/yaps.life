@@ -169,7 +169,7 @@ class MatchList extends Component {
           )
             }
             {this.state.gettingCloudMatched && (
-              <Progress active color="blue" percent={this.state.loadingPercent} attached="top" />
+              <Progress active color="blue" percent={this.state.loadingPercent} />
             )}
             {this.state.gettingCloudMatched && (
             <Segment >

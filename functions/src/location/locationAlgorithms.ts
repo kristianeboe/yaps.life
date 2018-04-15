@@ -1,5 +1,5 @@
-const admin = require('firebase-admin')
-const axios = require('axios')
+import * as admin from 'firebase-admin'
+import axios from 'axios'
 /* function getNextDayOfWeek(date, dayOfWeek) {
   // Code to check that date and dayOfWeek are valid left as an exercise ;)
   date.setDate(date.getDate() + (7 + dayOfWeek - date.getDay()) % 7)
@@ -22,8 +22,7 @@ export function getBestOrigin(originsToDestinations) {
   return bestOrigin
 }
 
-export function getOriginsToDestinationsObject(origins, flatmates) {
-  return new Promise((resolve, reject) => {
+export async function getOriginsToDestinationsObject(origins, flatmates) {
     const destinations = flatmates.map(mate => encodeURI(`${mate.workplaceLatLng.lat},${mate.workplaceLatLng.lng}`))
     const mode = 'transit'
     // '&departure_time=' + nextMondayAt8
@@ -32,52 +31,49 @@ export function getOriginsToDestinationsObject(origins, flatmates) {
       'AIzaSyB1wF4E4VWSxKj2dbldiERiK1bc9EABvBo'
 
 
-    return axios(requestUrl)
-      .then((response) => {
-        const { data } = response
-        const originsToDestinationsObject = {}
-        if (data.status === 'OK') {
-          const originAddresses = data.origin_addresses
-          const destinationAddresses = data.destination_addresses
+    const response = await axios.get(requestUrl)
 
-          try {
-            for (let i = 0; i < originAddresses.length; i += 1) {
-              const results = data.rows[i].elements
-              const from = originAddresses[i]
-              originsToDestinationsObject[from] = []
-              for (let j = 0; j < results.length; j += 1) {
-                const element = results[j]
-                const { status, distance, duration } = element
-                const to = destinationAddresses[j]
-                // console.log(from, to, duration.value)
-                originsToDestinationsObject[from].push({
-                  to,
-                  status,
-                  distance: status === 'OK' ? distance : '',
-                  duration: status === 'OK' ? duration : ''
-                })
-                // originsToDestinationsObject[from] = [...originsToDestinationsObject[from], {to, duration:duration.value} ]
-              }
-            }
-            Object.keys(originsToDestinationsObject).forEach((origin) => {
-              let combinedDuration = 0
-              const destinationsArray = originsToDestinationsObject[origin]
-              destinationsArray.forEach((destination) => {
-                combinedDuration += destination.duration.value
-              })
-              originsToDestinationsObject[
-                origin
-              ].combinedDuration = combinedDuration
+    const { data } = response
+    const originsToDestinationsObject = {}
+    if (data.status === 'OK') {
+      const originAddresses = data.origin_addresses
+      const destinationAddresses = data.destination_addresses
+
+      try {
+        for (let i = 0; i < originAddresses.length; i += 1) {
+          const results = data.rows[i].elements
+          const from = originAddresses[i]
+          originsToDestinationsObject[from] = []
+          for (let j = 0; j < results.length; j += 1) {
+            const element = results[j]
+            const { status, distance, duration } = element
+            const to = destinationAddresses[j]
+            // console.log(from, to, duration.value)
+            originsToDestinationsObject[from].push({
+              to,
+              status,
+              distance: status === 'OK' ? distance : '',
+              duration: status === 'OK' ? duration : ''
             })
-          } catch (error) {
-            reject(error)
+            // originsToDestinationsObject[from] = [...originsToDestinationsObject[from], {to, duration:duration.value} ]
           }
         }
-        resolve(originsToDestinationsObject)
-      })
-      .catch(err => console.log('error in axios', reject(err)))
-  })
-}
+        Object.keys(originsToDestinationsObject).forEach((origin) => {
+          let combinedDuration = 0
+          const destinationsArray = originsToDestinationsObject[origin]
+          destinationsArray.forEach((destination) => {
+            combinedDuration += destination.duration.value
+          })
+          originsToDestinationsObject[
+            origin
+          ].combinedDuration = combinedDuration
+        })
+      } catch (error) {
+        console.log(error)
+      }
+      }
+      return originsToDestinationsObject
+    }
 
 export function getBestOriginForMatch(match) {
   const originsOsloSmall = {

@@ -79,19 +79,14 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
   
   export const resetDatabase = functions.https.onRequest( async (req, res) => {
     await setTestUsersReadyToMatch(req, res)
-    await admin
-      .firestore()
-      .collection('users')
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach(doc => doc.ref.update({ readyToMatch: true, currentMatches: {} }))
-        console.log(`${snapshot.size} real users updated`)
-      }).catch(err => console.log(err) || res.status(500).send(err))
-    await deleteMatchClusterCollection().catch(err => console.log(err) || res.status(500).send(err))
+    const snapshot = await admin.firestore().collection('users').get()
+    snapshot.forEach(doc => doc.ref.update({ readyToMatch: true, currentMatches: {} }))
+    console.log(`${snapshot.size} real users updated`)
+    await deleteMatchClusterCollection() // .catch(err => console.log(err) || res.status(500).send(err))
     res.status(200).end()
   })
   
-  export const aggregateMatchInfo = functions.https.onRequest((req, res) => {
+  export const aggregateMatchInfo = functions.https.onRequest(async (req, res) => {
     let aggregateInfoObject = {}
     const matchSimilarityScores = []
     const matchSizes = {
@@ -106,61 +101,57 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
     let matchesWithBestOrigins = 0
     let numberOfUsersCounted = 0
     let customMatchCounter = 0
-    admin
-      .firestore()
-      .collection('matches')
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((matchDoc) => {
-          matchCounter += 1
-          const match = matchDoc.data()
-          const numberOfFlatmates = match.flatmates.length
-          numberOfUsersCounted += numberOfFlatmates
-          matchSizes[numberOfFlatmates] += 1
-          if (match.custom) {
-            customMatchCounter += 1
-          }
-          if (numberOfFlatmates > 2) {
-            matchSimilarityScores.push(match.flatScore)
-          }
-          if (
-            match.bestOrigin.length > 0 &&
-            match.bestOrigin !== 'Could not determine'
-          ) {
-            matchesWithBestOrigins += 1
-          }
-        })
-      })
-      .then(() => {
-        const averageScore =
-          matchSimilarityScores.reduce((a, b) => a + b, 0) /
-          matchSimilarityScores.length
-        const ratioOfPeopleIn3or4or5Flats =
-          (matchSizes[3] * 3 + matchSizes[4] * 4 + matchSizes[5] * 5) /
-          numberOfUsersCounted
-        const ratioOfPeopleLessThan3 = (matchSizes[1] + matchSizes[2] * 2) / numberOfUsersCounted
-        aggregateInfoObject = {
-          averageScore,
-          matchSizes,
-          matchCounter,
-          matchesWithBestOrigins,
-          numberOfUsersCounted,
-          ratioOfPeopleIn3or4or5Flats,
-          ratioOfPeopleLessThan3,
-          customMatchCounter
-        }
-        console.log(aggregateInfoObject)
-        res.status(200).end()
-      })
-      .catch(err => console.log('Error in aggregating database info', err))
+    const snapshot1 = await admin.firestore().collection('matches').get()
+
+    snapshot1.forEach((matchDoc) => {
+      matchCounter += 1
+      const match = matchDoc.data()
+      const numberOfFlatmates = match.flatmates.length
+      numberOfUsersCounted += numberOfFlatmates
+      matchSizes[numberOfFlatmates] += 1
+      if (match.custom) {
+        customMatchCounter += 1
+      }
+      if (numberOfFlatmates > 2) {
+        matchSimilarityScores.push(match.flatScore)
+      }
+      if (
+        match.bestOrigin.length > 0 &&
+        match.bestOrigin !== 'Could not determine'
+      ) {
+        matchesWithBestOrigins += 1
+      }
+    })
+
+
+    const averageScore =
+      matchSimilarityScores.reduce((a, b) => a + b, 0) /
+      matchSimilarityScores.length
+    const ratioOfPeopleIn3or4or5Flats =
+      (matchSizes[3] * 3 + matchSizes[4] * 4 + matchSizes[5] * 5) /
+      numberOfUsersCounted
+    const ratioOfPeopleLessThan3 = (matchSizes[1] + matchSizes[2] * 2) / numberOfUsersCounted
+    aggregateInfoObject = {
+      averageScore,
+      matchSizes,
+      matchCounter,
+      matchesWithBestOrigins,
+      numberOfUsersCounted,
+      ratioOfPeopleIn3or4or5Flats,
+      ratioOfPeopleLessThan3,
+      customMatchCounter
+    }
+    console.log(aggregateInfoObject)
+    res.status(200).end()
+
     return true
   })
   
   export const getMatchedByCluster = functions.https.onRequest((req, res) => {
     // const userData = event.data.data()
     // const { readyToMatch } = req.body
-    cors(req, res, () => {
-      matchAllAvailableUsers('PmzsNVCnUSMVSMu2WGRa4omxez52')
+    cors(req, res, async () => {
+      await matchAllAvailableUsers('PmzsNVCnUSMVSMu2WGRa4omxez52')
       res.status(200).end()
     })
   })
@@ -226,7 +217,7 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
   })
   
   export const scoreApartment = functions.https.onRequest((req, res) => {
-    cors(req, res, () => {
+    cors(req, res, async () => {
       // curl -H 'Content-Type: application/json' -d '{"address": "Nydalen Oslo", "flatmates": [{"workplace":"Netlight Oslo"}, {"workplace":"Capra Consulting Oslo"}]}' https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment
       const { address, flatmates } = req.body
   
@@ -234,16 +225,9 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
         res.status(400).end()
       }
       const origins = [encodeURI(address)]
-      getOriginsToDestinationsObject(
-        origins,
-        flatmates
-      ).then((originsToDestinationsObject) => {
-        const score = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
-        res.status(200).send({ score })
-      }).catch((err) => {
-        console.log('Error in scoring apartment', err)
-        res.status(300).end()
-      })
+      const originsToDestinationsObject = await getOriginsToDestinationsObject(origins,flatmates)
+      const score = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
+      res.status(200).send({ score })
     })
   })
   

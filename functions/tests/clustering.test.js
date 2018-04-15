@@ -3,15 +3,16 @@
  * @jest-environment node
  */
 
-
+const createTestData = require('../lib/utils/createTestData')
 const uuid = require('uuid')
-const { knnClustering, knnClusteringOneMatchPerUser } = require('../clusteringAlgorithms/knnClustering')
-const kMeansClustering = require('../clusteringAlgorithms/kMeansClustering')
-const createTestData = require('../utils/createTestData')
+const { knnClustering, knnClusteringOneMatchPerUser } = require('../lib/clusteringAlgorithms/knnClustering')
+const { kMeansClustering } = require('../lib/clusteringAlgorithms/kMeansClustering')
+
+
 const {
   createFlatmatesFromClusters, calculateFlatScore, calculateSimilarityScoreBetweenUsers, calculatePropertyAlignment
-} = require('../clusteringAlgorithms/clusteringPipeline')
-const { extractVectorsFromUsers } = require('../utils/vectorFunctions')
+} = require('../lib/clusteringAlgorithms/clusteringPipeline')
+const { extractVectorsFromUsers } = require('../lib/utils/vectorFunctions')
 
 
 test('Create test users', () => {
