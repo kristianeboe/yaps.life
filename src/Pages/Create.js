@@ -18,6 +18,7 @@ class Create extends Component {
       signUp: false,
       redirectToProfile: false,
       loading: false,
+      passwordError: false
     }
     // this.state = initialState
   }
@@ -59,8 +60,14 @@ class Create extends Component {
 
   handleSignUp = (event) => {
     event.preventDefault()
+    const { email, password, passwordConfirm } = this.state
+
+    if (password !== passwordConfirm) {
+      this.setState({ passwordError: true })
+      return
+    }
+    this.setState({ passwordError: false })
     this.setState({ loading: true })
-    const { email, password } = this.state
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((user) => {
@@ -100,7 +107,9 @@ class Create extends Component {
   }
 
   render() {
-    const { signUp, redirectToProfile, loading } = this.state
+    const {
+      signUp, redirectToProfile, loading, passwordError
+    } = this.state
     // && this.props.location.state ? this.props.location.state.redirectToProfile : false
     if (redirectToProfile) {
       return <Redirect push to="/profile" />
@@ -118,7 +127,7 @@ class Create extends Component {
             </Button>
           </Button.Group>
           <Divider horizontal>Or</Divider>
-          <Form loading={loading} >
+          <Form loading={loading} error={passwordError} >
             <Form.Input
               fluid
               icon="mail"
@@ -138,6 +147,18 @@ class Create extends Component {
               value={this.state.password}
               onChange={this.handleChange}
             />
+            {this.state.signUp && (
+            <Form.Input
+              fluid
+              icon="lock"
+              iconPosition="left"
+              placeholder="Confirm Password"
+              type="password"
+              name="passwordConfirm"
+              value={this.state.passwordConfirm}
+              onChange={this.handleChange}
+            />
+            )}
             {this.state.signUp ? (
               <Button onClick={this.handleSignUp} color="orange" fluid size="large">
               Sign up
@@ -152,6 +173,11 @@ class Create extends Component {
               {signUp ? 'Already have a user?' : 'New to us?'}{' '}
               <a> {signUp ? 'Log in' : 'Sign up'}</a>&nbsp;
             </Message>
+            <Message
+              error
+              header="Passwords do not match"
+              content="Please do something about it"
+            />
           </Form>
         </Segment>
       </Container>

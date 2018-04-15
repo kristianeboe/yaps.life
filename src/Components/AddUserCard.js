@@ -47,10 +47,10 @@ class AddUserCard extends Component {
     setTimeout(() => {
       if (this.state.value.length < 1) return this.resetComponent()
 
-      const results = this.state.availableUsers.filter(user => user.displayName.toLowerCase().includes(this.state.value.toLowerCase())).map(user => ({
+      const results = this.state.availableUsers.filter(user => user.email.toLowerCase().includes(this.state.value.toLowerCase())).map(user => ({
         key: user.uid, value: user.uid, title: user.displayName, image: user.photoURL, description: user.workplace
       }))
-      console.log(this.state.availableUsers.filter(user => user.displayName.includes(this.state.value)))
+      console.log(this.state.availableUsers.filter(user => user.email.includes(this.state.value)))
       this.setState({
         isLoading: false,
         results,
@@ -65,8 +65,8 @@ class AddUserCard extends Component {
       <Card>
         <Image src={personAvatar} />
         <Card.Content>
-          <Card.Header>Add person</Card.Header>
-          <Card.Description>Search available users by email</Card.Description>
+          <Card.Header>Add person by email</Card.Header>
+          <Card.Description>Search for friends by their email and add them to the match</Card.Description>
         </Card.Content>
         <Card.Content>
           <Search
