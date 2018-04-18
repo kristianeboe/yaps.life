@@ -86,14 +86,15 @@ class ChatRoom extends Component {
             avatarStyle.float = 'right'
             contentStyle = { marginRight: '3.5em', textAlign: 'right' }
           }
-
+          console.log(message.dateTime)
+          const timeOfWriting = new Date(message.dateTime).toString().slice(0, 24)
           return (
             <Comment key={message.dateTime} >
               <Comment.Avatar src={message.from.photoURL} style={avatarStyle} />
               <Comment.Content style={contentStyle}>
                 <Comment.Author as="a">{message.from.displayName}</Comment.Author>
                 <Comment.Metadata>
-                  <div>{Date(message.dateTime).slice(0, 24)}</div>
+                  <div>{timeOfWriting}</div>
                 </Comment.Metadata>
                 <Comment.Text>{message.text}</Comment.Text>
                 {/* <Comment.Actions>

@@ -14,7 +14,7 @@
     "uuid": "^3.2.1"
   },
   "scripts": {
-    "test": "jest",
+    "test": "npm run build && jest",
     "lint": "./node_modules/.bin/tslint -p tsconfig.json",
     "build": "./node_modules/.bin/tsc",
     "serve": "npm run build && firebase serve --only functions",

@@ -74,7 +74,7 @@ class MatchList extends Component {
     this.setState({ gettingCloudMatched: true, loadingPercent: 25, loadingText: 'Uploading you to the cloud. Prepare to get matched ;)' })
     setTimeout(() => this.setState({ loadingPercent: 50, loadingText: 'Wrapping up, almost done now.' }), 10000)
     axios
-      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getMatchedByClusterOnSave', { userUid: this.state.user.uid })
+      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getSingleMatchByKNNOnSave', { userUid: this.state.user.uid })
       .then((response) => {
         this.setState({ loadingPercent: 75, loadingText: 'Matching underway. Stay tuned.' })
         console.log(response)
@@ -87,6 +87,7 @@ class MatchList extends Component {
       uid: uuid.v4(),
       flatmates: [this.state.userData],
       flatScore: 100,
+      propertyAlignment: 100,
       location: 'Oslo',
       bestOrigin: '',
       custom: true,

@@ -5,10 +5,10 @@
 
 const createTestData = require('../lib/utils/createTestData')
 const uuid = require('uuid')
-const { knnClustering, knnClusteringOneMatchPerUser } = require('../lib/clusteringAlgorithms/knnClustering')
+const { knnClustering, knnClusteringOneMatchPerUser, knnClusteringSingleMatchTestUsers } = require('../lib/clusteringAlgorithms/knnClustering')
 const { kMeansClustering } = require('../lib/clusteringAlgorithms/kMeansClustering')
 
-
+const { createMatchFromFlatmates } = require('../lib/clusteringAlgorithms/clusteringPipeline')
 const {
   createFlatmatesFromClusters, calculateFlatScore, calculateSimilarityScoreBetweenUsers, calculatePropertyAlignment
 } = require('../lib/clusteringAlgorithms/clusteringPipeline')
@@ -49,7 +49,7 @@ test('User similarity', () => {
 })
 
 
-const testUsers = createTestData.createTestUsers(16)
+const testUsers = createTestData.createTestUsers(500)
 
 test('Clusters vectors with kNN', () => {
   // Create test users
@@ -95,7 +95,37 @@ test('knnClusteringOneMatchPerUser', () => {
   expect(averageMatchScore).toBeGreaterThan(70)
 })
 
+test('kNNSingleMatch', () => {
+  const { me } = createTestData
+  const vectors = extractVectorsFromUsers(testUsers, false)
+  const userVector = extractVectorsFromUsers([me], false)[0]
+  const topK = knnClusteringSingleMatchTestUsers(userVector, vectors, 4)
+  const flatmates = [me].concat(topK.map(id => testUsers[id]))
+  flatmates.forEach(mate => console.log(mate.answerVector, calculateSimilarityScoreBetweenUsers(me, mate)))
+  const match = createMatch(flatmates)
+  const averageMatchScore = getAverageMatchScore([match])
+  const averagePropertyAlignment = getAveragePropertyAlignment([match])
+  console.log(printScoreCard('kNNSingleMatch', [match], averageMatchScore, averagePropertyAlignment))
+  expect(flatmates.length).toBe(4)
+  // const match = createMatchFromFlatmates(flatmates)
+  // console.log(match)
+})
 
+function createMatch(flatmates) {
+  const flatScore = calculateFlatScore(flatmates)
+  const propertyAlignment = calculatePropertyAlignment(flatmates)
+  const matchUid = uuid.v4()
+  const match = {
+    uid: matchUid,
+    flatmates,
+    location: 'Oslo', // remember to change this in the future
+    bestOrigin: '',
+    flatScore,
+    propertyAlignment,
+    custom: false
+  }
+  return match
+}
 function createMatches(clusters) {
   let allFlatmates = createFlatmatesFromClusters(clusters)
   allFlatmates = allFlatmates.map(flatmates =>

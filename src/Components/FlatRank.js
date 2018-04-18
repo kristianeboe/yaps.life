@@ -17,10 +17,10 @@ const propertySizeOptions = [
   { key: '3', value: 5, text: 'Large' }
 ]
 
-const newnessOptions = [
-  { key: '1', value: 1, text: 'Old' },
-  { key: '2', value: 3, text: 'Refurbished' },
-  { key: '3', value: 5, text: 'Brand new' },
+const standardOptions = [
+  { key: '1', value: 1, text: 'Fixer upper' },
+  { key: '2', value: 3, text: 'Medium' },
+  { key: '3', value: 5, text: 'Good as new' },
 ]
 
 class FlatRank extends Component {
@@ -109,7 +109,7 @@ class FlatRank extends Component {
       segmentLoading: true
     })
     axios
-      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getListingDetails', { finnURL: finnListingURL })
+      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getListingDetailsHTTPS', { finnURL: finnListingURL })
       .then((response) => {
         console.log(response)
         console.log(response.data)
@@ -143,9 +143,9 @@ class FlatRank extends Component {
     return (
       <Segment loading={segmentLoading} >
         <Header as="h3" dividing >
-          2. Evaluate options
+          2. Paste in a link to a listing
           <Header.Subheader>
-          Enter information about potential flats here and evaluate them for the group.
+          If it'sa Finn.no link you can try to get the contents of the listing by pressing get info
           </Header.Subheader>
         </Header>
         <Form>
@@ -157,7 +157,12 @@ class FlatRank extends Component {
             <Form.Button width={4} onClick={this.handleGetFinnListingDetails}>Get info</Form.Button>
           </Form.Group>
         </Form>
-        <Divider horizontal>Or</Divider>
+        <Header as="h3" dividing >
+          3. Make sure the information is correct and click evaluate
+          <Header.Subheader>
+          Enter information about potential flats here and evaluate them for the group.
+          </Header.Subheader>
+        </Header>
         <Form onSubmit={this.handleSubmit}>
           <Form.Group widths="equal">
             <Popup
@@ -173,45 +178,61 @@ class FlatRank extends Component {
               />}
               content="The address of your new home, example: Pilestredet 57, 0350 Oslo"
             />
-
-            <Form.Input
-              value={price}
-              name="price"
-              fluid
-              onChange={this.handleChange}
-              label="Price"
-              icon="dollar"
-              iconPosition="left"
-              placeholder="Price of flat"
+            <Popup
+              trigger={
+                <Form.Input
+                  value={price}
+                  name="price"
+                  fluid
+                  onChange={this.handleChange}
+                  label="Price"
+                  icon="dollar"
+                  iconPosition="left"
+                  placeholder="Price of flat"
+                />}
+              content="Price of the property pr month"
             />
           </Form.Group>
           <Form.Group widths="equal">
-            <Form.Select
-              fluid
-              label="Budget"
-              options={budgetOptions}
-              placeholder="Budget"
-              value={budget}
-              name="budget"
-              onChange={this.handleChange}
+
+
+            <Popup
+              trigger={<Form.Select
+                fluid
+                label="Budget"
+                options={budgetOptions}
+                placeholder="Budget"
+                value={budget}
+                name="budget"
+                onChange={this.handleChange}
+              />}
+              content="Budget is determined by the price of the flat divided by the number of flatmates in the match"
             />
-            <Form.Select
-              fluid
-              label="Property size"
-              options={propertySizeOptions}
-              placeholder="Property size"
-              value={propertySize}
-              name="propertySize"
-              onChange={this.handleChange}
+            <Popup
+              trigger={
+                <Form.Select
+                  fluid
+                  label="Property size"
+                  options={propertySizeOptions}
+                  placeholder="Property size"
+                  value={propertySize}
+                  name="propertySize"
+                  onChange={this.handleChange}
+                />}
+              content="Small < 80m^2, Large > 110m^2, otherwise Medium"
             />
-            <Form.Select
-              fluid
-              label="Newness"
-              options={newnessOptions}
-              placeholder="Newness"
-              value={newness}
-              name="newness"
-              onChange={this.handleChange}
+            <Popup
+              trigger={
+                <Form.Select
+                  fluid
+                  label="Standard"
+                  options={standardOptions}
+                  placeholder="Standard"
+                  value={newness}
+                  name="newness"
+                  onChange={this.handleChange}
+                />}
+              content="You'll have to fill in this manually. Sorry :O PS: Defaults to medium"
             />
           </Form.Group>
           <Form.Button>Evaluate</Form.Button>

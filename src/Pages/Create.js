@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Container, Button, Form, Icon, Divider, Message, Segment } from 'semantic-ui-react'
+import { Container, Button, Form, Icon, Divider, Message, Segment, Header } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 import firebase, { auth, googleProvider, facebookProvider } from '../firebase'
 
@@ -12,13 +12,15 @@ import firebase, { auth, googleProvider, facebookProvider } from '../firebase'
 class Create extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       email: '',
       password: '',
-      signUp: false,
+      signUp: props.location.state ? props.location.state.signUp : false,
       redirectToProfile: false,
       loading: false,
-      passwordError: false
+      formError: false,
+      passwordMatchError: false,
     }
     // this.state = initialState
   }
@@ -63,10 +65,10 @@ class Create extends Component {
     const { email, password, passwordConfirm } = this.state
 
     if (password !== passwordConfirm) {
-      this.setState({ passwordError: true })
+      this.setState({ passwordMatchError: true, formError: true })
       return
     }
-    this.setState({ passwordError: false })
+    this.setState({ passwordMatchError: false, formError: false })
     this.setState({ loading: true })
     auth
       .createUserWithEmailAndPassword(email, password)
@@ -86,10 +88,21 @@ class Create extends Component {
         // ...
       })
   }
+  validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(email)
+  }
+
+  validatePassword = password => password.length > 6
 
   handleSignIn = (event) => {
     event.preventDefault()
     const { email, password } = this.state
+    if (!this.validatePassword(password) || !this.validateEmail(email)) {
+      this.setState({ formError: true })
+      return
+    }
+    this.setState({ passwordMatchError: false, formError: false })
     auth
       .signInWithEmailAndPassword(email, password)
       .then(() => {
@@ -108,8 +121,10 @@ class Create extends Component {
 
   render() {
     const {
-      signUp, redirectToProfile, loading, passwordError
+      signUp, redirectToProfile, loading, formError, passwordMatchError
     } = this.state
+    console.log(this.state)
+    console.log(this.props)
     // && this.props.location.state ? this.props.location.state.redirectToProfile : false
     if (redirectToProfile) {
       return <Redirect push to="/profile" />
@@ -117,6 +132,12 @@ class Create extends Component {
     return (
       <Container style={{ paddingTop: '5em', width: '50em' }}>
         <Segment>
+          <Header as="h1" >
+            {signUp ? 'Sign up' : 'Log in'}
+            <Header.Subheader>
+              {signUp ? 'Create a profile to find the perfect flatmates and figure out where to live' : 'Log in to view your profile and matches'}
+            </Header.Subheader>
+          </Header>
           <Button.Group size="large" style={{ display: 'flex' }}>
             <Button color="grey" onClick={this.googleSignIn}>
               <Icon name="google" />
@@ -127,7 +148,7 @@ class Create extends Component {
             </Button>
           </Button.Group>
           <Divider horizontal>Or</Divider>
-          <Form loading={loading} error={passwordError} >
+          <Form loading={loading} error={formError} >
             <Form.Input
               fluid
               icon="mail"
@@ -175,7 +196,7 @@ class Create extends Component {
             </Message>
             <Message
               error
-              header="Passwords do not match"
+              header={passwordMatchError ? 'Something is wrong with the email or password' : 'Passwords do not match'}
               content="Please do something about it"
             />
           </Form>

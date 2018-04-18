@@ -75,7 +75,7 @@ export async function getOriginsToDestinationsObject(origins, flatmates) {
       return originsToDestinationsObject
     }
 
-export function getBestOriginForMatch(match) {
+export async function getBestOriginForMatch(match) {
   const originsOsloSmall = {
     'Grunerløkka Oslo': 'location=1.20061.20511&', // Grunerløkka - Sofienberg
     'Majorstuen Oslo': 'location=1.20061.20508&', // Majorstuen, Uranienborg, Nationaltheateret
@@ -83,50 +83,48 @@ export function getBestOriginForMatch(match) {
     'Gamle Oslo': 'location=1.20061.20512&'
   }
   const origins = Object.keys(originsOsloSmall).map(origin => encodeURI(origin))
-  return getOriginsToDestinationsObject(origins, match.flatmates)
-    .then((originsToDestinationsObject) => {
-      const bestOrigin = getBestOrigin(originsToDestinationsObject)
+  const originsToDestinationsObject = await getOriginsToDestinationsObject(origins, match.flatmates)
 
-      // console.log(originsToDestinationsObject)
-      // console.log(bestOrigin)
+  const bestOrigin = getBestOrigin(originsToDestinationsObject)
 
-      const nrOfFlatmates = match.flatmates.length
+  // console.log(originsToDestinationsObject)
+  // console.log(bestOrigin)
 
-      const finnQueryStem =
-        'https://www.finn.no/realestate/lettings/search.html?'
-      const locationConstraintCity =
-        match.location.toLowerCase() === 'oslo' ? 'location=0.20061&' : ''
-      let locationConstraintNeighbourhood = ''
+  const nrOfFlatmates = match.flatmates.length
 
-      if (bestOrigin.includes('Majorstuen')) {
-        locationConstraintNeighbourhood = originsOsloSmall['Majorstuen Oslo']
-      } else if (bestOrigin.includes('Grunerløkka')) {
-        locationConstraintNeighbourhood = originsOsloSmall['Grunerløkka Oslo']
-      } else if (bestOrigin.includes('Frogner')) {
-        locationConstraintNeighbourhood = originsOsloSmall['Frogner Oslo']
-      } else if (bestOrigin.includes('Gamle Oslo')) {
-        locationConstraintNeighbourhood = originsOsloSmall['Gamle Oslo']
-      }
+  const finnQueryStem =
+    'https://www.finn.no/realestate/lettings/search.html?'
+  const locationConstraintCity =
+    match.location.toLowerCase() === 'oslo' ? 'location=0.20061&' : ''
+  let locationConstraintNeighbourhood = ''
 
-      const nrOfBedroomsFrom = `no_of_bedrooms_from=${nrOfFlatmates}&`
-      const propertyTypes =
-        'property_type=1&property_type=3&property_type=4&property_type=2'
+  if (bestOrigin.includes('Majorstuen')) {
+    locationConstraintNeighbourhood = originsOsloSmall['Majorstuen Oslo']
+  } else if (bestOrigin.includes('Sofienberg')) {
+    locationConstraintNeighbourhood = originsOsloSmall['Grunerløkka Oslo']
+  } else if (bestOrigin.includes('Frogner')) {
+    locationConstraintNeighbourhood = originsOsloSmall['Frogner Oslo']
+  } else if (bestOrigin.includes('Gamle Oslo')) {
+    locationConstraintNeighbourhood = originsOsloSmall['Gamle Oslo']
+  }
 
-      const finnQueryString =
-        finnQueryStem +
-        locationConstraintCity +
-        locationConstraintNeighbourhood +
-        nrOfBedroomsFrom +
-        propertyTypes
+  const nrOfBedroomsFrom = `no_of_bedrooms_from=${nrOfFlatmates}&`
+  const propertyTypes =
+    'property_type=1&property_type=3&property_type=4&property_type=2'
 
-      const airBnBQueryString = `${'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=' +
-        '&adults='}${nrOfFlatmates}&min_beds=${nrOfFlatmates}&min_bedrooms=${nrOfFlatmates}&s_tag=2D91el1z`
+  const finnQueryString =
+    finnQueryStem +
+    locationConstraintCity +
+    locationConstraintNeighbourhood +
+    nrOfBedroomsFrom +
+    propertyTypes
 
-      admin
-        .firestore()
-        .collection('matches')
-        .doc(match.uid)
-        .update({ bestOrigin, finnQueryString, airBnBQueryString })
-    })
-    .catch(err => console.log('Error in getBestOriginFromMatch', err))
+  const airBnBQueryString = `${'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=' +
+    '&adults='}${nrOfFlatmates}&min_beds=${nrOfFlatmates}&min_bedrooms=${nrOfFlatmates}&s_tag=2D91el1z`
+
+  return admin
+    .firestore()
+    .collection('matches')
+    .doc(match.uid)
+    .update({ bestOrigin, finnQueryString, airBnBQueryString })
 }

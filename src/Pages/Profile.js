@@ -8,7 +8,8 @@ import {
   Checkbox,
   Message,
   Label,
-  Popup
+  Popup,
+  Header
 } from 'semantic-ui-react'
 import { Redirect, Link } from 'react-router-dom'
 import PlacesAutocomplete, {
@@ -258,7 +259,12 @@ class Profile extends Component {
             >
               <Grid columns="equal" stackable>
                 <Grid.Column>
-                  <h1>My profile</h1>
+                  <Header as="h1">
+                  My profile
+                    <Header.Subheader>
+                    Fill out the entire form to get better matches and see how you appear to other users on the right.
+                    </Header.Subheader>
+                  </Header>
                   <Form.Input
                     fluid
                     label="Name"
@@ -444,23 +450,23 @@ class Profile extends Component {
                   alignItems: 'center'
                 }}
                 >
-                  {/* <Image circular src={photoURL} size="medium" /> */}
                   <MateCard
                     mate={{
-                    photoURL: photoURL || personAvatar,
-                    age: this.state.age,
-                    displayName: this.state.displayName,
-                    workplace: this.state.workplace,
-                    studyProgramme: this.state.studyProgramme,
-                    university: this.state.university,
-                    gender: this.state.gender,
-                    budget: this.state.budget,
-                    propertySize: this.state.propertySize,
-                    newness: this.state.newness,
-                    matchLocation: this.state.matchLocation,
-                  }}
+                      photoURL: photoURL || personAvatar,
+                      age: this.state.age,
+                      displayName: this.state.displayName,
+                      workplace: this.state.workplace,
+                      studyProgramme: this.state.studyProgramme,
+                      university: this.state.university,
+                      gender: this.state.gender,
+                      budget: this.state.budget,
+                      propertySize: this.state.propertySize,
+                      newness: this.state.newness,
+                      matchLocation: this.state.matchLocation,
+                    }}
                     similarityScore={100}
                   />
+
                 </Grid.Column>
               </Grid>
               <Message success header="Profile updated" content="You're ready to match!" />

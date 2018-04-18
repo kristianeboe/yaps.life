@@ -2,10 +2,12 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
 const cors = require('cors')({ origin: true })
 import {createTestUsers} from './utils/createTestData'
-import {matchAllAvailableUsers} from './clusteringAlgorithms/clusteringPipeline'
+import {matchAllAvailableUsers, createMatchFromFlatmates} from './clusteringAlgorithms/clusteringPipeline'
 import {getBestOriginForMatch, getOriginsToDestinationsObject} from './location/locationAlgorithms'
 import { deleteMatchClusterCollection } from './utils/dbCleanupFunctions'
 import { getListingDetails, getPropertyList} from './location/finnScraper'
+import { extractVectorsFromUsers } from './utils/vectorFunctions';
+import { knnClusteringSingleMatchTestUsers } from './clusteringAlgorithms/knnClustering';
 
 admin.initializeApp()
 
@@ -181,6 +183,33 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
       res.status(200).end()
     })
   })
+
+export const getSingleMatchByKNNOnSave = functions.https.onRequest( (req, res) => {
+  let { userUid } = req.body
+    console.log(userUid)
+    if (!userUid) {
+      userUid = 'PmzsNVCnUSMVSMu2WGRa4omxez52'
+      console.log('default', userUid)
+    }
+    cors(req, res, async () => {
+      const userRef = await admin.firestore().collection('users').doc(userUid).get()
+      const testUsersSnapshot = await admin.firestore().collection('testUsers').get()
+      const testUsers = []
+      testUsersSnapshot.forEach(testUser => {
+        testUsers.push(testUser.data())
+      })
+      console.log(testUsers.length)
+      const userData = userRef.data()
+      const vectors = extractVectorsFromUsers(testUsers, false)
+      const userVector = extractVectorsFromUsers([userData], false)[0]
+      const topK = knnClusteringSingleMatchTestUsers(userVector, vectors, 4)
+      console.log(topK)
+      const flatmates = [userData].concat(topK.map(id => testUsers[id]))
+      const match = await createMatchFromFlatmates(flatmates)
+      res.status(200).end()
+})
+})
+
   
   
   export const onMatchCreate = functions.firestore
@@ -188,7 +217,12 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
     .onCreate((snap, context) => {
     //.onCreate((event) => {
       const match = snap.data()
-      return getBestOriginForMatch(match)
+      const matchContainsRealUser = match.flatmates.find(el => el.uid.length === 28)
+      if (matchContainsRealUser) {
+        return getBestOriginForMatch(match)
+      }
+      console.log('no real users present, returning false')
+      return false
       /* if (!match) {
         console.log('LOG: No match provided to get best origin for')
       }
@@ -232,7 +266,7 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
   })
   
   export const getListingDetailsHTTPS = functions.https.onRequest((req, res) => {
-    cors(req, res, () => {
+    cors(req, res, async () => {
       // curl -H 'Content-Type: application/json' -d '{"address": "Nydalen Oslo", "flatmates": [{"workplace":"Netlight Oslo"}, {"workplace":"Capra Consulting Oslo"}]}' https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment
       const { finnURL } = req.body
       console.log(finnURL)
@@ -240,12 +274,9 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest( asy
       if (!finnURL) {
         res.status(400).end()
       }
-      return getListingDetails(finnURL).then((listing) => {
-        res.status(200).send(listing)
-      }).catch((err) => {
-        console.log('Error in getting listing from Finn', err)
-        res.status(300).end()
-      })
+      const listing = await getListingDetails(finnURL)
+      res.status(200).send(listing)
+      
     })
   })
   

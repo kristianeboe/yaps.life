@@ -90,6 +90,7 @@ export const me = {
   photoURL:
     'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg',
   answerVector: [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1],
+  propertyVector: [5, 5, 5],
   readyToMatch: true,
   studyProgramme: 'Computer Science',
   tos: true,
@@ -100,9 +101,11 @@ export const me = {
 
 export const antiKristianUser = {
   displayName: 'Anti Kristian Elset Bø',
+  uid: 'hWBbCxiigfUISnJ8upb',
   gender: 'Male',
   matchLocation: 'Oslo',
-  answerVector: [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2]
+  answerVector: [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2],
+  propertyVector: [5, 5, 5],
 }
 
 export const kristianVector = [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1]

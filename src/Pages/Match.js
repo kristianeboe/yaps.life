@@ -4,7 +4,8 @@ import {
   Grid,
   Segment,
   Container,
-  Header
+  Header,
+  Label
 } from 'semantic-ui-react'
 import euclidianDistanceSquared from 'euclidean-distance/squared'
 import axios from 'axios'
@@ -102,13 +103,52 @@ class Match extends Component {
     return Math.floor(flatScore)
   }
 
+  createGroupPropertyVector = (flatmates) => {
+    const groupVector = []
+    const propertyVectors = flatmates.map(mate => mate.propertyVector)
+    for (let i = 0; i < propertyVectors[0].length; i += 1) {
+      let sum = 0
+      for (let j = 0; j < flatmates.length; j += 1) {
+        sum += propertyVectors[j][i]
+      }
+      groupVector.push(sum / propertyVectors.length)
+    }
+    return groupVector
+  }
+
+  mapPropScoreToPercentage = propScore => Math.floor((1 - (propScore / 48)) * 100)
+
+  calculatePropertyAlignment = (flatmates) => {
+    const propScores = []
+    for (let i = 0; i < flatmates.length; i += 1) {
+      const mate1 = flatmates[i]
+      for (let j = 0; j < flatmates.length; j += 1) {
+        const mate2 = flatmates[j]
+        if (i !== j) {
+          const propScore = euclidianDistanceSquared(mate1.propertyVector, mate2.propertyVector)
+          propScores.push(this.mapPropScoreToPercentage(propScore))
+        }
+      }
+    }
+
+    let propertyAlignment = 100
+    if (propScores.length > 1) {
+      propertyAlignment = propScores.reduce((a, b) => a + b, 0) / propScores.length
+    }
+    return Math.floor(propertyAlignment)
+  }
+
   addFlatmateToMatch = (userData) => {
     const flatmates = [...this.state.flatmates, userData]
     const flatScore = this.calculateFlatScore(flatmates)
+    const propertyAlignment = this.calculatePropertyAlignment(flatmates)
+    const groupPropertyVector = this.createGroupPropertyVector(flatmates)
     console.log(flatScore)
     const { matchId } = this.props.match.params
     this.setState({
       flatmates,
+      propertyAlignment,
+      groupPropertyVector,
       showAddUserCard: false
     })
     firebase.firestore().collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
@@ -173,18 +213,8 @@ class Match extends Component {
                       </Grid.Column>
                     )}
                   </Grid.Row>
-                  <Grid.Row>
-                    <Grid.Column>
-                      Personality alignment {this.state.flatScore}
-                    </Grid.Column>
-                    <Grid.Column>
-                      Property alignment {this.state.propertyAlignment}
-                    </Grid.Column>
-                  </Grid.Row>
                 </Grid>
-                {/* <Button onClick={() => this.createNewMatchObject()}>
-                  Create new Match Object
-                </Button> */}
+                <Label as="a" color="blue" ribbon>Personality alignment: {this.state.flatScore} <br />Property alignment: {this.state.propertyAlignment}</Label>
               </Segment>
               <Grid stackable columns="equal">
                 <Grid.Column>

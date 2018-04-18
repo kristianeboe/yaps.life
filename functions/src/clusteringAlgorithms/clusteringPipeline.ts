@@ -203,7 +203,7 @@ export async function matchAllAvailableUsers(userUid) {
   })
 }
  */
-async function createMatchFromFlatmates(flatmates) {
+export async function createMatchFromFlatmates(flatmates) {
   const flatScore = calculateFlatScore(flatmates)
   const propertyAlignment = calculatePropertyAlignment(flatmates)
   const groupPropertyVector = createGroupPropertyVector(flatmates)

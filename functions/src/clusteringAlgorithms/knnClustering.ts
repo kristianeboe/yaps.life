@@ -13,7 +13,10 @@ export function knnClustering(vectors, K) {
       }
     }
 
-    const topK = scores.sort((a, b) => a.score - b.score).slice(0, K).map(el => el.j)
+    const topK = scores
+      .sort((a, b) => a.score - b.score)
+      .slice(0, K)
+      .map(el => el.j)
     clusters.push(topK)
   }
   return clusters
@@ -35,4 +38,24 @@ export function knnClusteringOneMatchPerUser(vectors, K) {
   }
 
   return clusters
+}
+
+export function knnClusteringSingleMatchTestUsers(
+  userVector,
+  testUserVectors,
+  K
+) {
+  const u = userVector
+  const scores = []
+  for (let j = 0; j < testUserVectors.length; j += 1) {
+    const v = testUserVectors[j]
+    const score = euclidianDistance(u, v)
+    scores.push({ j, score })
+  }
+  const topK = scores
+      .sort((a, b) => a.score - b.score)
+      .slice(0, K-1)
+      .map(el => el.j)
+  
+  return topK
 }

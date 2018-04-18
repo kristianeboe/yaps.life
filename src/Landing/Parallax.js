@@ -5,6 +5,7 @@ import {
   Header,
   Icon,
   Item,
+  Grid,
 } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 
@@ -63,12 +64,14 @@ const Parallax = (props) => {
             style={{ fontSize: '1.5em', fontWeight: 'normal' }}
           />
           {buttonContent.length > 0 && (
-            <Link to="/create">
-              <Button primary size="huge" onClick={buttonOnClick} >
-                {buttonContent}
-                <Icon name="right arrow" />
-              </Button>
-            </Link>
+            <Grid columns="equal">
+              <Grid.Column>
+                <Button primary size="huge" onClick={buttonOnClick} >I have my own roommates</Button>
+              </Grid.Column>
+              <Grid.Column>
+                <Button primary size="huge" onClick={buttonOnClick} >Find new roommates with AI</Button>
+              </Grid.Column>
+            </Grid>
           )}
         </Container>
       </Item.Content>

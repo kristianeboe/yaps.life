@@ -46,7 +46,9 @@ class AddUserCard extends Component {
 
     setTimeout(() => {
       if (this.state.value.length < 1) return this.resetComponent()
-
+      if (this.state.value.length < 3 || this.state.value.indexOf('@') === -1) {
+        return false
+      }
       const results = this.state.availableUsers.filter(user => user.email.toLowerCase().includes(this.state.value.toLowerCase())).map(user => ({
         key: user.uid, value: user.uid, title: user.displayName, image: user.photoURL, description: user.workplace
       }))
