@@ -66,10 +66,13 @@ const Parallax = (props) => {
           {buttonContent.length > 0 && (
             <Grid columns="equal">
               <Grid.Column>
-                <Button primary size="huge" onClick={buttonOnClick} >I have my own roommates</Button>
+                <Link to="/matches"><Button primary size="large" onClick={buttonOnClick} >I have my own roommates</Button></Link>
               </Grid.Column>
               <Grid.Column>
-                <Button primary size="huge" onClick={buttonOnClick} >Find new roommates with AI</Button>
+                <Link to="/profile"><Button primary size="large" onClick={buttonOnClick} >Find new roommates with AI</Button></Link>
+              </Grid.Column>
+              <Grid.Column>
+                <Link to="/upload-property"><Button primary size="large" onClick={buttonOnClick} >Match my apartment with tenants</Button></Link>
               </Grid.Column>
             </Grid>
           )}

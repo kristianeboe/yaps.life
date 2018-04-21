@@ -95,3 +95,24 @@ export const GENDERS = ['Male', 'Female']
 export const BUDGETS = [1, 3, 5]
 export const PROPERTY_SIZES = [1, 3, 5]
 export const NEWNESS = [1, 3, 5]
+
+export const GROUP_NAMES = [
+  'The Wolf Pack',
+  'The Fantastic Four',
+  'The A-Team',
+  'The Four Musketeers',
+  'The Fellowship of the Ring',
+  'The Channel 4 News Team',
+  'The Ghostbusters',
+  'The Incredibles',
+  'The Beatles',
+  'The Fantastic Foursome of Oz',
+  'The Survivors', // left for dead
+  'Entourage',
+]
+
+export const GIRL_GROUP_NAMES = [
+  'Sex and the city',
+  'The Golden Girls',
+
+]

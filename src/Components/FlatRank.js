@@ -69,7 +69,7 @@ class FlatRank extends Component {
       flatmates,
     }
     console.log(matchDoc.data())
-    const url = 'https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment'
+    const url = 'https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartmentHTTPS'
     axios
       .post(url, data)
       .then((response) => {
@@ -151,7 +151,7 @@ class FlatRank extends Component {
         <Form>
           <Form.Group>
             <Popup
-              trigger={<Form.Input width={12} onChange={this.handleChange} name="finnListingURL" placeholder="Pase in Finn.no apartment link or finn code" />}
+              trigger={<Form.Input width={12} onChange={this.handleChange} name="finnListingURL" placeholder="Paste in listing link" />}
               content="Example: https://www.finn.no/realestate/lettings/ad.html?finnkode=117756936 or simply 117756936"
             />
             <Form.Button width={4} onClick={this.handleGetFinnListingDetails}>Get info</Form.Button>

@@ -13,7 +13,6 @@ import firebase, { auth } from '../firebase'
 import ChatRoom from '../Components/ChatRoom'
 import FlatRank from '../Components/FlatRank'
 import Flatmates from '../Containers/Flatmates'
-import visitOslo from '../assets/images/visit_oslo.jpg'
 import FlatList from '../Containers/FlatList'
 
 class Match extends Component {
@@ -62,6 +61,8 @@ class Match extends Component {
           matchDoc,
           flatmates,
           flatScore: match.flatScore,
+          finnQueryString: match.finnQueryString,
+          airBnBQueryString: match.airBnBQueryString,
           propertyAlignment: match.propertyAlignment,
           bestOrigin: match.bestOrigin.length > 0 && match.bestOrigin !== 'Could not determine, did not receive any origins' ? match.bestOrigin : match.location,
           propertyList: match.propertyList ? match.propertyList : [],
@@ -177,15 +178,13 @@ class Match extends Component {
       boxShadow: 'inset 0 0 0 2000px rgba(0,0,0,0.4)',
       }}
       >
-        <Container style={{
-          paddingTop: '5em',
-          paddingBottom: '3em',
-          }}
-        >
+        <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
           {this.state.user && (
             <div>
               <Segment loading={flatmatesLoading}>
-                <h2>Here are your new (potential) flatmates</h2>
+                <Header as="h2">
+                  Here are your new (potential) flatmates
+                </Header>
                 <Grid stackable columns="equal">
                   <Flatmates
                     flatmates={flatmates}
@@ -195,7 +194,7 @@ class Match extends Component {
                     userUid={this.state.user.uid}
                   />
                   <Grid.Row>
-                    {this.state.flatmates.length < 5 && (
+                    {this.state.flatmates.length < 4 && (
                       <Grid.Column
                         style={{
                           display: 'flex',
@@ -210,6 +209,7 @@ class Match extends Component {
                             this.setState({ showAddUserCard: true })
                           }
                         />
+                        <span>You can add other users you know to the match by their email address</span>
                       </Grid.Column>
                     )}
                   </Grid.Row>

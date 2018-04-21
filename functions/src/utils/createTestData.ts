@@ -96,7 +96,11 @@ export const me = {
   tos: true,
   uid: 'hWBbCxiigfUISnJ8upb6pnUDfXG3',
   university: 'NTNU',
-  workplace: 'Netlight AS Oslo'
+  workplace: 'Netlight AS Oslo',
+  workplaceLatLng: {
+    lat: 59.9131672,
+    lng: 10.741938699999992
+  }
 }
 
 export const antiKristianUser = {
@@ -106,7 +110,19 @@ export const antiKristianUser = {
   matchLocation: 'Oslo',
   answerVector: [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2],
   propertyVector: [5, 5, 5],
+  workplace: 'Capra Consulting Oslo',
+  workplaceLatLng: {
+    lat: 59.9130579,
+    lng: 10.751287199999979
+  }
 }
 
 export const kristianVector = [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1]
 export const antiKristianVector = [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2]
+
+export const exampleMatch = {
+  uid: '35c974dc-882d-486b-a47d-c9bb09a47707',
+  flatmates: [me, antiKristianUser, me, antiKristianUser],
+  finnQueryString: 'https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20508&no_of_bedrooms_from=4&property_type=1&property_type=3&property_type=4&property_type=2',
+  groupPropertyVector: [3,3,3]
+}

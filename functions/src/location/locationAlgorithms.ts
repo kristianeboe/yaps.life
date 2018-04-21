@@ -122,9 +122,20 @@ export async function getBestOriginForMatch(match) {
   const airBnBQueryString = `${'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=' +
     '&adults='}${nrOfFlatmates}&min_beds=${nrOfFlatmates}&min_bedrooms=${nrOfFlatmates}&s_tag=2D91el1z`
 
-  return admin
+  await admin
     .firestore()
     .collection('matches')
     .doc(match.uid)
     .update({ bestOrigin, finnQueryString, airBnBQueryString })
+
+  
+  return {...match, bestOrigin, finnQueryString, airBnBQueryString}
+}
+
+
+export async function scoreApartment(address, flatmates) {
+  const origins = [encodeURI(address)]
+  const originsToDestinationsObject = await getOriginsToDestinationsObject(origins,flatmates)
+  const score = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
+  return score
 }

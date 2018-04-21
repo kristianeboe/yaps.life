@@ -6,6 +6,7 @@ const euclidianDistanceSquared = require('euclidean-distance/squared')
 import {extractVectorsFromUsers } from '../utils/vectorFunctions'
 import { knnClustering, knnClusteringOneMatchPerUser } from './knnClustering'
 import  {kMeansClustering} from './kMeansClustering'
+import { GROUP_NAMES } from '../utils/constants';
 
 
 export function mapSimScoreToPercentage(simScore) {
@@ -210,6 +211,7 @@ export async function createMatchFromFlatmates(flatmates) {
 
   const matchUid = uuid.v4()
   const match = {
+    title: GROUP_NAMES[Math.floor(Math.random()*GROUP_NAMES.length)],
     uid: matchUid,
     flatmates,
     location: 'Oslo', // remember to change this in the future

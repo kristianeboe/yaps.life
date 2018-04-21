@@ -38,14 +38,15 @@ const FlatList = (props) => {
       <Header as="h3" dividing >
           4. See your list of options here, sorted by average commute time and group score
         <Header.Subheader>
-            Neat, or what? :)
+            The ones already here are the two first listings from Finn.no, feel free to add more.
         </Header.Subheader>
       </Header>
 
       { _.sortBy(flats, 'commuteScore').map((flat, index) => (
         <Segment key={flat.address} clearing>
-          <Header as="h4">{index + 1}. {flat.apartmentMetaData ? flat.apartmentMetaData.title : flat.address}
+          <Header as="h4">{index + 1}. {flat.title ? flat.title : flat.address}
             <Header.Subheader>{flat.address}</Header.Subheader>
+            <Header.Subheader>{flat.price / 4} kr per person</Header.Subheader>
           </Header>
           <Button floated="right" icon="external" color="blue" as="a" target="_blank" href={flat.finnListingURL} />
 

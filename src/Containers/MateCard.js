@@ -9,8 +9,9 @@ const MateCard = ({
   mate, similarityScore
 }) => {
   const {
-    age, photoURL, displayName, workplace, studyProgramme, university, gender, budget, matchLocation, propertySize, newness,
+    age, photoURL, displayName, workplace, studyProgramme, university, gender, matchLocation, propertyVector
   } = mate
+  const [budget, propertySize, newness] = propertyVector
   const genderDisplay = gender === 'Male' ? 'He' : 'She'
   const budgetDisplay = budget === 1 ? 'cheaper' : budget === 3 ? '' : 'premium'
   const sizeDisplay = propertySize === 1 ? 'small' : propertySize === 3 ? '' : 'huge'

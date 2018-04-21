@@ -7,6 +7,7 @@ import Create from './Pages/Create'
 import Profile from './Pages/Profile'
 import Match from './Pages/Match'
 import MatchList from './Pages/MatchList'
+import LandlordProfie from './Components/LandlordProfile'
 import TOS from './Pages/TOS'
 
 const App = () => (
@@ -18,6 +19,7 @@ const App = () => (
       <Route path="/matches/:matchId" component={Match} />
       <Route path="/matches" component={MatchList} />
       <Route path="/profile" component={Profile} />
+      <Route path="/upload-property" component={LandlordProfie} />
       <Route path="/TOS" component={TOS} />
     </Switch>
   </div>

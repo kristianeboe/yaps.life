@@ -39,6 +39,7 @@ class MatchList extends Component {
       gettingCloudMatched: false,
       loadingPercent: 0,
       loadingText: '',
+      redirectToSignIn: false,
     }
   }
   componentDidMount() {
@@ -59,12 +60,18 @@ class MatchList extends Component {
               matches: results.map(res => res.data())
             }))
         })
+      } else {
+        this.setState({
+          redirectToSignIn: true
+        })
       }
     })
   }
 
   componentWillUnmount() {
-    this.unsubscribe()
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   }
 
   getMatched = (e) => {
@@ -72,13 +79,13 @@ class MatchList extends Component {
     console.log('about to match')
     firebase.firestore().collection('users').doc(this.state.user.uid).update({ gettingCloudMatched: true })
     this.setState({ gettingCloudMatched: true, loadingPercent: 25, loadingText: 'Uploading you to the cloud. Prepare to get matched ;)' })
-    setTimeout(() => this.setState({ loadingPercent: 50, loadingText: 'Wrapping up, almost done now.' }), 10000)
+    setTimeout(() => this.setState({ loadingPercent: 50, loadingText: 'Matching underway. Stay tuned.' }), 8000)
     axios
       .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getSingleMatchByKNNOnSave', { userUid: this.state.user.uid })
       .then((response) => {
-        this.setState({ loadingPercent: 75, loadingText: 'Matching underway. Stay tuned.' })
+        this.setState({ loadingPercent: 75, loadingText: 'Wrapping up, almost done now.' })
         console.log(response)
-        setTimeout(() => this.setState({ loadingPercent: 90, loadingText: 'Wrapping up, almost done now.' }), 10000)
+        setTimeout(() => this.setState({ loadingPercent: 90, loadingText: 'Just a few seconds more.' }), 8000)
       })
   }
 
@@ -130,6 +137,18 @@ class MatchList extends Component {
       return <Redirect push to={`/matches/${this.state.match.uid}`} />
     }
 
+    if (this.state.redirectToSignIn) {
+      return (
+        <Redirect
+          push
+          to={{
+            pathname: '/create',
+            state: { redirectToProfile: true }
+          }}
+        />
+      )
+    }
+
     /* const interval = setInterval(() => {
       const { loadingPercent } = this.state
       console.log(loadingPercent)
@@ -152,7 +171,7 @@ class MatchList extends Component {
           height: '-webkit-fill-available'
           }}
       >
-        <Container style={{ paddingTop: '5em', paddingBottom: '3em' }}>
+        <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
           <Segment loading={this.state.matchesLoading} >
             <Header as="h3" dividing >
                 Match list
@@ -184,7 +203,7 @@ class MatchList extends Component {
               </Link>
               <div>{fakeMatch.createdAt}</div>
               <div>{fakeMatch.bestOrigin}</div>
-              <div>{`fakeMatch score: ${fakeMatch.flatScore ? fakeMatch.flatScore : ''}`}</div>
+              <div>{`Match score: ${fakeMatch.flatScore ? fakeMatch.flatScore : ''}`}</div>
               <List horizontal>
                 {fakeMatch.flatmates.map(mate => (
                   <List.Item key={mate.uid} >
@@ -202,7 +221,7 @@ class MatchList extends Component {
               <Segment key={match.uid} clearing >
                 <Button floated="right" icon="user delete" color="red" onClick={() => this.leaveMatch(match)} />
                 <Link to={`/matches/${match.uid}`} >
-                  <h3>Match title</h3>
+                  <h3>{match.title ? match.title : 'Match Title'}</h3>
                 </Link>
                 <div>{match.createdAt.toDateString()}</div>
                 <div>{match.bestOrigin ? match.bestOrigin : match.location}</div>
@@ -224,7 +243,11 @@ class MatchList extends Component {
               </Segment>
             ))}
             <div>
-              <Button onClick={this.createNewMatchAndRedirect} >Create new custom match</Button>
+              <Popup
+                trigger={
+                  <Button onClick={this.createNewMatchAndRedirect} >Create new custom match</Button>}
+                content="Create your own match and invite your friends"
+              />
               <Popup
                 trigger={<Button onClick={this.getMatched} >Get matched by AI(demo)</Button>}
                 content="Do a test match with test users to see what the process looks like"
