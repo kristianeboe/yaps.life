@@ -12,11 +12,12 @@ class Home extends Component {
   }
 
   render() {
+    console.log(this.props)
     return (
       <div className="Home">
         <Parallax
           h1Content="Disributed Co-Living"
-          h3Content="The YAPS life is a lifestyle for champions"
+          h3Content="Home-as-a-service"
           h2Content="Get matched into a shared household with AI. All you need to do is register and we will do the rest."
           buttonContent="Register today!"
           // buttonOnClick={() => document.getElementById('register-section').scrollIntoView()}

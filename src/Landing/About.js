@@ -6,7 +6,8 @@ const extra = (
     <List.Item icon="mail" content={<a href="mailto:kristian.e.boe@gmail.com">hello@yaps.life</a>} />
     <List.Item icon="linkedin square" content={<a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/kristianeboe/">linkedIn</a>} />
     <List.Item icon="linkify" content={<a href="http://kristianeboe.me">kristianeboe.me</a>} />
-  </List>)
+  </List>
+)
 const About = () => (
   <Segment inverted style={{ paddingTop: '10vh', paddingBottom: '10vh' }} >
     <Container>

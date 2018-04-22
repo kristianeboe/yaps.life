@@ -247,23 +247,27 @@ export const onMatchCreate = functions.firestore
     const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
     const listings: any = await Promise.all(listingURLs.slice(0, 2).map(url => getListingDetails(url))).catch(err => console.log(err))
     const scores = await Promise.all(listings.map((listing) => {
-      const { address, price, primærrom } = listing
+      let { address, price, propertySize } = listing
 
-      const pricePerPerson =
+      const pricePerRoom =
           price < 15000
             ? price
             : Math.floor(price / updatedMatch.flatmates.length)
 
-      const propertySize = primærrom > 100 ? 5 : primærrom < 60 ? 1 : 3
+      propertySize = propertySize > 100 ? 5 : propertySize < 60 ? 1 : 3
       const budget =
-          pricePerPerson > 12000 ? 5 : pricePerPerson < 7000 ? 1 : 3
-      const newness = 3
-      const propertyVector = [budget, propertySize, newness]
+          pricePerRoom > 12000 ? 5 : pricePerRoom < 7000 ? 1 : 3
+      const standard = 3
+      const style = 3
+      const propertyVector = [budget, propertySize, standard, style]
 
       listing.groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
         updatedMatch.groupPropertyVector,
         propertyVector
       ))
+      listing.propertyVector = propertyVector
+      listing.pricePerRoom = pricePerRoom
+      
       return scoreApartment(listing.address, updatedMatch.flatmates)
     }))
     scores.forEach((score, i) => (listings[i].commuteScore = score))
@@ -287,6 +291,29 @@ export const onMatchCreate = functions.firestore
 
       if (match && match.flatmates.length > 3) */
   })
+
+export const onListingCreate = functions.firestore
+.document('listings/{listingId}')
+.onCreate(async (snap, context) => {
+  const listing = snap.data()
+  console.log(listing)
+  const matchesSnapsot = await admin.firestore().collection('matches').get()
+  matchesSnapsot.forEach(async matchDoc => {
+    const match = matchDoc.data()
+    const propScore = mapPropScoreToPercentage(euclidianDistanceSquared(
+      match.groupPropertyVector,
+      listing.propertyVector
+    ))
+    console.log(matchDoc.id)
+    console.log(propScore)
+    if (propScore > 10) {
+      const commuteScore = await scoreApartment(listing.address, match.flatmates)
+      console.log(commuteScore)
+      matchDoc.ref.update({propertyList: [...match.propertyList, {listingId: snap.id, commuteScore, groupScore: propScore}]})
+      snap.ref.update({matchedWith: [matchDoc.id]})
+    }
+  })
+})
 
 export const getBestOriginHTTPforMatch = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
@@ -361,22 +388,25 @@ export const getFinnURLList = functions.https.onRequest(async (req, res) => {
   const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
   const listings: any = await Promise.all(listingURLs.slice(0, 2).map(url => getListingDetails(url))).catch(err => console.log(err))
   const scores = await Promise.all(listings.map((listing) => {
-    const { address, price, primærrom } = listing
+    let { address, price, propertySize } = listing
 
-    const pricePerPerson =
+    const pricePerRoom =
         price < 15000
           ? price
           : Math.floor(price / updatedMatch.flatmates.length)
 
-    const propertySize = primærrom > 100 ? 5 : primærrom < 60 ? 1 : 3
-    const budget = pricePerPerson > 12000 ? 5 : pricePerPerson < 7000 ? 1 : 3
-    const newness = 3
-    const propertyVector = [budget, propertySize, newness]
+    propertySize = propertySize > 100 ? 5 : propertySize < 60 ? 1 : 3
+    const budget = pricePerRoom > 12000 ? 5 : pricePerRoom < 7000 ? 1 : 3
+    const standard = 3
+    const style = 3
+    const propertyVector = [budget, propertySize, standard, style]
 
     listing.groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
       updatedMatch.groupPropertyVector,
       propertyVector
     ))
+    listing.propertyVector = propertyVector
+    listing.pricePerRoom = pricePerRoom
     return scoreApartment(listing.address, updatedMatch.flatmates)
   }))
   scores.forEach((score, i) => (listings[i].commuteScore = score))

@@ -22,8 +22,28 @@ export async function getListingDetails(finnListingURL: string) {
     const dlItems = $('dl.r-prl.mhn.multicol.col-count1upto640.col-count2upto768.col-count1upto990.col-count2from990')
     dlItems.children().each((i, ele) => {
       if (ele.name === 'dt') {
-        const key = ele.children[0].data.trim()
-        const value = ele.next.next.children[0].data.trim()
+        let key = ele.children[0].data.trim()
+        let value = ele.next.next.children[0].data.trim()
+        switch (key) {
+          case 'Boligtype':
+           key = 'propertyType' 
+           value = value === 'Leilighet' ? 'apartment' : value
+            break;
+          case 'Etasje':
+            key= 'floor'
+            break
+          case 'Soverom':
+            key='numberOfBedrooms'
+            break
+          case 'Primærrom':
+            key='propertySize'
+            value = value.split(' ')[0]
+            break
+          case 'Leieperiode':
+            key="rentFrom"
+          default:
+            break;
+        }
         listingTemp[key] = value
       }
     })
@@ -35,8 +55,8 @@ export async function getListingDetails(finnListingURL: string) {
     })
 
     const listing = {
-      ...listingTemp,
       title,
+      ...listingTemp,
       address, 
       price,
       facilities,

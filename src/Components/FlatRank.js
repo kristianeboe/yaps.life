@@ -31,7 +31,7 @@ class FlatRank extends Component {
       price: '',
       budget: 0,
       propertySize: 0,
-      newness: 0,
+      standard: 0,
       // flats: [{ address: 'Arnebråtveien 75D', price: 25000, score: 10 }],
       segmentLoading: false,
       finnListingURL: '',
@@ -46,11 +46,11 @@ class FlatRank extends Component {
     console.log('submit')
 
     const {
-      address, price, budget, propertySize, newness, finnListingURL, apartmentMetaData
+      address, price, budget, propertySize, standard, finnListingURL, apartmentMetaData
     } = this.state
     const { propertyList, flatmates, matchDoc } = this.props
 
-    const propertyVector = [budget, propertySize, newness]
+    const propertyVector = [budget, propertySize, standard]
     const groupScore = this.mapPropScoreToPercentage(euclidianDistanceSquared(matchDoc.data().groupPropertyVector, propertyVector))
     console.log(groupScore)
     if (address.length < 1 || price.length < 1) {
@@ -115,11 +115,11 @@ class FlatRank extends Component {
         console.log(response.data)
         const { address, price, primærrom } = response.data
 
-        const pricePerPerson = price < 15000 ? price : Math.floor(price / this.props.flatmates.length)
+        const pricePerRoom = price < 15000 ? price : Math.floor(price / this.props.flatmates.length)
 
         const propertySize = primærrom > 100 ? 5 : primærrom < 60 ? 1 : 3
-        const budget = pricePerPerson > 12000 ? 5 : pricePerPerson < 7000 ? 1 : 3
-        const newness = response.data.facilities.find(el => el === 'moderne') ? 5 : 'Could not determine'
+        const budget = pricePerRoom > 12000 ? 5 : pricePerRoom < 7000 ? 1 : 3
+        const standard = response.data.facilities.find(el => el === 'moderne') ? 5 : 'Could not determine'
 
         this.setState({
           segmentLoading: false,
@@ -128,7 +128,7 @@ class FlatRank extends Component {
           budget,
           propertySize,
           apartmentMetaData: response.data,
-          newness
+          standard
         })
         console.log(this.state)
       })
@@ -137,7 +137,7 @@ class FlatRank extends Component {
 
   render() {
     const {
-      address, price, segmentLoading, budget, propertySize, newness
+      address, price, segmentLoading, budget, propertySize, standard
     } = this.state
 
     return (
@@ -228,8 +228,8 @@ class FlatRank extends Component {
                   label="Standard"
                   options={standardOptions}
                   placeholder="Standard"
-                  value={newness}
-                  name="newness"
+                  value={standard}
+                  name="standard"
                   onChange={this.handleChange}
                 />}
               content="You'll have to fill in this manually. Sorry :O PS: Defaults to medium"

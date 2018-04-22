@@ -109,7 +109,7 @@ class Profile extends Component {
               workplace: userData.workplace ? userData.workplace : '',
               budget: userData.budget ? userData.budget : 0,
               propertySize: userData.propertySize ? userData.propertySize : 0,
-              newness: userData.newness ? userData.newness : 0,
+              standard: userData.standard ? userData.standard : 0,
               matchLocation: userData.matchLocation
                 ? userData.matchLocation
                 : '',
@@ -148,10 +148,10 @@ class Profile extends Component {
     })
   }
 
-  handleNewness = (e, value) => {
+  handleStandard = (e, value) => {
     e.preventDefault()
     this.setState({
-      newness: value
+      standard: value
     })
   }
 
@@ -162,7 +162,7 @@ class Profile extends Component {
     for (let q = 0; q < 20; q += 1) {
       answerVector.push(this.state[`q${q + 1}`] - 3)
     }
-    const propertyVector = [this.state.budget, this.state.propertySize, this.state.newness]
+    const propertyVector = [this.state.budget, this.state.propertySize, this.state.standard]
     const userData = {
       displayName: this.state.displayName,
       age: this.state.age,
@@ -170,7 +170,7 @@ class Profile extends Component {
       studyProgramme: this.state.studyProgramme,
       budget: this.state.budget,
       propertySize: this.state.propertySize,
-      newness: this.state.newness,
+      standard: this.state.standard,
       workplace: this.state.workplace,
       workplaceLatLng: this.state.workplaceLatLng,
       university: this.state.university,
@@ -414,13 +414,13 @@ class Profile extends Component {
                       </Button.Group>
                     </Form.Field>
                     <Form.Field>
-                      <label>Newness</label>
+                      <label>standard</label>
                       <Button.Group widths={3} >
-                        <Button primary={this.state.newness === 1} onClick={e => this.handleNewness(e, 1)} >A fixer upper is fine with me</Button>
+                        <Button primary={this.state.standard === 1} onClick={e => this.handleStandard(e, 1)} >A fixer upper is fine with me</Button>
                         <Button.Or />
-                        <Button primary={this.state.newness === 3} onClick={e => this.handleNewness(e, 3)} >Flexible</Button>
+                        <Button primary={this.state.standard === 3} onClick={e => this.handleStandard(e, 3)} >Flexible</Button>
                         <Button.Or />
-                        <Button primary={this.state.newness === 5} onClick={e => this.handleNewness(e, 5)} >Give me something brand new</Button>
+                        <Button primary={this.state.standard === 5} onClick={e => this.handleStandard(e, 5)} >Give me something brand new</Button>
                       </Button.Group>
                     </Form.Field>
                     <div>
@@ -464,7 +464,7 @@ class Profile extends Component {
                       studyProgramme: this.state.studyProgramme,
                       university: this.state.university,
                       gender: this.state.gender,
-                      propertyVector: [this.state.budget, this.state.propertySize, this.state.newness],
+                      propertyVector: [this.state.budget, this.state.propertySize, this.state.standard],
                       matchLocation: this.state.matchLocation,
                     }}
                       similarityScore={100}

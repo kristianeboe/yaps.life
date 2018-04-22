@@ -11,7 +11,7 @@ export const PROPERTY_SIZE_TO_TEXT = {
 }
 
 
-export const NEWNESS_TO_TEXT = {
+export const STANDARD_TO_TEXT = {
   1: 'Old',
   3: 'Not new',
   5: 'Brand new'

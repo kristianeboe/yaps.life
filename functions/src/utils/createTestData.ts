@@ -6,7 +6,8 @@ import {
   STUDY_PROGRAMMES,
   BUDGETS,
   PROPERTY_SIZES,
-  NEWNESS
+  STANDARD,
+  STYLE,
 } from './constants'
 
 export function getRandomInt(max) {
@@ -32,8 +33,9 @@ export function createTestUsers(n) {
     const workplaceLatLng = WORKPLACES[workplace]
     const budget = BUDGETS[Math.floor(Math.random() * BUDGETS.length)]
     const propertySize = PROPERTY_SIZES[Math.floor(Math.random() * PROPERTY_SIZES.length)]
-    const newness = NEWNESS[Math.floor(Math.random() * NEWNESS.length)]
-    const propertyVector = [budget, propertySize, newness]
+    const standard = STANDARD[Math.floor(Math.random() * STANDARD.length)]
+    const style = STYLE[Math.floor(Math.random() * STYLE.length)]
+    const propertyVector = [budget, propertySize, standard, style]
     const user = {
       uid: uuid.v4(),
       displayName: `testUser${index}`,
@@ -63,15 +65,15 @@ export function createTestProperties(n) {
   for (let index = 0; index < n; index += 1) {
     const budget = BUDGETS[Math.floor(Math.random() * BUDGETS.length)]
     const propertySize = PROPERTY_SIZES[Math.floor(Math.random() * PROPERTY_SIZES.length)]
-    const newness = NEWNESS[Math.floor(Math.random() * NEWNESS.length)]
-    const propertyVector = [budget, propertySize, newness]
+    const standard = STANDARD[Math.floor(Math.random() * STANDARD.length)]
+    const propertyVector = [budget, propertySize, standard]
     const property = {
       uid: uuid.v4(),
       location: 'Oslo',
       address: '',
       budget,
       propertySize,
-      newness,
+      standard,
       propertyVector
     }
     properties.push(property)

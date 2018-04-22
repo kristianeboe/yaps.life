@@ -49,12 +49,20 @@ class Match extends Component {
     this.matchUnsubscribe()
   }
 
-  subscribeToMatch = (matchId) => {
+  getPropertyList = async propertyList => Promise.all(propertyList.map(async (property) => {
+    if (property.listingId) {
+      return firebase.firestore().collection('listings').doc(property.listingId).get()
+        .then(doc => doc.data())
+    }
+    return property
+  }))
+
+  subscribeToMatch = async (matchId) => {
     this.matchUnsubscribe = firebase
       .firestore()
       .collection('matches')
       .doc(matchId)
-      .onSnapshot((matchDoc) => {
+      .onSnapshot(async (matchDoc) => {
         const match = matchDoc.data()
         const { flatmates } = match
         this.setState({
@@ -65,12 +73,18 @@ class Match extends Component {
           airBnBQueryString: match.airBnBQueryString,
           propertyAlignment: match.propertyAlignment,
           bestOrigin: match.bestOrigin.length > 0 && match.bestOrigin !== 'Could not determine, did not receive any origins' ? match.bestOrigin : match.location,
-          propertyList: match.propertyList ? match.propertyList : [],
           flatmatesLoading: false,
           showChatRoom: true,
         })
+        const propList = await this.getPropertyList(match.propertyList)
+        console.log(propList)
+        this.setState({
+          propertyList: match.propertyList ? propList : [],
+
+        })
       })
   }
+
 
   mapSimScoreToPercentage = simScore => Math.floor((1 - (simScore / 320)) * 100)
 
@@ -250,10 +264,10 @@ class Match extends Component {
                       </Grid.Column>
                     </Grid>
                   </Segment>
-                  <FlatList flats={propertyList} />
+                  <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} propertyList={propertyList} />
                 </Grid.Column>
                 <Grid.Column>
-                  <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} propertyList={propertyList} />
+                  <FlatList flats={propertyList} />
                 </Grid.Column>
               </Grid>
               {this.state.showChatRoom && (

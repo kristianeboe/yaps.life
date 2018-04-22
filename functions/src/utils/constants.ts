@@ -94,7 +94,8 @@ export const GENDERS = ['Male', 'Female']
 
 export const BUDGETS = [1, 3, 5]
 export const PROPERTY_SIZES = [1, 3, 5]
-export const NEWNESS = [1, 3, 5]
+export const STANDARD = [1, 3, 5]
+export const STYLE = [1, 3, 5]
 
 export const GROUP_NAMES = [
   'The Wolf Pack',

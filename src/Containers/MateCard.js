@@ -11,11 +11,11 @@ const MateCard = ({
   const {
     age, photoURL, displayName, workplace, studyProgramme, university, gender, matchLocation, propertyVector
   } = mate
-  const [budget, propertySize, newness] = propertyVector
+  const [budget, propertySize, standard] = propertyVector
   const genderDisplay = gender === 'Male' ? 'He' : 'She'
   const budgetDisplay = budget === 1 ? 'cheaper' : budget === 3 ? '' : 'premium'
   const sizeDisplay = propertySize === 1 ? 'small' : propertySize === 3 ? '' : 'huge'
-  const newnessDisplay = newness === 1 ? 'rustic' : newness === 3 ? 'modern' : 'brand new'
+  const standardDisplay = standard === 1 ? 'rustic' : standard === 3 ? 'modern' : 'brand new'
   return (
     <Card centered >
       <Image
@@ -39,7 +39,7 @@ const MateCard = ({
           {`Studied ${studyProgramme} at ${university}`}
         </Card.Description>
         <Card.Description>
-          {`Looking to move into a ${sizeDisplay}, ${budgetDisplay} apartment in ${matchLocation}. Prefers ${newnessDisplay} apartments.`}
+          {`Looking to move into a ${sizeDisplay}, ${budgetDisplay} apartment in ${matchLocation}. Prefers ${standardDisplay} apartments.`}
         </Card.Description>
       </Card.Content>
       <Card.Content extra>
