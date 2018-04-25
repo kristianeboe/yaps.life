@@ -21,6 +21,7 @@ class Create extends Component {
       loading: false,
       formError: false,
       passwordMatchError: false,
+      errors: {}
     }
     // this.state = initialState
   }
@@ -55,6 +56,8 @@ class Create extends Component {
         photoURL: user.photoURL ? user.photoURL : '',
         email: user.email,
         phone: '',
+        answerVector: new Array(20).fill(0),
+        propertyVector: new Array(4).fill(0),
       })
       .then(() => resolve())
       .catch(error => reject(error))
@@ -115,7 +118,8 @@ class Create extends Component {
 
   render() {
     const {
-      signUp, redirectToProfile, loading, formError, passwordMatchError
+      signUp, redirectToProfile, loading, formError, passwordMatchError, errors,
+      email, password, passwordConfirm,
     } = this.state
     console.log(this.state)
     console.log(this.props)
@@ -149,9 +153,10 @@ class Create extends Component {
               iconPosition="left"
               placeholder="E-mail address"
               name="email"
-              value={this.state.email}
+              value={email}
               onChange={this.handleChange}
-              error={validEmail(this.state.email)}
+              onBlur={() => this.setState({ errors: { ...errors, email: !validEmail(email) } })}
+              error={errors.email}
             />
             <Form.Input
               fluid
@@ -160,9 +165,10 @@ class Create extends Component {
               placeholder="Password"
               type="password"
               name="password"
-              value={this.state.password}
+              value={password}
               onChange={this.handleChange}
-              error={validPassword(this.state.password)}
+              onBlur={() => this.setState({ errors: { ...errors, password: !validPassword(password) } })}
+              error={errors.password}
             />
             {this.state.signUp && (
             <Form.Input
@@ -172,8 +178,10 @@ class Create extends Component {
               placeholder="Confirm Password"
               type="password"
               name="passwordConfirm"
-              value={this.state.passwordConfirm}
+              value={passwordConfirm}
               onChange={this.handleChange}
+              onBlur={() => this.setState({ errors: { ...errors, passwordConfirm: !validPassword(passwordConfirm) || passwordConfirm === password } })}
+              error={errors.passwordConfirm}
             />
             )}
             {this.state.signUp ? (

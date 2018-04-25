@@ -244,7 +244,7 @@ export async function createMatchFromFlatmates(flatmates) {
         .update({
           [`currentMatches.${matchUid}`]: Date.now(),
           readyToMatch: false,
-          newMatch: true,
+          newMatches: true,
           gettingCloudMatched: false,
         })
           .catch(err =>

@@ -13,6 +13,7 @@ const RentFromDateRange = ({
         dateFormat="YYYY/MM/DD"
         selected={rentFrom}
         onChange={date => handleDateChange('rentFrom', date)}
+        disabled
       />
     </Form.Field>
     <Form.Field readOnly style={{ zIndex: 10 }} >
@@ -21,6 +22,8 @@ const RentFromDateRange = ({
         dateFormat="YYYY/MM/DD"
         selected={rentTo}
         onChange={date => handleDateChange('rentTo', date)}
+        disabled
+        showWeekNumbers
       />
     </Form.Field>
   </Form.Group>

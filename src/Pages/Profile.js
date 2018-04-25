@@ -9,7 +9,8 @@ import {
   Message,
   Label,
   Popup,
-  Header
+  Header,
+  Dropdown
 } from 'semantic-ui-react'
 import { Redirect, Link } from 'react-router-dom'
 
@@ -22,6 +23,7 @@ import {
   SOCIAL_OPENNESS_QUESTIONES,
   SOCIAL_FLEXIBILITY_QUESTIONES
 } from '../assets/MatchingQuestions'
+import { ProfileFormValidation } from '../utils/FormValidations'
 import { auth, firestore } from '../firebase'
 import MateCard from '../Containers/MateCard'
 import personAvatar from '../assets/images/personAvatar.png'
@@ -29,17 +31,8 @@ import PropertyVectorQuestions from '../Containers/PropertyVectorQuestions'
 import ContactInfo from '../Containers/ContactInfo'
 import PlacesAutoCompleteWrapper from '../Containers/PlacesAutoCompleteWrapper'
 import RentFromDateRange from '../Containers/RentfromDateRange'
-import { MATCH_LOCATION_OPTIONS } from '../utils/CONSTANTS'
+import { MATCH_LOCATION_OPTIONS, UNIVERSITY_OPTIONS, FIELD_OF_STUDY_OPTIONS } from '../utils/CONSTANTS'
 
-const universityOptions = [
-  { key: 'ntnu', text: 'NTNU', value: 'NTNU' },
-  { key: 'nhh', text: 'NHH', value: 'NHH' },
-  { key: 'bi', text: 'BI Oslo', value: 'BI' },
-  { key: 'uio', text: 'UIO', value: 'UIO' },
-  { key: 'uit', text: 'UIT', value: 'UIT' },
-  { key: 'uib', text: 'UIB', value: 'UIB' },
-  { key: 'other', text: 'Other', value: 'Other' },
-]
 
 class Profile extends Component {
   constructor(props) {
@@ -53,20 +46,22 @@ class Profile extends Component {
     }
     this.state = {
       user: null,
-      formLoading: true,
-      formSuccess: false,
+      profileFormLoading: true,
+      profileFormSuccess: false,
       displayName: '',
       photoURL: '',
       age: '',
       gender: '',
       email: '',
       phone: '',
-      studyProgramme: '',
+      fieldOfStudy: '',
+      fieldOfStudyOptions: FIELD_OF_STUDY_OPTIONS,
       matchLocation: '',
       workplace: '',
       workplaceLatLng: {},
       budget: 0,
       university: '',
+      universityOptions: UNIVERSITY_OPTIONS,
       ...questions,
       redirectToSignIn: false,
       readyToMatch: false,
@@ -89,24 +84,27 @@ class Profile extends Component {
           .then((doc) => {
             const userData = doc.data()
             const questions = {}
-            const answerVector = userData.answerVector ? userData.answerVector : []
+            const { answerVector, propertyVector } = userData
+
             for (let index = 0; index < answerVector.length; index += 1) {
               const answer = answerVector[index]
               questions[`q${index + 1}`] = answer + 3
             }
+            const [budget, propertySize, standard, style] = propertyVector
             this.setState({
-              formLoading: false,
+              profileFormLoading: false,
               displayName: userData.displayName ? userData.displayName : '',
               photoURL: user.photoURL ? user.photoURL : '',
               age: userData.age ? userData.age : '',
               gender: userData.gender ? userData.gender : '',
-              studyProgramme: userData.studyProgramme
-                ? userData.studyProgramme
+              fieldOfStudy: userData.fieldOfStudy
+                ? userData.fieldOfStudy
                 : '',
               workplace: userData.workplace ? userData.workplace : '',
-              budget: userData.budget ? userData.budget : 0,
-              propertySize: userData.propertySize ? userData.propertySize : 0,
-              standard: userData.standard ? userData.standard : 0,
+              budget,
+              propertySize,
+              standard,
+              style,
               matchLocation: userData.matchLocation
                 ? userData.matchLocation
                 : '',
@@ -135,42 +133,61 @@ class Profile extends Component {
     this.setState({ [name]: value })
   }
 
+  handleAddition = (e, { options, value }) => {
+    this.setState({
+      [options]: [{ text: value, value, key: value }, ...this.state[options]],
+    })
+  }
 
-  handleSubmit = () => {
+
+  handleSubmit = async () => {
     window.scrollTo(0, 0)
-    this.setState({ formLoading: true })
+    this.setState({ profileFormLoading: true })
     const answerVector = []
     for (let q = 0; q < 20; q += 1) {
       answerVector.push(this.state[`q${q + 1}`] - 3)
     }
-    const propertyVector = [this.state.budget, this.state.propertySize, this.state.standard]
-    const userData = {
+
+    const formFields = {
       displayName: this.state.displayName,
       age: this.state.age,
       gender: this.state.gender,
-      studyProgramme: this.state.studyProgramme,
-      budget: this.state.budget,
-      propertySize: this.state.propertySize,
-      standard: this.state.standard,
-      workplace: this.state.workplace,
-      workplaceLatLng: this.state.workplaceLatLng,
+      fieldOfStudy: this.state.fieldOfStudy,
       university: this.state.university,
       matchLocation: this.state.matchLocation,
-      readyToMatch: this.state.readyToMatch,
+      workplace: this.state.workplace,
+      workplaceLatLng: this.state.workplaceLatLng,
+      rentFrom: this.state.rentFrom.toISOString(),
+      rentTo: this.state.rentTo.toISOString(),
+      propertyVector: [this.state.budget, this.state.propertySize, this.state.standard, this.state.style],
       tos: this.state.tos,
-      uid: this.state.user.uid,
-      photoURL: this.state.user.photoURL,
+      readyToMatch: this.state.readyToMatch,
       answerVector,
-      propertyVector
     }
 
-    firestore
-      .collection('users')
-      .doc(this.state.user.uid)
-      .set(userData, { merge: true })
-      .then(() => {
-        this.setState({ formLoading: false, formSuccess: true })
-      })
+    const errors = {}
+    let errorFlag = false
+    Object.keys(formFields).forEach((key) => {
+      const value = formFields[key]
+      if (!ProfileFormValidation[key](value)) {
+        errors[key] = true
+        errorFlag = true
+      }
+    })
+
+    console.log(errors)
+    if (!errorFlag) {
+      const userData = {
+        ...formFields,
+        uid: this.state.user.uid,
+        photoURL: this.state.user.photoURL,
+      }
+
+      await firestore.collection('users').doc(this.state.user.uid).set(userData, { merge: true })
+      this.setState({ profileFormLoading: false, profileFormSuccess: true, profileFormError: false })
+    } else {
+      this.setState({ profileFormLoading: false, profileFormError: true, errors, })
+    }
   }
 
   handleSliderChange = (value, name) => {
@@ -212,12 +229,13 @@ class Profile extends Component {
     }
 
     const {
-      formSuccess,
+      profileFormSuccess,
+      profileFormError,
       errors,
       displayName,
       age,
       gender,
-      studyProgramme,
+      fieldOfStudy,
       matchLocation,
       university,
       photoURL,
@@ -230,6 +248,8 @@ class Profile extends Component {
     const {
       budget, propertySize, standard, style
     } = this.state
+
+    console.log(this.state)
 
     return (
       <div style={{
@@ -244,9 +264,10 @@ class Profile extends Component {
 
 
         <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
-          <Segment raised className="you" loading={this.state.formLoading}>
+          <Segment raised className="you" loading={this.state.profileFormLoading}>
             <Form
-              success={formSuccess}
+              success={profileFormSuccess}
+              error={profileFormError}
               onSubmit={this.handleSubmit}
             >
               <Grid columns="equal" stackable>
@@ -265,22 +286,32 @@ class Profile extends Component {
                     handleChange={this.handleChange}
                   />
                   <Form.Group widths="equal">
-                    <Form.Input
-                      fluid
-                      label="Study programme"
-                      placeholder="Study programme"
-                      name="studyProgramme"
-                      value={this.state.studyProgramme}
-                      onChange={this.handleChange}
-                    />
                     <Form.Select
                       fluid
                       style={{ zIndex: 61 }}
-                      label="University"
-                      options={universityOptions}
-                      placeholder="University"
-                      value={this.state.university}
+                      label="Field of study"
+                      options={this.state.fieldOfStudyOptions}
+                      placeholder="Field of study"
+                      value={this.state.fieldOfStudy}
+                      name="fieldOfStudy"
+                      onChange={this.handleChange}
+                      search
+                      selection
+                      allowAdditions
+                      onAddItem={e => this.handleAddition(e, { options: 'fieldOfStudyOptions', value: this.state.fieldOfStudy })}
+                    />
+                    <Form.Select
+                      style={{ zIndex: 61 }}
+                      fluid
+                      search
+                      selection
+                      allowAdditions
+                      onAddItem={e => this.handleAddition(e, { options: 'universityOptions', value: this.state.university })}
                       name="university"
+                      label="University"
+                      placeholder="University"
+                      options={this.state.universityOptions}
+                      value={this.state.university}
                       onChange={this.handleChange}
                     />
                   </Form.Group>
@@ -301,6 +332,36 @@ class Profile extends Component {
                       fieldValue={this.state.workplace}
                     />
                   </Form.Field>
+                  {/* <Form.Group> // what will you work with?
+                    <Form.Select
+                      style={{ zIndex: 61 }}
+                      fluid
+                      search
+                      selection
+                      allowAdditions
+                      onAddItem={e => this.handleAddition(e, { options: 'universityOptions', value: this.state.university })}
+                      name="university"
+                      label="University"
+                      placeholder="University"
+                      options={this.state.universityOptions}
+                      value={this.state.university}
+                      onChange={this.handleChange}
+                    />
+                    <Form.Select
+                      style={{ zIndex: 61 }}
+                      fluid
+                      search
+                      selection
+                      allowAdditions
+                      onAddItem={e => this.handleAddition(e, { options: 'universityOptions', value: this.state.university })}
+                      name="university"
+                      label="University"
+                      placeholder="University"
+                      options={this.state.universityOptions}
+                      value={this.state.university}
+                      onChange={this.handleChange}
+                    />
+                  </Form.Group> */}
                   <RentFromDateRange
                     rentFrom={this.state.rentFrom}
                     rentTo={this.state.rentTo}
@@ -349,7 +410,7 @@ class Profile extends Component {
                       age: this.state.age,
                       displayName: this.state.displayName,
                       workplace: this.state.workplace,
-                      studyProgramme: this.state.studyProgramme,
+                      fieldOfStudy: this.state.fieldOfStudy,
                       university: this.state.university,
                       gender: this.state.gender,
                       propertyVector: [this.state.budget, this.state.propertySize, this.state.standard],
@@ -360,7 +421,24 @@ class Profile extends Component {
 
                 </Grid.Column>
               </Grid>
-              <Message success header="Profile updated" content="You're ready to match!" />
+              <Message
+                success
+                header="Profile updated"
+                content={
+                  <div>
+                    You're ready to match! <Link to="matches" >Go to match list</Link>
+
+                  </div>
+                }
+              />
+              <Message
+                error
+                header="Profile not updated"
+                content={
+                  `Fix the errors in the form and try again\n
+                  ${Object.keys(errors)}`
+                }
+              />
             </Form>
           </Segment>
 
@@ -369,7 +447,7 @@ class Profile extends Component {
               <Grid.Column>
                 <Segment
                   style={{ minHeight: '35em' }}
-                  loading={this.state.formLoading}
+                  loading={this.state.profileFormLoading}
                 >
                   <h1>Social habbits</h1>
                   <Segment style={{ paddingTop: '5vh' }} >
@@ -389,7 +467,7 @@ class Profile extends Component {
               <Grid.Column>
                 <Segment
                   style={{ minHeight: '35em' }}
-                  loading={this.state.formLoading}
+                  loading={this.state.profileFormLoading}
                 >
                   <h1>Cleanliness</h1>
                   <Segment style={{ paddingTop: '5vh' }}>
@@ -411,7 +489,7 @@ class Profile extends Component {
               <Grid.Column>
                 <Segment
                   style={{ minHeight: '35em' }}
-                  loading={this.state.formLoading}
+                  loading={this.state.profileFormLoading}
                 >
                   <h1>Social openness</h1>
                   <Segment style={{ paddingTop: '5vh' }} >
@@ -431,7 +509,7 @@ class Profile extends Component {
               <Grid.Column>
                 <Segment
                   style={{ minHeight: '35em' }}
-                  loading={this.state.formLoading}
+                  loading={this.state.profileFormLoading}
                 >
                   <h1>Social flexibility</h1>
                   <Segment style={{ paddingTop: '5vh' }} >

@@ -17,11 +17,11 @@ const PropertySegment = ({
   property, index, commuteScore, groupScore
 }) => {
   const {
-    title, address, pricePerRoom, propertyVector, listingURL,
+    title, address, pricePerRoom, propertyVector, listingURL, uid,
   } = property
   const [budget, propertySize, standard, style] = propertyVector
   return (
-    <Segment key={address} clearing>
+    <Segment key={uid || listingURL} clearing>
       <Header as="h4">{index + 1 ? `${index + 1}.` : ''} {title || address}
         <Header.Subheader>
           <List size="small" >

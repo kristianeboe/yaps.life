@@ -1,0 +1,59 @@
+[debug] [2018-04-25T16:34:08.041Z] ----------------------------------------------------------------------
+[debug] [2018-04-25T16:34:08.043Z] Command:       /usr/local/Cellar/node/9.11.1/bin/node /usr/local/bin/firebase experimental:functions:shell
+[debug] [2018-04-25T16:34:08.043Z] CLI Version:   3.18.0
+[debug] [2018-04-25T16:34:08.043Z] Platform:      darwin
+[debug] [2018-04-25T16:34:08.043Z] Node Version:  v9.11.1
+[debug] [2018-04-25T16:34:08.044Z] Time:          Wed Apr 25 2018 18:34:08 GMT+0200 (CEST)
+[debug] [2018-04-25T16:34:08.044Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-04-25T16:34:08.058Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-04-25T16:34:08.058Z] > authorizing via signed-in user
+[debug] [2018-04-25T16:34:08.059Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-04-25T16:34:08.060Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token: '1/2UTnQ5d1xDWnkjzCqR56sAKsGn0WWkorEjhhB9SSvnk',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Wed Apr 25 2018 18:34:08 GMT+0200 (CEST)
+[debug] [2018-04-25T16:34:08.225Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-25T16:34:08.239Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yaps-1496498804190  
+  
+ Wed Apr 25 2018 18:34:08 GMT+0200 (CEST)
+[debug] [2018-04-25T16:34:09.224Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-25T16:34:09.225Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yaps-1496498804190/tokens  
+  
+ Wed Apr 25 2018 18:34:09 GMT+0200 (CEST)
+[debug] [2018-04-25T16:34:09.924Z] <<< HTTP RESPONSE 200
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-04-25T16:34:10.638Z] Fetching environment
+[debug] [2018-04-25T16:34:10.639Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/yaps-1496498804190  
+  
+ Wed Apr 25 2018 18:34:10 GMT+0200 (CEST)
+[debug] [2018-04-25T16:34:11.548Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-25T16:34:11.549Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/569081698642:getServerAppConfig  
+  
+ Wed Apr 25 2018 18:34:11 GMT+0200 (CEST)
+[debug] [2018-04-25T16:34:12.093Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-25T16:34:12.094Z] Starting @google-cloud/functions-emulator
+[debug] [2018-04-25T16:34:13.658Z] Parsing function triggers
+[debug] [2018-04-25T16:34:14.243Z] Deploying functions locally
+[debug] [2018-04-25T16:34:14.244Z] Deploying functions locally
+[info] ✔  functions: deleteTestUsers
+[info] ✔  functions: populateDatabaseWithTestUsersHTTPS
+[info] ✔  functions: countTestUsers
+[info] ✔  functions: setTestUsersReadyToMatch
+[info] ✔  functions: aggregateMatchInfo
+[info] ✔  functions: getSingleMatchByKNNOnSave
+[info] ✔  functions: scoreApartmentHTTPS
+[info] ✔  functions: getListingDetailsHTTPS
+[info] ✔  functions: updateUser
+[info] ✔  functions: updateUsers
+[info] ✔  functions: getFinnURLList
+[info] ✔  functions: addListingToMatchHTTPS
+[info] ✔  functions: resetDatabase
+[info] ✔  functions: getMatchedByCluster
+[info] ✔  functions: getMatchedByClusterOnSave
+[info] ✔  functions: onMatchCreate
+[info] ✔  functions: onListingCreate
+[info] ✔  functions: getBestOriginHTTPforMatch

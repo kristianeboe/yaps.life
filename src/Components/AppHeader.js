@@ -61,9 +61,9 @@ class AppHeader extends Component {
           .doc(user.uid)
           .onSnapshot((doc) => {
             try {
-              const { newMatch } = doc.data()
+              const { newMatches } = doc.data()
               this.setState({
-                newMatch
+                newMatches
               })
             } catch (error) {
               console.log(error)
@@ -76,11 +76,11 @@ class AppHeader extends Component {
   closeBurgerMenu = () => {
     this.setState({ burgerMenuIsOpen: false })
   }
-  seeNewUsers = (newMatch) => {
+  seeNewUsers = (newMatches) => {
     this.closeBurgerMenu()
     this.handleItemClick(null, { name: 'matches' })
-    if (newMatch) {
-      firestore.collection('users').doc(this.props.user.uid).update({ newMatch: false })
+    if (newMatches) {
+      firestore.collection('users').doc(this.props.user.uid).update({ newMatches: false })
     }
   }
 
@@ -102,7 +102,7 @@ class AppHeader extends Component {
   render() {
     const { burgerMenuIsOpen, activeItem } = this.state
     const { user } = this.props
-    const newMatch = user ? user.newMatch : false
+    const { newMatches } = this.props
 
     const Logo = () => (
       <Menu.Item as="div">
@@ -157,11 +157,11 @@ class AppHeader extends Component {
                 </Link>
               </Menu.Item>
               {user && (
-              <Menu.Item as="div" onClick={() => this.seeNewUsers(newMatch)}>
+              <Menu.Item as="div" onClick={() => this.seeNewUsers(newMatches)}>
                 <Icon name="users" />
                 <Link to="/matches">
                 Matches
-                  {newMatch && (
+                  {newMatches && (
                   <Label color="red" size="mini" >
                     New
                   </Label>
@@ -225,11 +225,11 @@ class AppHeader extends Component {
                 </Link>
               </Menu.Item>
 
-              <Menu.Item as="div" active={activeItem === 'matches'} name="matches" onClick={() => this.seeNewUsers(newMatch)}>
+              <Menu.Item as="div" active={activeItem === 'matches'} name="matches" onClick={() => this.seeNewUsers(newMatches)}>
                 <Link to="/matches">
                   <Icon name="users" />
                 Matches
-                  {newMatch && (
+                  {newMatches && (
                   <Label color="red" size="mini" >
                     New
                   </Label>

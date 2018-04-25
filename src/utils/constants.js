@@ -109,3 +109,35 @@ export const STYLE_OPTIONS = [
   { key: '2', value: 3, text: 'Refurbished' },
   { key: '3', value: 5, text: 'Modern/Hipster' },
 ]
+
+
+export const UNIVERSITY_OPTIONS = [
+  { key: 'ntnu', text: 'NTNU', value: 'NTNU' },
+  { key: 'nhh', text: 'NHH', value: 'NHH' },
+  { key: 'bi', text: 'BI Oslo', value: 'BI' },
+  { key: 'uio', text: 'UIO', value: 'UIO' },
+  { key: 'uit', text: 'UIT', value: 'UIT' },
+  { key: 'uib', text: 'UIB', value: 'UIB' },
+]
+
+export const FIELD_OF_STUDY_OPTIONS = [
+  { key: 'cs', text: 'Computer Science', value: 'computer_sciecne' },
+  { key: 'fin', text: 'Finance', value: 'finance' },
+  { key: 'des', text: 'Design', value: 'design' },
+  { key: 'arc', text: 'Architecture', value: 'architechture' },
+  { key: 'law', text: 'Law', value: 'law' },
+  { key: 'pm', text: 'Physics & Mathematics', value: 'phys_math' },
+  { key: 'con', text: 'Construction', value: 'construction' },
+  { key: 'een', text: 'Electrical Engineering', value: 'electrical_engineering' },
+  { key: 'cen', text: 'Checmical Engineering', value: 'checmical_engineering' },
+]
+
+export const TYPE_OF_WORK_OPTIONS = [
+  { key: 'c', text: 'Coding', value: 'coding' },
+  { key: 's', text: 'Strategy', value: 'strategy' },
+  { key: 'pm', text: 'Project management', value: 'project_management' },
+  { key: 'f', text: 'Finance', value: 'finance' },
+  { key: 'su', text: 'Startup', value: 'startup' },
+  { key: 'd', text: 'Design', value: 'design' },
+  { key: 'e', text: 'Engineering', value: 'engineering' },
+]

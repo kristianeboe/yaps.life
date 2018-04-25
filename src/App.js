@@ -16,13 +16,14 @@ class App extends Component {
     super(props)
     this.unsubscribe = null
     this.state = {
+      user: null,
       userData: {},
     }
   }
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot(doc => this.setState({ userData: doc.data() }))
+        this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot(doc => this.setState({ user, userData: doc.data() }))
       }
     })
   }
@@ -33,10 +34,10 @@ class App extends Component {
     }
   }
   render() {
-    const { userData } = this.state
+    const { user, userData } = this.state
     return (
       <div className="app">
-        <AppHeader user={userData} />
+        <AppHeader user={user} newMatches={userData.newMatches} />
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/create" component={Create} />

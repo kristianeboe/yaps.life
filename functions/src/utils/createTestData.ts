@@ -24,7 +24,7 @@ export function createTestUsers(n) {
     }
     const university =
       UNIVERSITIES[Math.floor(Math.random() * UNIVERSITIES.length)]
-    const studyProgramme =
+    const fieldOfStudy =
       STUDY_PROGRAMMES[university][
         Math.floor(Math.random() * Math.floor(STUDY_PROGRAMMES[university].length))
       ]
@@ -51,7 +51,7 @@ export function createTestUsers(n) {
       tos: true,
       readyToMatch: true,
       gender: GENDERS[Math.floor(Math.random() * GENDERS.length)],
-      studyProgramme,
+      fieldOfStudy,
       answerVector
     }
     users.push(user)
@@ -94,7 +94,7 @@ export const me = {
   answerVector: [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1],
   propertyVector: [5, 5, 5],
   readyToMatch: true,
-  studyProgramme: 'Computer Science',
+  fieldOfStudy: 'Computer Science',
   tos: true,
   uid: 'hWBbCxiigfUISnJ8upb6pnUDfXG3',
   university: 'NTNU',

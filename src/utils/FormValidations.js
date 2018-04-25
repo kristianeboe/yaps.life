@@ -1,4 +1,5 @@
 import { MATCH_LOCATION_OPTIONS, PROPERTY_TYPE_OPTIONS, BUDGET_OPTIONS, PROPERTY_SIZE_OPTIONS, STANDARD_OPTIONS, STYLE_OPTIONS } from './CONSTANTS'
+import moment from 'moment'
 
 const validStandardInput = input => input.length > 0 && input.length < 100
 const isNumber = number => !isNaN(parseFloat(number)) && isFinite(number)
@@ -33,7 +34,14 @@ const validPropertyVector = propertyVector => propertyVector.length === 4 && pro
 
 const validListingURL = listingURL => listingURL.length === 0 || listingURL.includes('finn.no') || listingURL.includes('airbnb.com') || listingURL.includes('hybel.no') || listingURL.includes('utleiemegleren.no')
 const validTOS = tos => tos
+const validReadyToMatch = readyToMatch => true || false
+const validRentFrom = () => true // date.isValid()
+const validRentTo = () => true // date.isValid()
+const validAnswerVector = answerVector => answerVector.length === 20 && answerVector.reduce((f, c) => [-2, -1, 0, 1, 2].includes(c))
 
+/* const validStudyProgramme = studyProgramme =>
+const validUniversity = university =>
+ */
 export const LandlordFormValidation = {
   displayName: validDisplayName,
   age: validAge,
@@ -66,6 +74,23 @@ export const EvaluateListingFormValidation = {
   style: validStyle,
   propertyVector: validPropertyVector,
   listingURL: validListingURL,
+}
+
+export const ProfileFormValidation = {
+  displayName: validDisplayName,
+  age: validAge,
+  gender: validGender,
+  fieldOfStudy: validStandardInput,
+  university: validStandardInput,
+  matchLocation: validMatchLocation,
+  workplace: validAddress,
+  workplaceLatLng: validLatLng,
+  rentFrom: validRentFrom,
+  rentTo: validRentTo,
+  propertyVector: validPropertyVector,
+  tos: validTOS,
+  readyToMatch: validReadyToMatch,
+  answerVector: validAnswerVector,
 }
 
 /*

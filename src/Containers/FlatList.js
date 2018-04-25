@@ -6,8 +6,9 @@ import PropertySegment from './PropertySegment'
 
 const FlatList = (props) => {
   const { flats } = props
+  console.log(flats)
   return _.sortBy(flats, 'commuteScore').map((flat, index) => (
-    <PropertySegment key={flat.listing.uid} property={flat.listing} commuteScore={flat.commuteScore} groupScore={flat.groupScore} index={index} />
+    <PropertySegment key={flat.uid || flat.listingURL} property={flat.listing} commuteScore={flat.commuteScore} groupScore={flat.groupScore} index={index} />
   ))
 }
 

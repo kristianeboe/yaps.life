@@ -393,14 +393,14 @@ export const updateUsers = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     await admin
       .firestore()
-      .collection('users')
+      .collection('testUsers')
       .get()
       .then((snapshot) => {
         snapshot.forEach(doc => {
           const data = doc.data()
           /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
           propertyVector.push(3) */
-          doc.ref.update({ phone: '' })
+          doc.ref.update({ fieldOfStudy: data.studyProgramme })
           console.log('User ' + doc.id + 'updated')
         })
       }).catch((err) => {

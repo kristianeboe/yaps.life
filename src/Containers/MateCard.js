@@ -11,7 +11,7 @@ const MateCard = ({
   mate, similarityScore
 }) => {
   const {
-    age, photoURL, displayName, workplace, studyProgramme, university, gender, matchLocation, propertyVector, linkedInURL
+    age, photoURL, displayName, workplace, fieldOfStudy, university, gender, matchLocation, propertyVector, linkedInURL
   } = mate
   const [budget, propertySize, standard] = propertyVector
   const genderDisplay = gender === 'Male' ? 'He' : 'She'
@@ -50,7 +50,7 @@ const MateCard = ({
           </div>
           <div>
             <Icon name="student" />{' '}
-            {`${studyProgramme}, ${university}`}
+            {`${fieldOfStudy}, ${university}`}
           </div>
         </Card.Meta>
         )}
