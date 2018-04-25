@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Image, Card, Search } from 'semantic-ui-react'
 import _ from 'underscore'
 import personAvatar from '../assets/images/personAvatar.png'
-import firebase from '../firebase'
+import { firestore } from '../firebase'
 
 
 class AddUserCard extends Component {
@@ -17,8 +17,7 @@ class AddUserCard extends Component {
   }
 
   componentDidMount() {
-    firebase
-      .firestore()
+    firestore
       .collection('users')
       .get()
       .then((snapshot) => {

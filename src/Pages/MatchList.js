@@ -4,7 +4,7 @@ import { Link, Redirect } from 'react-router-dom'
 import uuid from 'uuid'
 import _ from 'underscore'
 import axios from 'axios'
-import firebase, { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 import personAvatar from '../assets/images/personAvatar.png'
 
 const fakeMatch = {
@@ -46,13 +46,13 @@ class MatchList extends Component {
     auth.onAuthStateChanged((user) => {
       this.setState({ user })
       if (user) {
-        this.unsubscribe = firebase.firestore().collection('users').doc(user.uid).onSnapshot((doc) => {
+        this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot((doc) => {
           const userData = doc.data()
           const matches = userData.currentMatches ? userData.currentMatches : {}
 
           this.setState({ gettingCloudMatched: userData.gettingCloudMatched })
 
-          Promise.all(Object.keys(matches).map(matchId => firebase.firestore().collection('matches').doc(matchId).get()))
+          Promise.all(Object.keys(matches).map(matchId => firestore.collection('matches').doc(matchId).get()))
             .then(results => this.setState({
               matchesLoading: false,
               userData,
@@ -77,7 +77,7 @@ class MatchList extends Component {
   getMatched = (e) => {
     e.preventDefault()
     console.log('about to match')
-    firebase.firestore().collection('users').doc(this.state.user.uid).update({ gettingCloudMatched: true })
+    firestore.collection('users').doc(this.state.user.uid).update({ gettingCloudMatched: true })
     this.setState({ gettingCloudMatched: true, loadingPercent: 25, loadingText: 'Uploading you to the cloud. Prepare to get matched ;)' })
     setTimeout(() => this.setState({ loadingPercent: 50, loadingText: 'Matching underway. Stay tuned.' }), 8000)
     axios
@@ -91,16 +91,19 @@ class MatchList extends Component {
 
   createNewMatchAndRedirect = () => {
     const match = {
+      title: 'The One',
       uid: uuid.v4(),
       flatmates: [this.state.userData],
-      flatScore: 100,
-      propertyAlignment: 100,
       location: 'Oslo',
       bestOrigin: '',
+      flatScore: 100,
+      propertyAlignment: 100,
+      propertyList: [],
+      groupPropertyVector: this.state.userData.propertyVector,
       custom: true,
       createdAt: new Date()
     }
-    firebase.firestore().collection('matches').doc(match.uid).set(match)
+    firestore.collection('matches').doc(match.uid).set(match)
       .then(() => {
         this.state.userDoc.ref.update({ [`currentMatches.${match.uid}`]: Date.now() })
       })
@@ -111,7 +114,7 @@ class MatchList extends Component {
     const { userData } = this.state
     const flatmates = match.flatmates.filter(mate => mate.uid !== userData.uid)
     const currentMatches = _.omit(userData.currentMatches, match.uid)
-    const matchRef = firebase.firestore().collection('matches').doc(match.uid)
+    const matchRef = firestore.collection('matches').doc(match.uid)
     Promise.all([
       matchRef.update({ flatmates }),
       matchRef.collection('messages').add({
@@ -123,7 +126,7 @@ class MatchList extends Component {
           photoURL: userData.photoURL ? userData.photoURL : personAvatar,
         },
       }),
-      firebase.firestore().collection('users').doc(userData.uid).update({ currentMatches })
+      firestore.collection('users').doc(userData.uid).update({ currentMatches })
     ]).then(() => {
       this.setState({
         matches: this.state.matches.filter(match_ => match_.uid !== match.uid)
@@ -184,7 +187,7 @@ class MatchList extends Component {
               <Message
                 icon="users"
                 header="You have no matches yet"
-                content="Create your own match or get matched by AI by clicking the buttons below"
+                content="Create your own match, do a demo match or wait for the system to match you with AI. You'll get an email when it does."
               />
           )
             }
@@ -252,7 +255,6 @@ class MatchList extends Component {
                 trigger={<Button onClick={this.getMatched} >Get matched by AI(demo)</Button>}
                 content="Do a test match with test users to see what the process looks like"
               />
-              <Button>Get matched by AI</Button>
             </div>
           </Segment>
         </Container>

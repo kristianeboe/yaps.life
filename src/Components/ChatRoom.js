@@ -86,7 +86,6 @@ class ChatRoom extends Component {
             avatarStyle.float = 'right'
             contentStyle = { marginRight: '3.5em', textAlign: 'right' }
           }
-          console.log(message.dateTime)
           const timeOfWriting = new Date(message.dateTime).toString().slice(0, 24)
           return (
             <Comment key={message.dateTime} >

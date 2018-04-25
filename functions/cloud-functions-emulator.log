@@ -23895,3 +23895,182 @@ Execution took 4730 ms, user function completed successfully
 2018-04-22T15:36:43.649Z - info: 20 real users updated
 2018-04-22T15:36:44.373Z - info: 1000 test users ready to match
 2018-04-22T15:36:44.375Z - info: Execution took 3039 ms, user function completed successfully
+2018-04-23T09:47:43.660Z - info: User function triggered, starting execution
+2018-04-23T09:47:46.344Z - info: 21 real users updated
+2018-04-23T09:47:47.078Z - info: 1000 test users ready to match
+2018-04-23T09:47:47.082Z - info: Execution took 3423 ms, user function completed successfully
+2018-04-23T11:53:33.281Z - info: User function triggered, starting execution
+2018-04-23T11:53:35.508Z - info: 21 real users updated
+2018-04-23T11:53:36.228Z - info: 1000 test users ready to match
+2018-04-23T11:53:36.233Z - info: Execution took 2952 ms, user function completed successfully
+2018-04-23T12:12:53.695Z - info: User function triggered, starting execution
+2018-04-23T12:12:55.958Z - info: User 0M01ZrNAJ7X8fuCXMXSifoMLju72updated
+2018-04-23T12:12:55.959Z - info: User 2GJ58Ne2fGRFytAHKzmwI5wzJBd2updated
+2018-04-23T12:12:55.959Z - info: User 2f6i4mvzBAYMAjFaCdFLNNQwdjp1updated
+2018-04-23T12:12:55.960Z - info: Error in updating users TypeError: Cannot read property 'push' of undefined
+    at snapshot.forEach.doc (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:342:32)
+    at QuerySnapshot.forEach (/Users/Kristian/Developer/yaps.life/functions/node_modules/@google-cloud/firestore/src/reference.js:1012:16)
+    at admin.firestore.collection.get.then (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:339:22)
+    at <anonymous>
+    at process._tickCallback (internal/process/next_tick.js:182:7)
+2018-04-23T12:12:55.963Z - info: Execution took 2268 ms, user function completed successfully
+2018-04-23T12:13:31.174Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-04-23T12:13:31.174Z - info: Worker for resetDatabase closed due to file changes.
+2018-04-23T12:13:31.175Z - info: Worker for onMatchCreate closed due to file changes.
+2018-04-23T12:13:31.175Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-04-23T12:13:31.175Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-04-23T12:13:31.175Z - info: Worker for onListingCreate closed due to file changes.
+2018-04-23T12:13:31.175Z - info: Worker for countTestUsers closed due to file changes.
+2018-04-23T12:13:31.176Z - info: Worker for updateUsers closed due to file changes.
+2018-04-23T12:13:31.176Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-04-23T12:13:31.176Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-04-23T12:13:31.177Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-04-23T12:13:31.177Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-04-23T12:13:31.177Z - info: Worker for updateUser closed due to file changes.
+2018-04-23T12:13:31.177Z - info: Worker for getFinnURLList closed due to file changes.
+2018-04-23T12:13:31.187Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-04-23T12:13:31.187Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-04-23T12:13:31.187Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-04-23T12:14:53.723Z - info: User function triggered, starting execution
+2018-04-23T12:14:55.868Z - info: User 0M01ZrNAJ7X8fuCXMXSifoMLju72updated
+2018-04-23T12:14:55.869Z - info: User 2GJ58Ne2fGRFytAHKzmwI5wzJBd2updated
+2018-04-23T12:14:55.869Z - info: User 2f6i4mvzBAYMAjFaCdFLNNQwdjp1updated
+2018-04-23T12:14:55.869Z - info: User 3neRxD0eNheokKQbeN9ozlIsorJ2updated
+2018-04-23T12:14:55.870Z - info: User 4d73b6usYaPjRIj9YQRjEKVV7vH3updated
+2018-04-23T12:14:55.870Z - info: User 4spel7y5oJg0OarPxcHxhdwkgPF2updated
+2018-04-23T12:14:55.870Z - info: User 8LhfxDrSJ4Qd2RHQ7bHCSIbkijL2updated
+2018-04-23T12:14:55.870Z - info: User 8rn9x1AMN2PaYZ3fQFK0Hrv2yrn2updated
+2018-04-23T12:14:55.871Z - info: User Is0H5IQ5GBM3ntyJmFqpOAOfGmS2updated
+2018-04-23T12:14:55.871Z - info: User PmzsNVCnUSMVSMu2WGRa4omxez52updated
+2018-04-23T12:14:55.871Z - info: User UBavdmnoNnhIN4CFeNnTdAVlkh42updated
+2018-04-23T12:14:55.872Z - info: User WaIVUhvQBkUZ0OdxllmroNh9u222updated
+2018-04-23T12:14:55.872Z - info: User WwplzRwnRUfoMWiFyHYdgTzkV7i2updated
+2018-04-23T12:14:55.872Z - info: User YSjkZY9w1dbkpL0bb3jyKRce7bk2updated
+2018-04-23T12:14:55.872Z - info: User b22j42juxOZdedoC4jzhXXkpM3H2updated
+2018-04-23T12:14:55.873Z - info: User bTKMjZPYS3ds3awIVXE65D9pWLA2updated
+2018-04-23T12:14:55.873Z - info: User c4Z3JyPZgyRZRy8Y8CP7M8NBdk53updated
+2018-04-23T12:14:55.873Z - info: User fwepwMGggoZPt1DhLrFOa1K7HJ42updated
+2018-04-23T12:14:55.873Z - info: User jjv13jCsPjbIMYKFzTavaijguWt2updated
+2018-04-23T12:14:55.874Z - info: User pEpPlsXGT4W5Hm51WYWASqfttx52updated
+2018-04-23T12:14:55.874Z - info: User zUJOXMs7hYVI0rgLtq2dTGzfI943updated
+2018-04-23T12:14:55.877Z - info: Execution took 2154 ms, user function completed successfully
+2018-04-23T16:21:57.867Z - info: User function triggered, starting execution
+2018-04-23T16:22:00.388Z - info: User 0M01ZrNAJ7X8fuCXMXSifoMLju72updated
+2018-04-23T16:22:00.388Z - info: User 2GJ58Ne2fGRFytAHKzmwI5wzJBd2updated
+User 2f6i4mvzBAYMAjFaCdFLNNQwdjp1updated
+2018-04-23T16:22:00.388Z - info: User 3neRxD0eNheokKQbeN9ozlIsorJ2updated
+2018-04-23T16:22:00.388Z - info: User 4d73b6usYaPjRIj9YQRjEKVV7vH3updated
+2018-04-23T16:22:00.389Z - info: User 4spel7y5oJg0OarPxcHxhdwkgPF2updated
+2018-04-23T16:22:00.389Z - info: User 8LhfxDrSJ4Qd2RHQ7bHCSIbkijL2updated
+2018-04-23T16:22:00.389Z - info: User 8rn9x1AMN2PaYZ3fQFK0Hrv2yrn2updated
+2018-04-23T16:22:00.389Z - info: User Is0H5IQ5GBM3ntyJmFqpOAOfGmS2updated
+2018-04-23T16:22:00.389Z - info: User PmzsNVCnUSMVSMu2WGRa4omxez52updated
+2018-04-23T16:22:00.390Z - info: User UBavdmnoNnhIN4CFeNnTdAVlkh42updated
+2018-04-23T16:22:00.390Z - info: User WaIVUhvQBkUZ0OdxllmroNh9u222updated
+2018-04-23T16:22:00.390Z - info: User WwplzRwnRUfoMWiFyHYdgTzkV7i2updated
+User YSjkZY9w1dbkpL0bb3jyKRce7bk2updated
+2018-04-23T16:22:00.390Z - info: User b22j42juxOZdedoC4jzhXXkpM3H2updated
+2018-04-23T16:22:00.390Z - info: User bTKMjZPYS3ds3awIVXE65D9pWLA2updated
+2018-04-23T16:22:00.391Z - info: User c4Z3JyPZgyRZRy8Y8CP7M8NBdk53updated
+User fwepwMGggoZPt1DhLrFOa1K7HJ42updated
+2018-04-23T16:22:00.391Z - info: User jjv13jCsPjbIMYKFzTavaijguWt2updated
+2018-04-23T16:22:00.391Z - info: User pEpPlsXGT4W5Hm51WYWASqfttx52updated
+2018-04-23T16:22:00.391Z - info: User zUJOXMs7hYVI0rgLtq2dTGzfI943updated
+2018-04-23T16:22:00.393Z - info: Execution took 2528 ms, user function completed successfully
+2018-04-24T17:51:02.981Z - info: User function triggered, starting execution
+2018-04-24T17:51:06.749Z - info: Execution took 3769 ms, user function completed successfully
+2018-04-24T17:54:20.659Z - info: Worker for addApartmentToMatch closed due to file changes.
+2018-04-24T17:54:20.660Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-04-24T17:54:20.660Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-04-24T17:54:20.660Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-04-24T17:54:20.661Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-04-24T17:54:20.661Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-04-24T17:54:20.661Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-04-24T17:54:20.666Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-04-24T17:54:20.667Z - info: Worker for onListingCreate closed due to file changes.
+2018-04-24T17:54:20.667Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-04-24T17:54:20.667Z - info: Worker for updateUser closed due to file changes.
+2018-04-24T17:54:20.667Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-04-24T17:54:20.668Z - info: Worker for resetDatabase closed due to file changes.
+2018-04-24T17:54:20.668Z - info: Worker for countTestUsers closed due to file changes.
+2018-04-24T17:54:20.686Z - info: Worker for getFinnURLList closed due to file changes.
+2018-04-24T17:54:20.686Z - info: Worker for updateUsers closed due to file changes.
+2018-04-24T17:54:20.686Z - info: Worker for onMatchCreate closed due to file changes.
+2018-04-24T17:54:20.687Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-04-25T07:29:39.849Z - info: User function triggered, starting execution
+2018-04-25T07:29:42.363Z - info: 21 real users updated
+2018-04-25T07:29:43.131Z - info: 1000 test users ready to match
+2018-04-25T07:29:43.134Z - info: Execution took 3286 ms, user function completed successfully
+2018-04-25T07:30:27.637Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-04-25T07:30:27.640Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-04-25T07:30:27.640Z - info: Worker for onListingCreate closed due to file changes.
+2018-04-25T07:30:27.640Z - info: Worker for countTestUsers closed due to file changes.
+2018-04-25T07:30:27.640Z - info: Worker for resetDatabase closed due to file changes.
+2018-04-25T07:30:27.640Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-04-25T07:30:27.640Z - info: Worker for onMatchCreate closed due to file changes.
+2018-04-25T07:30:27.640Z - info: Worker for updateUser closed due to file changes.
+2018-04-25T07:30:27.641Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-04-25T07:30:27.641Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-04-25T07:30:27.641Z - info: Worker for getFinnURLList closed due to file changes.
+2018-04-25T07:30:27.642Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-04-25T07:30:27.642Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-04-25T07:30:27.642Z - info: Worker for updateUsers closed due to file changes.
+2018-04-25T07:30:27.656Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-04-25T07:30:27.658Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-04-25T07:30:27.658Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-04-25T07:30:27.658Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-04-25T08:49:53.801Z - info: User function triggered, starting execution
+2018-04-25T08:49:53.803Z - info: undefined
+2018-04-25T08:49:53.807Z - info: Execution took 6 ms, user function completed successfully
+2018-04-25T08:49:53.808Z - info: Error in getting Finn url
+2018-04-25T08:49:53.809Z - error: (node:21891) UnhandledPromiseRejectionWarning: TypeError: Cannot read property 'status' of undefined
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/location/finnScraper.js:16:22)
+    at Generator.next (<anonymous>)
+    at fulfilled (/Users/Kristian/Developer/yaps.life/functions/lib/location/finnScraper.js:4:58)
+    at <anonymous>
+    at process._tickCallback (internal/process/next_tick.js:182:7)
+2018-04-25T08:49:53.810Z - error: (node:21891) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 4)
+(node:21891) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+2018-04-25T08:50:17.584Z - error: Function worker killed by signal: SIGTERM
+2018-04-25T08:51:14.464Z - info: User function triggered, starting execution
+2018-04-25T08:51:14.467Z - info: https://www.finn.no/realestate/lettings/ad.html?finnkode=117344527 { listingURL: 'https://www.finn.no/realestate/lettings/ad.html?finnkode=117344527' }
+2018-04-25T08:51:14.727Z - info: Execution took 263 ms, user function completed successfully
+2018-04-25T08:52:43.078Z - info: Worker for resetDatabase closed due to file changes.
+2018-04-25T08:52:43.078Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-04-25T08:52:43.078Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-04-25T08:52:43.079Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-04-25T08:52:43.079Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-04-25T08:52:43.079Z - info: Worker for onMatchCreate closed due to file changes.
+2018-04-25T08:52:43.079Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-04-25T08:52:43.080Z - info: Worker for countTestUsers closed due to file changes.
+2018-04-25T08:52:43.080Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-04-25T08:52:43.080Z - info: Worker for onListingCreate closed due to file changes.
+2018-04-25T08:52:43.080Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-04-25T08:52:43.081Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-04-25T08:52:43.081Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-04-25T08:52:43.081Z - info: Worker for updateUsers closed due to file changes.
+2018-04-25T08:52:43.094Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-04-25T08:52:43.094Z - info: Worker for updateUser closed due to file changes.
+2018-04-25T08:52:43.095Z - info: Worker for getFinnURLList closed due to file changes.
+2018-04-25T08:52:43.095Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-04-25T09:29:24.273Z - info: User function triggered, starting execution
+2018-04-25T09:29:24.275Z - info: {}
+2018-04-25T09:29:29.130Z - info: Execution took 4857 ms, user function completed successfully
+2018-04-25T09:30:08.406Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-04-25T09:30:08.407Z - info: Worker for onMatchCreate closed due to file changes.
+2018-04-25T09:30:08.407Z - info: Worker for onListingCreate closed due to file changes.
+2018-04-25T09:30:08.407Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-04-25T09:30:08.407Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-04-25T09:30:08.408Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-04-25T09:30:08.408Z - info: Worker for getFinnURLList closed due to file changes.
+2018-04-25T09:30:08.409Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-04-25T09:30:08.409Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-04-25T09:30:08.409Z - info: Worker for updateUser closed due to file changes.
+2018-04-25T09:30:08.409Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-04-25T09:30:08.409Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-04-25T09:30:08.411Z - info: Worker for updateUsers closed due to file changes.
+2018-04-25T09:30:08.411Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-04-25T09:30:08.424Z - info: Worker for resetDatabase closed due to file changes.
+2018-04-25T09:30:08.424Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-04-25T09:30:08.424Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-04-25T09:30:08.424Z - info: Worker for countTestUsers closed due to file changes.

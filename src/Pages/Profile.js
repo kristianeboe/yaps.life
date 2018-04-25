@@ -12,11 +12,9 @@ import {
   Header
 } from 'semantic-ui-react'
 import { Redirect, Link } from 'react-router-dom'
-import PlacesAutocomplete, {
-  geocodeByAddress,
-  getLatLng
-} from 'react-places-autocomplete'
-import googleLogo from '../assets/images/powered_by_google_default.png'
+
+import moment from 'moment'
+
 import MatchingQuestion from '../Components/MatchingQuestion'
 import {
   SOCIAL_HABBITS_QUESTIONES,
@@ -24,15 +22,14 @@ import {
   SOCIAL_OPENNESS_QUESTIONES,
   SOCIAL_FLEXIBILITY_QUESTIONES
 } from '../assets/MatchingQuestions'
-import firebase, { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 import MateCard from '../Containers/MateCard'
-import LandlordProfile from '../Components/LandlordProfile'
 import personAvatar from '../assets/images/personAvatar.png'
-
-const genderOptions = [
-  { key: 'm', text: 'Male', value: 'Male' },
-  { key: 'f', text: 'Female', value: 'Female' }
-]
+import PropertyVectorQuestions from '../Containers/PropertyVectorQuestions'
+import ContactInfo from '../Containers/ContactInfo'
+import PlacesAutoCompleteWrapper from '../Containers/PlacesAutoCompleteWrapper'
+import RentFromDateRange from '../Containers/RentfromDateRange'
+import { MATCH_LOCATION_OPTIONS } from '../utils/CONSTANTS'
 
 const universityOptions = [
   { key: 'ntnu', text: 'NTNU', value: 'NTNU' },
@@ -42,10 +39,6 @@ const universityOptions = [
   { key: 'uit', text: 'UIT', value: 'UIT' },
   { key: 'uib', text: 'UIB', value: 'UIB' },
   { key: 'other', text: 'Other', value: 'Other' },
-]
-
-const matchLocationOptions = [
-  { key: 'oslo', text: 'Oslo', value: 'Oslo' },
 ]
 
 class Profile extends Component {
@@ -66,6 +59,8 @@ class Profile extends Component {
       photoURL: '',
       age: '',
       gender: '',
+      email: '',
+      phone: '',
       studyProgramme: '',
       matchLocation: '',
       workplace: '',
@@ -77,6 +72,9 @@ class Profile extends Component {
       readyToMatch: false,
       tos: false,
       landlord: false,
+      rentFrom: moment('2018-06-01'),
+      rentTo: moment('2018-08-31'),
+      errors: {},
     }
   }
 
@@ -84,8 +82,7 @@ class Profile extends Component {
     auth.onAuthStateChanged((user) => {
       this.setState({ user })
       if (user) {
-        firebase
-          .firestore()
+        firestore
           .collection('users')
           .doc(user.uid)
           .get()
@@ -133,27 +130,11 @@ class Profile extends Component {
   }
 
 
-  handleChange = (e, { name, value }) => this.setState({ [name]: value })
-
-  handleBudget = (e, value) => {
-    e.preventDefault()
-    this.setState({
-      budget: value
-    })
-  }
-  handleSize = (e, value) => {
-    e.preventDefault()
-    this.setState({
-      propertySize: value
-    })
+  handleChange = (e, { name, value }) => {
+    if (e) e.preventDefault()
+    this.setState({ [name]: value })
   }
 
-  handleStandard = (e, value) => {
-    e.preventDefault()
-    this.setState({
-      standard: value
-    })
-  }
 
   handleSubmit = () => {
     window.scrollTo(0, 0)
@@ -183,8 +164,7 @@ class Profile extends Component {
       propertyVector
     }
 
-    firebase
-      .firestore()
+    firestore
       .collection('users')
       .doc(this.state.user.uid)
       .set(userData, { merge: true })
@@ -196,6 +176,12 @@ class Profile extends Component {
   handleSliderChange = (value, name) => {
     this.setState({
       [name]: value
+    })
+  }
+
+  handleDateChange = (name, date) => {
+    this.setState({
+      [name]: date
     })
   }
 
@@ -227,6 +213,7 @@ class Profile extends Component {
 
     const {
       formSuccess,
+      errors,
       displayName,
       age,
       gender,
@@ -240,6 +227,10 @@ class Profile extends Component {
 
     // if (!user) return <Redirect push to="login" />
 
+    const {
+      budget, propertySize, standard, style
+    } = this.state
+
     return (
       <div style={{
         backgroundAttachment: 'fixed',
@@ -252,211 +243,108 @@ class Profile extends Component {
       >
 
 
-        {this.state.landlord ? (
-          <LandlordProfile />
-        ) : (
-          <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
-            <Segment raised className="you" loading={this.state.formLoading}>
-              <Form
-                success={formSuccess}
-                onSubmit={this.handleSubmit}
-              >
-                <Grid columns="equal" stackable>
-                  <Grid.Column>
-                    <Header as="h1">
+        <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
+          <Segment raised className="you" loading={this.state.formLoading}>
+            <Form
+              success={formSuccess}
+              onSubmit={this.handleSubmit}
+            >
+              <Grid columns="equal" stackable>
+                <Grid.Column>
+                  <Header as="h1">
                   My profile
-                      <Header.Subheader>
+                    <Header.Subheader>
                     Fill out the entire form to get better matches and see how you appear to other users on the right.
-                      </Header.Subheader>
-                    </Header>
+                    </Header.Subheader>
+                  </Header>
+                  <ContactInfo
+                    contactInfo={{
+                        displayName, age, gender
+                        }}
+                    errors={errors}
+                    handleChange={this.handleChange}
+                  />
+                  <Form.Group widths="equal">
                     <Form.Input
                       fluid
-                      label="Name"
-                      placeholder="Name"
-                      name="displayName"
-                      value={displayName}
+                      label="Study programme"
+                      placeholder="Study programme"
+                      name="studyProgramme"
+                      value={this.state.studyProgramme}
                       onChange={this.handleChange}
                     />
-                    <Form.Group widths="equal">
-                      <Form.Input
-                        fluid
-                        label="Age"
-                        placeholder="Age"
-                        name="age"
-                        value={age}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Select
-                        fluid
-                        style={{ zIndex: 65 }}
-                        label="Gender"
-                        options={genderOptions}
-                        placeholder="Gender"
-                        value={gender}
-                        name="gender"
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                    <Form.Group widths="equal">
-                      <Form.Input
-                        fluid
-                        label="Study programme"
-                        placeholder="Study programme"
-                        name="studyProgramme"
-                        value={studyProgramme}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Select
-                        fluid
-                        style={{ zIndex: 61 }}
-                        label="University"
-                        options={universityOptions}
-                        placeholder="University"
-                        value={university}
-                        name="university"
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
                     <Form.Select
                       fluid
-                      style={{ zIndex: 60 }}
-                      label="Where are you moving to?(Currently only supports Oslo)"
-                      options={matchLocationOptions}
-                      placeholder="Område du vil bli matchet til"
-                      value={matchLocation}
-                      name="matchLocation"
+                      style={{ zIndex: 61 }}
+                      label="University"
+                      options={universityOptions}
+                      placeholder="University"
+                      value={this.state.university}
+                      name="university"
                       onChange={this.handleChange}
                     />
-                    <Form.Field required>
-                      <label>Address of workplace(Please pick a location in Oslo)</label>
-                      <PlacesAutocomplete
-                        styles={{ root: { zIndex: 50 } }}
-                        inputProps={{
-                      name: 'workplace',
-                      placeholder: 'Where are you going to work?',
-                      value: this.state.workplace,
-                      onChange: (workplace) => {
-                        this.setState({
-                          workplace
-                        })
-                      }
-                    }}
-                        renderFooter={() => (
-                          <div
-                            style={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                          padding: '4px'
-                        }}
-                          >
-                            <div>
-                              <img
-                                src={googleLogo}
-                                style={{ display: 'inline-block', width: '150px' }}
-                                alt="Powered by Google"
-                              />
-                            </div>
-                          </div>
-                    )}
-                        onSelect={(workplace) => {
-                      this.setState({ workplace })
-                      geocodeByAddress(workplace)
-                        .then(results => getLatLng(results[0]))
-                        .then(({ lat, lng }) => {
-                          this.setState({
-                            workplaceLatLng: {
-                              lat,
-                              lng
-                            }
-                          })
-                        })
-                        .catch((error) => {
-                          console.log('Oh no!', error)
-                          this.setState({
-                            workplaceLatLng: null // this.renderGeocodeFailure(error),
-                          })
-                        })
-                    }}
-                        shouldFetchSuggestions={({ value }) => value.length > 2}
-                        highlightFirstSuggestion
-                        options={{
-                      types: ['establishment']
-                    }}
-                      />
-                    </Form.Field>
-                    <Form.Field>
-                      <label>What is your budget?</label>
-                      <Button.Group widths={3} >
-                        <Popup
-                          trigger={<Button primary={this.state.budget === 1} onClick={e => this.handleBudget(e, 1)} >As cheap as possible</Button>}
-                          content="Less than 6000 kr pr month pr person"
-                        />
-                        <Button.Or />
-                        <Popup
-                          trigger={<Button primary={this.state.budget === 3} onClick={e => this.handleBudget(e, 3)} >Flexible</Button>}
-                          content="I can lean either way"
-                        />
-                        <Button.Or />
-                        <Popup
-                          trigger={<Button primary={this.state.budget === 5} onClick={e => this.handleBudget(e, 5)} >I want to live like a {gender === 'Male' ? 'King' : 'Queen'}</Button>}
-                          content="More than 10 000 kr pr month pr person"
-                        />
-                      </Button.Group>
-                    </Form.Field>
-                    <Form.Field>
-                      <label>Does size matter to you?</label>
-                      <Button.Group widths={3} >
-                        <Button primary={this.state.propertySize === 1} onClick={e => this.handleSize(e, 1)} >A cupboard under the stairs is fine</Button>
-                        <Button.Or />
-                        <Button primary={this.state.propertySize === 3} onClick={e => this.handleSize(e, 3)} >Flexible</Button>
-                        <Button.Or />
-                        <Button primary={this.state.propertySize === 5} onClick={e => this.handleSize(e, 5)} >I need space!</Button>
-                      </Button.Group>
-                    </Form.Field>
-                    <Form.Field>
-                      <label>standard</label>
-                      <Button.Group widths={3} >
-                        <Button primary={this.state.standard === 1} onClick={e => this.handleStandard(e, 1)} >A fixer upper is fine with me</Button>
-                        <Button.Or />
-                        <Button primary={this.state.standard === 3} onClick={e => this.handleStandard(e, 3)} >Flexible</Button>
-                        <Button.Or />
-                        <Button primary={this.state.standard === 5} onClick={e => this.handleStandard(e, 5)} >Give me something brand new</Button>
-                      </Button.Group>
-                    </Form.Field>
-                    <div>
-                      <Form.Field>
-                        <Checkbox
-                          label="Agree to "
-                          checked={tos}
-                          onChange={() => this.setState({ tos: !this.state.tos })}
-                        />
-                        <Link to="/TOS" onClick={this.handleSubmit} > Terms of Service</Link>
-                      </Form.Field>
-                    </div>
+                  </Form.Group>
+                  <Form.Select
+                    fluid
+                    style={{ zIndex: 60 }}
+                    label="Where are you moving to?(Currently only supports Oslo)"
+                    options={MATCH_LOCATION_OPTIONS}
+                    placeholder="Område du vil bli matchet til"
+                    value={this.state.matchLocation}
+                    name="matchLocation"
+                    onChange={this.handleChange}
+                  />
+                  <Form.Field required>
+                    <label>Address of workplace or university(Please pick a location in Oslo)</label>
+                    <PlacesAutoCompleteWrapper
+                      handleChange={this.handleChange}
+                      fieldValue={this.state.workplace}
+                    />
+                  </Form.Field>
+                  <RentFromDateRange
+                    rentFrom={this.state.rentFrom}
+                    rentTo={this.state.rentTo}
+                    handleDateChange={this.handleDateChange}
+                  />
+                  <PropertyVectorQuestions
+                    propertyVector={[budget, propertySize, standard, style]}
+                    landlord={false}
+                    handleChange={this.handleChange}
+                  />
+                  <div>
                     <Form.Field>
                       <Checkbox
-                        label="I'm ready to get matched!"
-                        checked={readyToMatch}
-                        onChange={() =>
+                        label="Agree to "
+                        checked={tos}
+                        onChange={() => this.setState({ tos: !this.state.tos })}
+                      />
+                      <Link to="/TOS" onClick={this.handleSubmit} > Terms of Service</Link>
+                    </Form.Field>
+                  </div>
+                  <Form.Field>
+                    <Checkbox
+                      label="I'm ready to get matched!"
+                      checked={readyToMatch}
+                      onChange={() =>
                       this.setState({ readyToMatch: !this.state.readyToMatch })
                     }
-                      />
-                    </Form.Field>
-                    <div>
+                    />
+                  </Form.Field>
+                  {/* <div>
                       <Button onClick={this.handleSubmit} type="submit">Save</Button>
                       <Button onClick={() => this.setState({ redirectToMatch: true })} >Go to match list</Button>
-                      <Button onClick={() => this.setState({ landlord: true })} >Switch to Landlord view</Button>
-                    </div>
-                  </Grid.Column>
-                  <Grid.Column
-                    style={{
+                      <Button onClick={() => this.setState({ landlord: true })} ><Link to="/landlord-view">Switch to Landlord view</Link></Button>
+                    </div> */}
+                </Grid.Column>
+                <Grid.Column
+                  style={{
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center'
                 }}
-                  >
-                    <MateCard
-                      mate={{
+                >
+                  <MateCard
+                    mate={{
                       photoURL: photoURL || personAvatar,
                       age: this.state.age,
                       displayName: this.state.displayName,
@@ -467,118 +355,118 @@ class Profile extends Component {
                       propertyVector: [this.state.budget, this.state.propertySize, this.state.standard],
                       matchLocation: this.state.matchLocation,
                     }}
-                      similarityScore={100}
-                    />
+                    similarityScore={100}
+                  />
 
-                  </Grid.Column>
-                </Grid>
-                <Message success header="Profile updated" content="You're ready to match!" />
-              </Form>
-            </Segment>
+                </Grid.Column>
+              </Grid>
+              <Message success header="Profile updated" content="You're ready to match!" />
+            </Form>
+          </Segment>
 
-            <Grid stackable columns="equal">
-              <Grid.Row>
-                <Grid.Column>
-                  <Segment
-                    style={{ minHeight: '35em' }}
-                    loading={this.state.formLoading}
-                  >
-                    <h1>Social habbits</h1>
-                    <Segment style={{ paddingTop: '5vh' }} >
-                      {SOCIAL_HABBITS_QUESTIONES.map(question => (
-                        <MatchingQuestion
-                          key={question.key}
-                          question={question}
-                          handleSliderChange={this.handleSliderChange}
-                          value={this.state[question.key]}
-                        />
+          <Grid stackable columns="equal">
+            <Grid.Row>
+              <Grid.Column>
+                <Segment
+                  style={{ minHeight: '35em' }}
+                  loading={this.state.formLoading}
+                >
+                  <h1>Social habbits</h1>
+                  <Segment style={{ paddingTop: '5vh' }} >
+                    {SOCIAL_HABBITS_QUESTIONES.map(question => (
+                      <MatchingQuestion
+                        key={question.key}
+                        question={question}
+                        handleSliderChange={this.handleSliderChange}
+                        value={this.state[question.key]}
+                      />
                 ))}
-                      <Label attached="top left">Strongly disagree</Label>
-                      <Label attached="top right">Strongly agree</Label>
-                    </Segment>
+                    <Label attached="top left">Strongly disagree</Label>
+                    <Label attached="top right">Strongly agree</Label>
                   </Segment>
-                </Grid.Column>
-                <Grid.Column>
-                  <Segment
-                    style={{ minHeight: '35em' }}
-                    loading={this.state.formLoading}
-                  >
-                    <h1>Cleanliness</h1>
-                    <Segment style={{ paddingTop: '5vh' }} >
-                      {CLEANLINESS_QUESTIONES.map(question => (
-                        <MatchingQuestion
-                          key={question.key}
-                          question={question}
-                          handleSliderChange={this.handleSliderChange}
-                          value={this.state[question.key]}
-                        />
+                </Segment>
+              </Grid.Column>
+              <Grid.Column>
+                <Segment
+                  style={{ minHeight: '35em' }}
+                  loading={this.state.formLoading}
+                >
+                  <h1>Cleanliness</h1>
+                  <Segment style={{ paddingTop: '5vh' }}>
+                    {CLEANLINESS_QUESTIONES.map(question => (
+                      <MatchingQuestion
+                        key={question.key}
+                        question={question}
+                        handleSliderChange={this.handleSliderChange}
+                        value={this.state[question.key]}
+                      />
+                      ))}
+                    <Label attached="top left">Strongly disagree</Label>
+                    <Label attached="top right">Strongly agree</Label>
+                  </Segment>
+                </Segment>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              <Grid.Column>
+                <Segment
+                  style={{ minHeight: '35em' }}
+                  loading={this.state.formLoading}
+                >
+                  <h1>Social openness</h1>
+                  <Segment style={{ paddingTop: '5vh' }} >
+                    {SOCIAL_OPENNESS_QUESTIONES.map(question => (
+                      <MatchingQuestion
+                        key={question.key}
+                        question={question}
+                        handleSliderChange={this.handleSliderChange}
+                        value={this.state[question.key]}
+                      />
                 ))}
-                      <Label attached="top left">Strongly disagree</Label>
-                      <Label attached="top right">Strongly agree</Label>
-                    </Segment>
+                    <Label attached="top left">Strongly disagree</Label>
+                    <Label attached="top right">Strongly agree</Label>
                   </Segment>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid.Column>
-                  <Segment
-                    style={{ minHeight: '35em' }}
-                    loading={this.state.formLoading}
-                  >
-                    <h1>Social openness</h1>
-                    <Segment style={{ paddingTop: '5vh' }} >
-                      {SOCIAL_OPENNESS_QUESTIONES.map(question => (
-                        <MatchingQuestion
-                          key={question.key}
-                          question={question}
-                          handleSliderChange={this.handleSliderChange}
-                          value={this.state[question.key]}
-                        />
+                </Segment>
+              </Grid.Column>
+              <Grid.Column>
+                <Segment
+                  style={{ minHeight: '35em' }}
+                  loading={this.state.formLoading}
+                >
+                  <h1>Social flexibility</h1>
+                  <Segment style={{ paddingTop: '5vh' }} >
+                    {SOCIAL_FLEXIBILITY_QUESTIONES.map(question => (
+                      <MatchingQuestion
+                        key={question.key}
+                        question={question}
+                        handleSliderChange={this.handleSliderChange}
+                        value={this.state[question.key]}
+                      />
                 ))}
-                      <Label attached="top left">Strongly disagree</Label>
-                      <Label attached="top right">Strongly agree</Label>
-                    </Segment>
+                    <Label attached="top left">Strongly disagree</Label>
+                    <Label attached="top right">Strongly agree</Label>
                   </Segment>
-                </Grid.Column>
-                <Grid.Column>
-                  <Segment
-                    style={{ minHeight: '35em' }}
-                    loading={this.state.formLoading}
-                  >
-                    <h1>Social flexibility</h1>
-                    <Segment style={{ paddingTop: '5vh' }} >
-                      {SOCIAL_FLEXIBILITY_QUESTIONES.map(question => (
-                        <MatchingQuestion
-                          key={question.key}
-                          question={question}
-                          handleSliderChange={this.handleSliderChange}
-                          value={this.state[question.key]}
-                        />
-                ))}
-                      <Label attached="top left">Strongly disagree</Label>
-                      <Label attached="top right">Strongly agree</Label>
-                    </Segment>
-                  </Segment>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid.Column style={{
+                </Segment>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              <Grid.Column style={{
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center'
                 }}
-                >
-                  <Segment>
-                    <div>
-                      <Button onClick={this.handleSubmit} type="submit">Save</Button>
-                      <Button onClick={() => this.setState({ redirectToMatch: true })} >Go to match list</Button>
-                    </div>
-                  </Segment>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-          </Container>
-        )}
+              >
+                <Segment>
+                  <div>
+                    <Button onClick={this.handleSubmit} type="submit">Save</Button>
+                    <Button onClick={() => this.setState({ redirectToMatch: true })} >Go to match list</Button>
+                  </div>
+                </Segment>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Container>
+
       </div>
     )
   }

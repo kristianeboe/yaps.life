@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Container, Button, Form, Icon, Divider, Message, Segment, Header } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
-import firebase, { auth, googleProvider, facebookProvider } from '../firebase'
-
+import { firestore, auth, googleProvider, facebookProvider } from '../firebase'
+import { validEmail, validPassword } from '../utils/FormValidations'
 // const initialState = {
 //   email: 'kristian.e.boe@crux.no',
 //   password: 'Crux2005',
@@ -46,8 +46,7 @@ class Create extends Component {
   }
 
   createUserInDatabase = user => new Promise((resolve, reject) => {
-    firebase
-      .firestore()
+    firestore
       .collection('users')
       .doc(user.uid)
       .set({
@@ -55,6 +54,7 @@ class Create extends Component {
         displayName: user.displayName ? user.displayName : '',
         photoURL: user.photoURL ? user.photoURL : '',
         email: user.email,
+        phone: '',
       })
       .then(() => resolve())
       .catch(error => reject(error))
@@ -88,12 +88,6 @@ class Create extends Component {
         // ...
       })
   }
-  validateEmail = (email) => {
-    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    return re.test(email)
-  }
-
-  validatePassword = password => password.length > 6
 
   handleSignIn = (event) => {
     event.preventDefault()
@@ -157,6 +151,7 @@ class Create extends Component {
               name="email"
               value={this.state.email}
               onChange={this.handleChange}
+              error={validEmail(this.state.email)}
             />
             <Form.Input
               fluid
@@ -167,6 +162,7 @@ class Create extends Component {
               name="password"
               value={this.state.password}
               onChange={this.handleChange}
+              error={validPassword(this.state.password)}
             />
             {this.state.signUp && (
             <Form.Input

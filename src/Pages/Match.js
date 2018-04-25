@@ -7,9 +7,9 @@ import {
   Header,
   Label
 } from 'semantic-ui-react'
-import euclidianDistanceSquared from 'euclidean-distance/squared'
+import { calculateSimilarityScoreBetweenUsers, calculateFlatScore, createGroupPropertyVector, calculatePropertyAlignment } from '../utils/alignMentFunctions'
 import axios from 'axios'
-import firebase, { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 import ChatRoom from '../Components/ChatRoom'
 import FlatRank from '../Components/FlatRank'
 import Flatmates from '../Containers/Flatmates'
@@ -21,6 +21,7 @@ class Match extends Component {
     this.unsubscribe = null
     this.matchUnsubscribe = null
     this.state = {
+      matchTitle: '',
       user: null,
       flatmatesLoading: true,
       chatLoading: true,
@@ -49,25 +50,27 @@ class Match extends Component {
     this.matchUnsubscribe()
   }
 
-  getPropertyList = async propertyList => Promise.all(propertyList.map(async (property) => {
-    if (property.listingId) {
-      return firebase.firestore().collection('listings').doc(property.listingId).get()
-        .then(doc => doc.data())
+  getPropertyList = async propertyList => Promise.all(propertyList.map(async (listing) => {
+    if (listing.listingId) {
+      return firestore.collection('listings').doc(listing.listingId).get()
+        .then((doc) => {
+          const listingData = doc.data()
+          return { listing: listingData, commuteScore: listing.commuteScore, groupScore: listing.groupScore }
+        })
     }
-    return property
+    return listing
   }))
 
   subscribeToMatch = async (matchId) => {
-    this.matchUnsubscribe = firebase
-      .firestore()
+    this.matchUnsubscribe = firestore
       .collection('matches')
       .doc(matchId)
       .onSnapshot(async (matchDoc) => {
         const match = matchDoc.data()
-        const { flatmates } = match
         this.setState({
+          matchTitle: match.title,
           matchDoc,
-          flatmates,
+          flatmates: match.flatmates,
           flatScore: match.flatScore,
           finnQueryString: match.finnQueryString,
           airBnBQueryString: match.airBnBQueryString,
@@ -76,88 +79,19 @@ class Match extends Component {
           flatmatesLoading: false,
           showChatRoom: true,
         })
-        const propList = await this.getPropertyList(match.propertyList)
-        console.log(propList)
+        const propertyList = await this.getPropertyList(match.propertyList)
         this.setState({
-          propertyList: match.propertyList ? propList : [],
-
+          propertyList,
         })
       })
   }
 
-
-  mapSimScoreToPercentage = simScore => Math.floor((1 - (simScore / 320)) * 100)
-
-  calculateSimilarityScoreBetweenUsers = (uData, vData) => {
-    const u = uData.answerVector
-    const v = vData.answerVector
-
-    const vectorDistance = euclidianDistanceSquared(u, v)
-    const simScore = this.mapSimScoreToPercentage(vectorDistance)
-
-    return simScore
-  }
-
-  calculateFlatScore = (flatmates) => {
-    const simScores = []
-    for (let i = 0; i < flatmates.length; i += 1) {
-      const mate1 = flatmates[i]
-      for (let j = 0; j < flatmates.length; j += 1) {
-        const mate2 = flatmates[j]
-        if (i !== j) {
-          const simScore = this.calculateSimilarityScoreBetweenUsers(mate1, mate2)
-          simScores.push(simScore)
-        }
-      }
-    }
-
-    let flatScore = 100
-    if (simScores.length > 1) {
-      flatScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
-    }
-    return Math.floor(flatScore)
-  }
-
-  createGroupPropertyVector = (flatmates) => {
-    const groupVector = []
-    const propertyVectors = flatmates.map(mate => mate.propertyVector)
-    for (let i = 0; i < propertyVectors[0].length; i += 1) {
-      let sum = 0
-      for (let j = 0; j < flatmates.length; j += 1) {
-        sum += propertyVectors[j][i]
-      }
-      groupVector.push(sum / propertyVectors.length)
-    }
-    return groupVector
-  }
-
-  mapPropScoreToPercentage = propScore => Math.floor((1 - (propScore / 48)) * 100)
-
-  calculatePropertyAlignment = (flatmates) => {
-    const propScores = []
-    for (let i = 0; i < flatmates.length; i += 1) {
-      const mate1 = flatmates[i]
-      for (let j = 0; j < flatmates.length; j += 1) {
-        const mate2 = flatmates[j]
-        if (i !== j) {
-          const propScore = euclidianDistanceSquared(mate1.propertyVector, mate2.propertyVector)
-          propScores.push(this.mapPropScoreToPercentage(propScore))
-        }
-      }
-    }
-
-    let propertyAlignment = 100
-    if (propScores.length > 1) {
-      propertyAlignment = propScores.reduce((a, b) => a + b, 0) / propScores.length
-    }
-    return Math.floor(propertyAlignment)
-  }
-
   addFlatmateToMatch = (userData) => {
     const flatmates = [...this.state.flatmates, userData]
-    const flatScore = this.calculateFlatScore(flatmates)
-    const propertyAlignment = this.calculatePropertyAlignment(flatmates)
-    const groupPropertyVector = this.createGroupPropertyVector(flatmates)
+    const flatScore = calculateFlatScore(flatmates)
+    const propertyAlignment = calculatePropertyAlignment(flatmates)
+    const groupPropertyVector = createGroupPropertyVector(flatmates)
+    const matchTitle = flatmates.length === 2 ? 'The Dynamic Duo' : flatmates.length === 3 ? 'Triple threat' : flatmates.length === 4 ? 'Fantastic Four' : flatmates.length === 5 ? 'The Quintessentials' : flatmates.length === 6 ? 'The Avengers' : 'The Horde'
     console.log(flatScore)
     const { matchId } = this.props.match.params
     this.setState({
@@ -166,8 +100,10 @@ class Match extends Component {
       groupPropertyVector,
       showAddUserCard: false
     })
-    firebase.firestore().collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
-    firebase.firestore().collection('matches').doc(matchId).update({ flatmates, flatScore })
+    firestore.collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
+    firestore.collection('matches').doc(matchId).update({
+      flatmates, flatScore, propertyAlignment, groupPropertyVector, title: matchTitle
+    })
     if (flatmates.length > 2) {
       axios
         .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getBestOriginHTTPforMatch', { matchId })
@@ -179,7 +115,7 @@ class Match extends Component {
 
   render() {
     const {
-      flatmatesLoading, flatmates, propertyList, finnQueryString, airBnBQueryString
+      matchTitle, flatmatesLoading, flatmates, propertyList, finnQueryString, airBnBQueryString
     } = this.state
     console.log(this.state)
     return (
@@ -196,13 +132,17 @@ class Match extends Component {
           {this.state.user && (
             <div>
               <Segment loading={flatmatesLoading}>
-                <Header as="h2">
+
+                <Header as="h1">
+                  {matchTitle}
+                  <Header.Subheader>
                   Here are your new (potential) flatmates
+                  </Header.Subheader>
                 </Header>
                 <Grid stackable columns="equal">
                   <Flatmates
                     flatmates={flatmates}
-                    calculateSimilarityScoreBetweenUsers={this.calculateSimilarityScoreBetweenUsers}
+                    calculateSimilarityScoreBetweenUsers={calculateSimilarityScoreBetweenUsers}
                     addFlatmateToMatch={this.addFlatmateToMatch}
                     showAddUserCard={this.state.showAddUserCard}
                     userUid={this.state.user.uid}
@@ -264,10 +204,18 @@ class Match extends Component {
                       </Grid.Column>
                     </Grid>
                   </Segment>
-                  <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} propertyList={propertyList} />
+                  <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} />
                 </Grid.Column>
                 <Grid.Column>
-                  <FlatList flats={propertyList} />
+                  <Segment>
+                    <Header as="h3" dividing >
+                        3. See your list of options here, sorted by average commute time and group score
+                      <Header.Subheader>
+                        The ones already here are the two first listings from Finn.no, feel free to add more.
+                      </Header.Subheader>
+                    </Header>
+                    <FlatList flats={propertyList} />
+                  </Segment>
                 </Grid.Column>
               </Grid>
               {this.state.showChatRoom && (

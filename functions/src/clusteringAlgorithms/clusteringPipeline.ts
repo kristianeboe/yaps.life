@@ -219,6 +219,7 @@ export async function createMatchFromFlatmates(flatmates) {
     flatScore,
     propertyAlignment,
     groupPropertyVector,
+    propertyList: [],
     custom: false,
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   }

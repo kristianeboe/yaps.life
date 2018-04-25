@@ -29,9 +29,10 @@ const MatchingQuestion = (props) => {
 
   return (
     <div style={wrapperStyle}>
-      <p>{question.text}</p>
+      <span>{question.text}</span>
       <Slider
         dots
+        style={{ height: '2.5em' }}
         min={1}
         max={5}
         // defaultValue={parentState[props.type][question.key] ? parentState[props.type][question.key] : 3 }

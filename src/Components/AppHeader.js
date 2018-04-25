@@ -4,7 +4,7 @@ import { HashLink } from 'react-router-hash-link'
 import { slide as BurgerMenu } from 'react-burger-menu'
 import { Link } from 'react-router-dom'
 import SameGenderLogo from '../assets/logos/SameGenderLogo.png'
-import firebase, { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 // import SignUp from "./SignUp";
 
 const styles = {
@@ -45,14 +45,12 @@ const styles = {
 class AppHeader extends Component {
   constructor(props) {
     super(props)
-    this.unsubscibe = null
     this.state = {
-      user: null,
-      newMatch: false,
       burgerMenuIsOpen: false,
+      activeItem: '',
     }
   }
-
+  /*
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
       this.setState({ user })
@@ -73,23 +71,17 @@ class AppHeader extends Component {
           })
       }
     })
-  }
-
-  componentWillUnmount() {
-    if (this.unsubscibe) {
-      this.unsubscibe()
-    }
-  }
+  } */
 
   closeBurgerMenu = () => {
     this.setState({ burgerMenuIsOpen: false })
   }
-  seeNewUsers = () => {
+  seeNewUsers = (newMatch) => {
     this.closeBurgerMenu()
-    if (this.state.newMatch) {
-      firebase.firestore().collection('users').doc(this.state.user.uid).update({ newMatch: false })
+    this.handleItemClick(null, { name: 'matches' })
+    if (newMatch) {
+      firestore.collection('users').doc(this.props.user.uid).update({ newMatch: false })
     }
-    this.setState({ newMatch: false })
   }
 
   logout = () => {
@@ -106,11 +98,14 @@ class AppHeader extends Component {
   }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+
   render() {
-    const { activeItem, burgerMenuIsOpen } = this.state
+    const { burgerMenuIsOpen, activeItem } = this.state
+    const { user } = this.props
+    const newMatch = user ? user.newMatch : false
 
     const Logo = () => (
-      <Menu.Item>
+      <Menu.Item as="div">
         <Link to="/">
           <Image src={SameGenderLogo} style={{ filter: 'brightness(0) invert(1)', width: 'auto', height: '2.5em' }} alt="YAPS.life logo" verticalAlign="middle" />
         </Link>
@@ -119,9 +114,12 @@ class AppHeader extends Component {
 
     const LogoText = () => (
       <Menu.Item
-        name="Yaps.life"
+        as="div"
+        name="YAPS.life"
+        active={activeItem === 'YAPS.life'}
         header
         onClick={this.handleItemClick}
+
       >
         <Link to="/">
           <Header as="h2" color="grey" inverted>
@@ -139,31 +137,31 @@ class AppHeader extends Component {
             <Logo />
             <LogoText />
             <Menu.Menu position="right">
-              <Menu.Item onClick={() => this.setState({ burgerMenuIsOpen: true })} >
+              <Menu.Item as="div" onClick={() => this.setState({ burgerMenuIsOpen: true })} >
                 <Icon name="sidebar" />
               </Menu.Item>
             </Menu.Menu>
           </Menu>
           <BurgerMenu isOpen={burgerMenuIsOpen} right width="80%" styles={styles} >
             <Menu icon="labeled" vertical fluid>
-              <Menu.Item onClick={this.closeBurgerMenu} >
+              <Menu.Item as="div" onClick={this.closeBurgerMenu} >
                 <Icon name="magic" />
                 <HashLink smooth to="/#process">
                   How it works
                 </HashLink>
               </Menu.Item>
-              <Menu.Item onClick={this.closeBurgerMenu}>
+              <Menu.Item as="div" onClick={this.closeBurgerMenu}>
                 <Icon name="user" />
                 <Link to="/profile">
               My profile
                 </Link>
               </Menu.Item>
-              {this.state.user && (
-              <Menu.Item onClick={this.seeNewUsers}>
+              {user && (
+              <Menu.Item as="div" onClick={() => this.seeNewUsers(newMatch)}>
                 <Icon name="users" />
                 <Link to="/matches">
                 Matches
-                  {this.state.newMatch && (
+                  {newMatch && (
                   <Label color="red" size="mini" >
                     New
                   </Label>
@@ -171,24 +169,30 @@ class AppHeader extends Component {
                 </Link>
               </Menu.Item>
           )}
-              {this.state.user && (
-              <Menu.Item onClick={this.logout}>
+              <Menu.Item as="div" onClick={this.closeBurgerMenu} >
+                <Icon name="home" />
+                <Link to="/landlord-view">
+              Upload listing
+                </Link>
+              </Menu.Item>
+              {user && (
+              <Menu.Item as="div" onClick={this.logout}>
                 <Icon name="log out" />
                 <Link to="/">
                 Log out
                 </Link>
               </Menu.Item>
           )}
-              {!this.state.user && (
-              <Menu.Item onClick={this.closeBurgerMenu}>
+              {!user && (
+              <Menu.Item as="div" onClick={this.closeBurgerMenu}>
                 <Icon name="sign in" />
                 <Link to="/create">
                 Log in
                 </Link>
               </Menu.Item>
           )}
-              {!this.state.user && (
-              <Menu.Item onClick={this.closeBurgerMenu}>
+              {!user && (
+              <Menu.Item as="div" onClick={this.closeBurgerMenu}>
                 <Icon name="signup" />
                 <Link to={{
                     pathname: '/create',
@@ -208,49 +212,54 @@ class AppHeader extends Component {
             <Logo />
             <LogoText />
             <Menu.Menu position="right">
-              <Menu.Item name="process" onClick={this.handleItemClick} >
+              <Menu.Item as="div" name="process" onClick={this.handleItemClick} >
                 <HashLink smooth to="/#process">
                   <Icon name="magic" />
               How it works
                 </HashLink>
               </Menu.Item>
-              <Menu.Item name="profile" onClick={this.handleItemClick} >
+              <Menu.Item as="div" active={activeItem === 'profile'} name="profile" onClick={this.handleItemClick} >
                 <Link to="/profile">
                   <Icon name="user" />
               My profile
                 </Link>
               </Menu.Item>
-              {this.state.user && (
-              <Menu.Item onClick={this.seeNewUsers}>
+
+              <Menu.Item as="div" active={activeItem === 'matches'} name="matches" onClick={() => this.seeNewUsers(newMatch)}>
                 <Link to="/matches">
                   <Icon name="users" />
                 Matches
-                  {this.state.newMatch && (
+                  {newMatch && (
                   <Label color="red" size="mini" >
                     New
                   </Label>
                 )}
                 </Link>
               </Menu.Item>
-          )}
-              {this.state.user && (
-              <Menu.Item name="logout" onClick={this.logout}>
+              <Menu.Item as="div" active={activeItem === 'landlord-view'} name="landlord-view" onClick={this.handleItemClick} >
+                <Link to="/landlord-view">
+                  <Icon name="home" />
+              Upload listing
+                </Link>
+              </Menu.Item>
+              {user && (
+              <Menu.Item as="div" name="logout" onClick={this.logout}>
                 <Link to="/">
                   <Icon name="log out" />
                 Log out
                 </Link>
               </Menu.Item>
           )}
-              {!this.state.user && (
-              <Menu.Item name="signIn" onClick={this.handleItemClick}>
+              {!user && (
+              <Menu.Item as="div" name="signIn" onClick={this.handleItemClick}>
                 <Link to="/create">
                   <Icon name="sign in" />
                 Log in
                 </Link>
               </Menu.Item>
           )}
-              {!this.state.user && (
-              <Menu.Item name="signUp" onClick={this.handleItemClick}>
+              {!user && (
+              <Menu.Item as="div" name="signUp" onClick={this.handleItemClick}>
                 <Link to={{
                     pathname: '/create',
                     state: { signUp: true }

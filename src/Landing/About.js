@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Container, Grid, Card, Header, List, Icon } from 'semantic-ui-react'
+import { Segment, Container, Grid, Card, Header, List } from 'semantic-ui-react'
 
 const extra = (
   <List size="small" >

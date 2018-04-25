@@ -40,6 +40,7 @@ const LandlordCard = ({ landlord }) => {
         </Card.Description>
       </Card.Content>
       <Card.Content extra>
+        Landlord rating:{'  '}
         <Rating disabled icon="star" defaultRating={rating} maxRating={5} />
       </Card.Content>
     </Card>

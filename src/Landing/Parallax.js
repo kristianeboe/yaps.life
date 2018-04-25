@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   Header,
-  Icon,
   Item,
   Grid,
 } from 'semantic-ui-react'
@@ -64,7 +63,7 @@ const Parallax = (props) => {
             style={{ fontSize: '1.5em', fontWeight: 'normal' }}
           />
           {buttonContent.length > 0 && (
-            <Grid columns="equal">
+            <Grid columns="equal" stackable>
               <Grid.Column>
                 <Link to="/matches"><Button primary size="large" onClick={buttonOnClick} >I have my own roommates</Button></Link>
               </Grid.Column>
@@ -72,7 +71,7 @@ const Parallax = (props) => {
                 <Link to="/profile"><Button primary size="large" onClick={buttonOnClick} >Find new roommates with AI</Button></Link>
               </Grid.Column>
               <Grid.Column>
-                <Link to="/upload-property"><Button primary size="large" onClick={buttonOnClick} >Match my apartment with tenants</Button></Link>
+                <Link to="/landlord-view"><Button primary size="large" onClick={buttonOnClick} >Match my apartment with tenants</Button></Link>
               </Grid.Column>
             </Grid>
           )}

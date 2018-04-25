@@ -11,7 +11,7 @@ export async function getListingDetails(finnListingURL: string) {
     const address = $('.word-break p')
       .first()
       .text()
-    const price = $('div.h1.mtn.r-margin').text().replace(/[,-\s]/g, '')
+    const pricePerMonth = $('div.h1.mtn.r-margin').text().replace(/[,-\s]/g, '')
 
     // console.log($('.word-break div'))
     // const price = $('.word-break div')['5'].text()
@@ -54,11 +54,27 @@ export async function getListingDetails(finnListingURL: string) {
       facilities.push(ele.children[0].data.trim())
     })
 
+    const pricePerRoom =
+          Number(pricePerMonth) < 15000
+            ? Number(pricePerMonth)
+            : Math.floor(Number(pricePerMonth) / 4) //updatedMatch.flatmates.length)
+
+      const propertySize = listingTemp['propertySize'] > 100 ? 5 : listingTemp['propertySize'] < 60 ? 1 : 3
+      const budget =
+          pricePerRoom > 9000 ? 5 : pricePerRoom < 5500 ? 1 : 3
+      const standard = 3
+      const style = 3
+      const propertyVector = [budget, propertySize, standard, style]
+
+
+
     const listing = {
       title,
       ...listingTemp,
       address, 
-      price,
+      pricePerMonth,
+      pricePerRoom,
+      propertyVector,
       facilities,
       finnListingURL,
     }

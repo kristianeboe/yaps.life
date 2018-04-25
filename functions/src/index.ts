@@ -246,7 +246,15 @@ export const onMatchCreate = functions.firestore
     const updatedMatch = await getBestOriginForMatch(match)
     const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
     const listings: any = await Promise.all(listingURLs.slice(0, 2).map(url => getListingDetails(url))).catch(err => console.log(err))
-    const scores = await Promise.all(listings.map((listing) => {
+
+    listings.forEach(async listing => {
+      await addListingToMatch(listing, updatedMatch)
+    })
+
+
+    /* const scores = await Promise.all(listings.map((listing) => {
+
+      await addListingToMatch(listing, updatedMatch.uid)
       let { address, price, propertySize } = listing
 
       const pricePerRoom =
@@ -279,7 +287,7 @@ export const onMatchCreate = functions.firestore
       .doc(updatedMatch.uid)
       .update({
         propertyList: listings
-      })
+      }) */
 
     /* if (!match) {
         console.log('LOG: No match provided to get best origin for')
@@ -346,13 +354,13 @@ export const scoreApartmentHTTPS = functions.https.onRequest((req, res) => {
 export const getListingDetailsHTTPS = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     // curl -H 'Content-Type: application/json' -d '{"address": "Nydalen Oslo", "flatmates": [{"workplace":"Netlight Oslo"}, {"workplace":"Capra Consulting Oslo"}]}' https://us-central1-yaps-1496498804190.cloudfunctions.net/scoreApartment
-    const { finnURL } = req.body
-    console.log(finnURL)
+    const { listingURL } = req.body
+    console.log(listingURL, req.body)
 
-    if (!finnURL) {
+    if (!listingURL) {
       res.status(400).end()
     }
-    const listing = await getListingDetails(finnURL)
+    const listing = await getListingDetails(listingURL)
     res.status(200).send(listing)
   })
 })
@@ -378,6 +386,29 @@ export const updateUser = functions.https.onRequest((req, res) => {
         console.log('Error in updating user', err)
         res.status(300).end()
       })
+  })
+})
+
+export const updateUsers = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    await admin
+      .firestore()
+      .collection('users')
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach(doc => {
+          const data = doc.data()
+          /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
+          propertyVector.push(3) */
+          doc.ref.update({ phone: '' })
+          console.log('User ' + doc.id + 'updated')
+        })
+      }).catch((err) => {
+        console.log('Error in updating users', err)
+        res.status(300).end()
+      })
+        
+      res.status(200).end()
   })
 })
 
@@ -422,3 +453,64 @@ export const getFinnURLList = functions.https.onRequest(async (req, res) => {
 })
 /*   console.log(score, groupScore, propertyVector)
   console.log(listing) */
+
+export const addListingToMatchHTTPS = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    const {listing, matchId} = req.body
+     /* listing = {
+      uid: '1d392500-d4b6-4de3-b663-ec698366d07c',
+      title: 'Home in Oslo',
+      numberOfBedrooms: '4',
+      pricePerRoom: 60000,
+      propertyType: 'apartment',
+      matchLocation: 'oslo',
+      address: 'Arnebråtveien 75D Oslo',
+      propertyVector: [1, 3, 3, 5],
+      addressLatLng: { lat: 222, lng: 333 },
+      listingURL: 'https://finn.no',
+    }
+    matchId = 'e862ffb6-a3bb-4ffa-a03d-9eb974b55966' */
+    console.log(req.body)
+
+    const matchDoc = await admin.firestore().collection('matches').doc(matchId).get()
+
+    await addListingToMatch(listing, matchDoc.data())
+
+    res.status(200).end()
+  })
+})
+
+async function addListingToMatch(listing, match){
+
+  const {groupPropertyVector, flatmates, propertyList} = match
+
+  // commute score
+  const commuteScore = await scoreApartment(listing.address, flatmates)
+
+  // group score
+  const groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
+    groupPropertyVector,
+    listing.propertyVector
+  ))
+  // add to match
+
+  await admin.firestore().collection('matches').doc(match.uid).update({
+    propertyList: [...propertyList, {listing, commuteScore, groupScore}]
+  })
+}
+
+/* const listing = {
+  uid: '1d392500-d4b6-4de3-b663-ec698366d07c',
+  title: 'Home in Oslo',
+  numberOfBedrooms: '4',
+  pricePerRoom: 60000,
+  propertyType: 'apartment',
+  matchLocation: 'oslo',
+  address: 'Arnebråtveien 75D Oslo',
+  propertyVector: [1, 3, 3, 5],
+  addressLatLng: { lat: 222, lng: 333 },
+  listingURL: 'https://finn.no',
+}
+
+const matchId = '1d392500-d4b6-4de3-b663-ec698366d07c'
+ */

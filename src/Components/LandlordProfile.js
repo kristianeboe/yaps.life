@@ -1,60 +1,54 @@
 import React, { Component } from 'react'
 import {
-  Button,
   Container,
   Segment,
   Form,
   Grid,
-  Checkbox,
+  Header,
   Message,
-  Label,
-  Popup,
-  Header
 } from 'semantic-ui-react'
-import { Redirect, Link } from 'react-router-dom'
-import firebase, { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 import PropertySegment from '../Containers/PropertySegment'
 import LandlordCard from '../Containers/LandlordCard'
 import UploadListing from '../Components/UploadListing'
-
-const genderOptions = [
-  { key: 'm', text: 'Male', value: 'Male' },
-  { key: 'f', text: 'Female', value: 'Female' }
-]
-
+import ContactInfo from '../Containers/ContactInfo'
+import { LandlordFormValidation } from '../utils/FormValidations'
+import FlatList from '../Containers/FlatList'
 
 class LandlordProfile extends Component {
   constructor(props) {
     super(props)
+    this.unsubscribe = null
     this.state = {
       user: null,
       displayName: '',
+      age: '',
+      gender: '',
       photoURL: '',
       email: '',
       phone: '',
       rating: '',
       numberOfListings: '',
-      tos: false,
-      readyToMatch: false,
       listings: [],
       landlordProfileLoading: true,
       myListingsLoading: true,
+      errors: {},
     }
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     auth.onAuthStateChanged(async (user) => {
       this.setState({
         user
       })
       if (user) {
-        const listingsSnapshot = await firebase.firestore().collection('listings').where('ownerId', '==', user.uid)
-          .get()
-        const listings = []
-        listingsSnapshot.forEach(listing => listings.push(listing.data()))
-        this.setState({ listings, myListingsLoading: false })
-        const userDoc = await firebase.firestore().collection('users').doc(user.uid)
-          .get()
+        this.unsubscribe = firestore.collection('listings').where('ownerId', '==', user.uid)
+          .onSnapshot((listingsSnapshot) => {
+            const listings = []
+            listingsSnapshot.forEach(listing => listings.push({ listing: listing.data() }))
+            this.setState({ listings, myListingsLoading: false })
+          })
+        const userDoc = await firestore.collection('users').doc(user.uid).get()
         const {
           displayName, age, gender, email, phone, photoURL, rating
         } = userDoc.data()
@@ -65,25 +59,55 @@ class LandlordProfile extends Component {
     })
   }
 
-  handleChange = (e, { name, value }) => this.setState({ [name]: value })
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
+  }
 
-  handleSubmit = () => {
-    const landlord = {
+  handleChange = (e, { name, value }) => {
+    if (e) e.preventDefault()
+    this.setState({ [name]: value })
+  }
+
+  handleSubmit = async () => {
+    this.setState({ landlordProfileLoading: true })
+
+    const formFields = {
       displayName: this.state.displayName,
       age: this.state.age,
       gender: this.state.gender,
       email: this.state.email,
       phone: this.state.phone,
-      landlord: true,
     }
 
-    firebase.firestore().collection('users').doc(this.state.user.uid).update(landlord)
+    const errors = {}
+    let errorFlag = false
+    Object.keys(formFields).forEach((key) => {
+      const value = formFields[key]
+      if (!LandlordFormValidation[key](value)) {
+        errors[key] = true
+        errorFlag = true
+      }
+    })
+    if (!errorFlag) {
+      const landlord = {
+        ...formFields,
+        landlord: true,
+      }
+      await firestore.collection('users').doc(this.state.user.uid).update(landlord)
+      this.setState({ landlordProfileLoading: false, landlordProfileError: false, landlordProfileSuccess: true })
+    } else {
+      this.setState({ errors, landlordProfileError: true, landlordProfileLoading: false })
+    }
   }
+
 
   render() {
     const {
-      displayName, photoURL, email, rating, phone, numberOfListings, gender, age,
+      displayName, age, gender, photoURL, email, rating, phone, numberOfListings,
     } = this.state
+
     return (
       <div style={{
         backgroundAttachment: 'fixed',
@@ -96,58 +120,27 @@ class LandlordProfile extends Component {
       >
 
         <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
-          <Grid>
+          <Grid stackable >
             <Grid.Column width="10">
               <Segment loading={this.state.landlordProfileLoading}>
-                <Grid columns="equal">
+                <Grid columns="equal" stackable>
                   <Grid.Column>
-                    <Form>
+                    <Form error={this.state.landlordProfileError} success={this.state.landlordProfileSuccess} >
                       <Header>My Landlord profile</Header>
-                      <Form.Input
-                        fluid
-                        label="Name"
-                        placeholder="Name"
-                        name="displayName"
-                        value={displayName}
-                        onChange={this.handleChange}
+                      <ContactInfo
+                        contactInfo={{
+                          displayName, age, gender, email, phone
+                        }}
+                        landlord
+                        handleChange={this.handleChange}
+                        errors={this.state.errors}
                       />
-                      <Form.Group widths="equal">
-                        <Form.Input
-                          fluid
-                          label="Age"
-                          placeholder="Age"
-                          name="age"
-                          value={age}
-                          onChange={this.handleChange}
-                        />
-                        <Form.Select
-                          fluid
-                          style={{ zIndex: 65 }}
-                          label="Gender"
-                          options={genderOptions}
-                          placeholder="Gender"
-                          value={gender}
-                          name="gender"
-                          onChange={this.handleChange}
-                        />
-                      </Form.Group>
-                      <Form.Input
-                        fluid
-                        label="Email"
-                        placeholder="Email"
-                        name="email"
-                        value={email}
-                        onChange={this.handleChange}
+                      <Form.Button onClick={this.handleSubmit}>Update</Form.Button>
+                      <Message
+                        error
+                        header="Update unsuccessful"
+                        content="Fix the errors in the form and try again"
                       />
-                      <Form.Input
-                        fluid
-                        label="Phone"
-                        placeholder="Phone"
-                        name="phone"
-                        value={phone}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Button type="submit">Update</Form.Button>
                     </Form>
                   </Grid.Column>
                   <Grid.Column>
@@ -168,12 +161,11 @@ class LandlordProfile extends Component {
             <Grid.Column width="6" >
               <Segment loading={this.state.myListingsLoading} >
                 <Header>My listings</Header>
-                {this.state.listings.map((listing, index) => <PropertySegment key={listing.address} property={listing} index={index} />)}
+                <FlatList flats={this.state.listings} />
               </Segment>
             </Grid.Column>
           </Grid>
           <UploadListing user={this.state.user} />
-
         </Container>
       </div>
     )
