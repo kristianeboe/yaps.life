@@ -7,14 +7,17 @@ import live from '../assets/images/live.jpg'
 const Process = () => (
   <Container id="process">
     <Segment vertical textAlign="center" style={{ padding: '5em 0em' }}>
-      <Header as="h3" style={{ fontSize: '2em' }}>
-        HVOR DU BOR OG HVEM DU BOR MED HAR UTROLIG MYE Å SI
+      <Header as="h2">
+        WHERE YOU LIVE AND WHO YOU LIVE WITH HAS A TREMENDOUS IMPACT ON YOUR LIFE
       </Header>
-      <p style={{ fontSize: '1.33em' }}>
-        Vi matcher deg inn i et kollektiv med andre studenter med sommerjobb på tvers av bransjer, men med like
-        preferanser. Siden vi vet du har sommerjobb kan vi anta at du både er betalingsdyktig og en god leietaker noe
-        som vil gjøre det lettere å pitche deg inn for utleiere over hele byen.
-      </p>
+      <Header as="h4" >
+        We match you into a shared household with other students with internships in Oslo for the summer, based on mutual preferences.
+        Because you have a summer internship we can assume you have money to pay rent and will be a good tenant. This makes you very
+        attractive for landlords throughout the city.
+      </Header>
+      <Header as="h3">
+        PROCESS
+      </Header>
       <Card.Group >
         <Card centered>
           <Image src={signup} />

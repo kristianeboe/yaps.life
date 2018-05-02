@@ -2,7 +2,7 @@ import React from 'react'
 import { List, Label, Header, Segment, Button, Grid } from 'semantic-ui-react'
 import { BUDGET_TO_TEXT, STANDARD_TO_TEXT, STYLE_TO_TEXT, PROPERTY_SIZE_TO_TEXT } from '../utils/CONSTANTS'
 import { secondsToMinutes } from '../utils/FormattingFunctions'
-
+import ChatAccordion from '../Components/ChatAccordion'
 /* const fakeProp = {
   title: 'Penthouse på møllenberg',
   address: 'Wessels gate 22b',
@@ -14,14 +14,15 @@ import { secondsToMinutes } from '../utils/FormattingFunctions'
 }
  */
 const PropertySegment = ({
-  property, index, commuteScore, groupScore
+  property, index, commuteScore, groupScore, matchId
 }) => {
   const {
     title, address, pricePerRoom, propertyVector, listingURL, uid,
   } = property
+  console.log(uid)
   const [budget, propertySize, standard, style] = propertyVector
   return (
-    <Segment key={uid || listingURL} clearing>
+    <Segment key={index || uid || listingURL} clearing>
       <Header as="h4">{index + 1 ? `${index + 1}.` : ''} {title || address}
         <Header.Subheader>
           <List size="small" >
@@ -49,6 +50,7 @@ const PropertySegment = ({
           </Grid.Column>
         </Grid>
       )}
+      <ChatAccordion listingId={uid || null} matchId={matchId || null} />
     </Segment>
   )
 }

@@ -66,22 +66,24 @@ class Match extends Component {
       .collection('matches')
       .doc(matchId)
       .onSnapshot(async (matchDoc) => {
-        const match = matchDoc.data()
+        const {
+          title, flatmates, flatScore, finnQueryString, airBnBQueryString, propertyAlignment, bestOrigin, propertyList, location
+        } = matchDoc.data()
         this.setState({
-          matchTitle: match.title,
+          matchTitle: title,
           matchDoc,
-          flatmates: match.flatmates,
-          flatScore: match.flatScore,
-          finnQueryString: match.finnQueryString,
-          airBnBQueryString: match.airBnBQueryString,
-          propertyAlignment: match.propertyAlignment,
-          bestOrigin: match.bestOrigin.length > 0 && match.bestOrigin !== 'Could not determine, did not receive any origins' ? match.bestOrigin : match.location,
+          flatmates,
+          flatScore,
+          finnQueryString,
+          airBnBQueryString,
+          propertyAlignment,
+          bestOrigin: bestOrigin.length > 0 && bestOrigin !== 'Could not determine, did not receive any origins' ? bestOrigin : location,
           flatmatesLoading: false,
           showChatRoom: true,
         })
-        const propertyList = await this.getPropertyList(match.propertyList)
+        const matchPropertyList = await this.getPropertyList(propertyList)
         this.setState({
-          propertyList,
+          propertyList: matchPropertyList,
         })
       })
   }
@@ -214,14 +216,14 @@ class Match extends Component {
                         The ones already here are the two first listings from Finn.no, feel free to add more.
                       </Header.Subheader>
                     </Header>
-                    <FlatList flats={propertyList} />
+                    <FlatList matchId={this.props.match.params.matchId} flats={propertyList} />
                   </Segment>
                 </Grid.Column>
               </Grid>
               {this.state.showChatRoom && (
                 <Segment loading={!this.state.matchDoc}>
                   {this.state.matchDoc && (
-                    <ChatRoom matchDoc={this.state.matchDoc} />
+                    <ChatRoom matchId={this.state.matchDoc} />
                   )}
                 </Segment>
               )}

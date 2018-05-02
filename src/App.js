@@ -24,6 +24,8 @@ class App extends Component {
     auth.onAuthStateChanged((user) => {
       if (user) {
         this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot(doc => this.setState({ user, userData: doc.data() }))
+      } else {
+        this.setState({ user, userData: {} })
       }
     })
   }
@@ -37,7 +39,7 @@ class App extends Component {
     const { user, userData } = this.state
     return (
       <div className="app">
-        <AppHeader user={user} newMatches={userData.newMatches} />
+        <AppHeader user={user} newMatches={userData ? userData.newMatches : false} />
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/create" component={Create} />

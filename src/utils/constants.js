@@ -77,13 +77,14 @@ export const STYLE_TEXT = {
 }
 
 export const MATCH_LOCATION_OPTIONS = [
-  { key: 'oslo', text: 'Oslo', value: 'oslo' },
+  { key: 'oslo', text: 'Oslo', value: 'Oslo' },
 ]
 
 export const PROPERTY_TYPE_OPTIONS = [
   { key: '1', text: 'Apartment', value: 'apartment' },
-  { key: '2', text: 'House', value: 'House' },
-  { key: '3', text: 'Villa', value: 'Villa' },
+  { key: '2', text: 'Single room in Apartment', value: 'single_room_in_apartment' },
+  { key: '3', text: 'House', value: 'house' },
+  { key: '4', text: 'Villa', value: 'villa' },
 ]
 
 export const BUDGET_OPTIONS = [
@@ -121,15 +122,15 @@ export const UNIVERSITY_OPTIONS = [
 ]
 
 export const FIELD_OF_STUDY_OPTIONS = [
-  { key: 'cs', text: 'Computer Science', value: 'computer_sciecne' },
-  { key: 'fin', text: 'Finance', value: 'finance' },
-  { key: 'des', text: 'Design', value: 'design' },
-  { key: 'arc', text: 'Architecture', value: 'architechture' },
-  { key: 'law', text: 'Law', value: 'law' },
-  { key: 'pm', text: 'Physics & Mathematics', value: 'phys_math' },
-  { key: 'con', text: 'Construction', value: 'construction' },
-  { key: 'een', text: 'Electrical Engineering', value: 'electrical_engineering' },
-  { key: 'cen', text: 'Checmical Engineering', value: 'checmical_engineering' },
+  { key: 'cs', text: 'Computer Science', value: 'Computer Science' },
+  { key: 'fin', text: 'Finance', value: 'Finance' },
+  { key: 'des', text: 'Design', value: 'Design' },
+  { key: 'arc', text: 'Architecture', value: 'Architecture' },
+  { key: 'law', text: 'Law', value: 'Law' },
+  { key: 'pm', text: 'Physics & Mathematics', value: 'Physics & Mathematics' },
+  { key: 'con', text: 'Construction', value: 'Construction' },
+  { key: 'een', text: 'Electrical Engineering', value: 'Electrical Engineering' },
+  { key: 'cen', text: 'Checmical Engineering', value: 'Checmical Engineering' },
 ]
 
 export const TYPE_OF_WORK_OPTIONS = [

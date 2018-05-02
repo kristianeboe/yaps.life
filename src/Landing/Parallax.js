@@ -65,7 +65,7 @@ const Parallax = (props) => {
           {buttonContent.length > 0 && (
             <Grid columns="equal" stackable>
               <Grid.Column>
-                <Link to="/matches"><Button primary size="large" onClick={buttonOnClick} >I have my own roommates</Button></Link>
+                <Link to="/matches"><Button primary size="large" onClick={buttonOnClick} >I already have roommates</Button></Link>
               </Grid.Column>
               <Grid.Column>
                 <Link to="/profile"><Button primary size="large" onClick={buttonOnClick} >Find new roommates with AI</Button></Link>

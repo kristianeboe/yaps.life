@@ -307,19 +307,61 @@ export const onListingCreate = functions.firestore
   console.log(listing)
   const matchesSnapsot = await admin.firestore().collection('matches').get()
   matchesSnapsot.forEach(async matchDoc => {
-    const match = matchDoc.data()
+    await matchListingWithMatch(snap, matchDoc)
+  })
+})
+
+async function matchListingWithMatch(listingDoc, matchDoc) {
+  const listing = listingDoc.data()
+  const match = matchDoc.data()
+  console.log(listing)
+  console.log(match.flatmates.length)
+  if(listing.numberOfBedrooms === match.flatmates.length) {
     const propScore = mapPropScoreToPercentage(euclidianDistanceSquared(
       match.groupPropertyVector,
       listing.propertyVector
     ))
     console.log(matchDoc.id)
     console.log(propScore)
-    if (propScore > 10) {
+    if (propScore > 50) {
       const commuteScore = await scoreApartment(listing.address, match.flatmates)
       console.log(commuteScore)
-      matchDoc.ref.update({propertyList: [...match.propertyList, {listingId: snap.id, commuteScore, groupScore: propScore}]})
-      snap.ref.update({matchedWith: [matchDoc.id]})
+      matchDoc.ref.update({propertyList: [...match.propertyList, {listingId: listingDoc.id, commuteScore, groupScore: propScore}]})
+      listingDoc.ref.update({matchedWith: [matchDoc.id]})
+      // const newChat = admin.firestore().collection('chats').doc(matchDoc.id + listing.doc.id)
+      // Set metadata about chat
+      listingDoc.ref.collection(matchDoc.id)
+      .add({
+        text: "It's a match! Time to set up a viewing" ,
+        dateTime: Date.now(),
+        from: {
+          uid: 'admin',
+          displayName: 'Admin',
+          photoURL:
+              'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
+        }
+      })
+      await addListingToMatch(listing, match)
+      // Send email to parties
+      // create chat between parties
     }
+  }
+}
+
+export const matchListingsWithMatches = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    const [matchesSnapsot, listingsSnapshot] = await Promise.all([
+      admin.firestore().collection('matches').get(),
+      admin.firestore().collection('listings').get()]
+    )
+    console.log(matchesSnapsot.size, listingsSnapshot.size)
+    listingsSnapshot.forEach(listingDoc => {
+      matchesSnapsot.forEach( async matchDoc => {
+        await matchListingWithMatch(listingDoc, matchDoc)
+      })
+    })
+    res.status(200).end()
+
   })
 })
 

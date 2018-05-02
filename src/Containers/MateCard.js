@@ -13,17 +13,19 @@ const MateCard = ({
   const {
     age, photoURL, displayName, workplace, fieldOfStudy, university, gender, matchLocation, propertyVector, linkedInURL
   } = mate
-  const [budget, propertySize, standard] = propertyVector
+  const [budget, propertySize, standard, style] = propertyVector
   const genderDisplay = gender === 'Male' ? 'He' : 'She'
   const budgetDisplay = budget === 1 ? 'cheaper' : budget === 3 ? '' : 'premium'
   const sizeDisplay = propertySize === 1 ? 'small' : propertySize === 3 ? '' : 'huge'
   const standardDisplay = standard === 1 ? 'rustic' : standard === 3 ? 'modern' : 'brand new'
-  let workplaceDisplay = workplace.split(/[AS,]+/)
+  const styleDisplay = style === 1 ? 'rustic' : style === 3 ? 'modern' : 'brand new'
+  let workplaceDisplay = workplace ? workplace.split(/[AS,]+/) : ['Unknown']
   if (workplaceDisplay[0].toLowerCase() === 'the') {
     workplaceDisplay = `${workplaceDisplay[0]} ${workplaceDisplay[1]}`
   } else {
     workplaceDisplay = workplaceDisplay[0]
   }
+  // ${sizeDisplay}, ${budgetDisplay}
   return (
     <Card centered >
       <Image
@@ -56,7 +58,7 @@ const MateCard = ({
         )}
         {displayName && (
         <Card.Description>
-          {`Looking to move into a ${sizeDisplay}, ${budgetDisplay} apartment in ${matchLocation}. Prefers ${standardDisplay} apartments.`}
+          {`Looking to move into an apartment in ${matchLocation}. Prefers ${standardDisplay} apartments.`}
         </Card.Description>
         )}
       </Card.Content>

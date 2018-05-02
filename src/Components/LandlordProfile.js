@@ -7,8 +7,8 @@ import {
   Header,
   Message,
 } from 'semantic-ui-react'
+import { Redirect } from 'react-router-dom'
 import { auth, firestore } from '../firebase'
-import PropertySegment from '../Containers/PropertySegment'
 import LandlordCard from '../Containers/LandlordCard'
 import UploadListing from '../Components/UploadListing'
 import ContactInfo from '../Containers/ContactInfo'
@@ -33,6 +33,7 @@ class LandlordProfile extends Component {
       landlordProfileLoading: true,
       myListingsLoading: true,
       errors: {},
+      redirectToSignIn: false,
     }
   }
 
@@ -54,6 +55,10 @@ class LandlordProfile extends Component {
         } = userDoc.data()
         this.setState({
           displayName, age, gender, email, phone, photoURL, rating, user, landlordProfileLoading: false,
+        })
+      } else {
+        this.setState({
+          redirectToSignIn: true
         })
       }
     })
@@ -107,6 +112,18 @@ class LandlordProfile extends Component {
     const {
       displayName, age, gender, photoURL, email, rating, phone, numberOfListings,
     } = this.state
+
+    if (this.state.redirectToSignIn) {
+      return (
+        <Redirect
+          push
+          to={{
+            pathname: '/create',
+            state: { redirectToProfile: true }
+          }}
+        />
+      )
+    }
 
     return (
       <div style={{

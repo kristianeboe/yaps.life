@@ -24140,3 +24140,563 @@ User PmzsNVCnUSMVSMu2WGRa4omxez52updated
 2018-04-25T16:36:39.370Z - info: Worker for updateUser closed due to file changes.
 2018-04-25T16:36:39.371Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
 2018-04-25T16:36:39.393Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-01T20:04:23.956Z - info: User function triggered, starting execution
+2018-05-01T20:04:25.991Z - info: 24 real users updated
+2018-05-01T20:04:31.870Z - info: 1000 test users ready to match
+2018-05-01T20:04:31.875Z - info: Execution took 7920 ms, user function completed successfully
+2018-05-01T20:06:32.624Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-05-01T20:06:32.625Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-05-01T20:06:32.625Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-05-01T20:06:32.625Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-05-01T20:06:32.625Z - info: Worker for updateUsers closed due to file changes.
+2018-05-01T20:06:32.625Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-01T20:06:32.626Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-01T20:06:32.626Z - info: Worker for resetDatabase closed due to file changes.
+2018-05-01T20:06:32.626Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-05-01T20:06:32.627Z - info: Worker for countTestUsers closed due to file changes.
+2018-05-01T20:06:32.627Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-05-01T20:06:32.627Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-05-01T20:06:32.627Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-01T20:06:32.627Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-05-01T20:06:32.637Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-05-01T20:06:32.637Z - info: Worker for updateUser closed due to file changes.
+2018-05-01T20:06:32.638Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-05-01T20:06:32.638Z - info: Worker for getFinnURLList closed due to file changes.
+2018-05-02T17:01:38.049Z - info: User function triggered, starting execution
+2018-05-02T17:02:38.039Z - info: Execution took 60000 ms, finished with status: 'timeout'
+2018-05-02T17:02:54.350Z - info: Worker for countTestUsers closed due to file changes.
+2018-05-02T17:02:54.351Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-05-02T17:02:54.351Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-05-02T17:02:54.351Z - info: Worker for resetDatabase closed due to file changes.
+2018-05-02T17:02:54.351Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-05-02T17:02:54.352Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-05-02T17:02:54.352Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-05-02T17:02:54.353Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-02T17:02:54.353Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-02T17:02:54.353Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-05-02T17:02:54.353Z - info: Worker for updateUser closed due to file changes.
+2018-05-02T17:02:54.353Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-02T17:02:54.353Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-05-02T17:02:54.354Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-05-02T17:02:54.363Z - info: Worker for updateUsers closed due to file changes.
+2018-05-02T17:02:54.363Z - info: Worker for getFinnURLList closed due to file changes.
+2018-05-02T17:02:54.364Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-05-02T17:02:54.364Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-05-02T17:05:18.620Z - info: User function triggered, starting execution
+2018-05-02T17:05:19.981Z - info: 1 2
+2018-05-02T17:05:19.982Z - info: about to match
+2018-05-02T17:05:19.983Z - info: { uid: '3427f828-cbe8-433f-a7bb-3db1fdc9cb30',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: '4',
+  propertyType: 'apartment',
+  pricePerRoom: '5000',
+  address: 'Nydalen allé, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9475975, lng: 10.767723499999988 },
+  readyToMatch: true,
+  title: 'Nydalen' }
+2018-05-02T17:05:19.984Z - info: { bestOrigin: 'Frogner, Oslo, Norway',
+  groupPropertyVector: [ 3, 3, 3, 3 ],
+  flatScore: 86,
+  propertyList: [ { commuteScore: 9127, listing: [Object], groupScore: 91 } ],
+  finnQueryString: 'https://www.finn.no/realestate/lettings/search.html?location=0.20061&undefinedno_of_bedrooms_from=4&property_type=1&property_type=3&property_type=4&property_type=2',
+  uid: '0e9eabe5-94b8-499f-bc93-ffc63978864e',
+  airBnBQueryString: 'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=&adults=4&min_beds=4&min_bedrooms=4&s_tag=2D91el1z',
+  flatmates: 
+   [ { phone: '+4791127607',
+       gender: 'Male',
+       tos: true,
+       email: 'kristian.e.boe@gmail.com',
+       workplace: 'Netlight AS, Karl Johans gate, Oslo, Norway',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Computer Science',
+       matchLocation: 'oslo',
+       photoURL: 'https://graph.facebook.com/1855420214468245/picture?type=large&width=720&height=720',
+       readyToMatch: false,
+       answerVector: [Array],
+       rentTo: '2018-08-31T07:00:00.000Z',
+       university: 'NTNU',
+       displayName: 'Kristian Elset Bø',
+       age: '25',
+       newMatches: false,
+       loginProvider: 'facebook',
+       rentFrom: '2018-06-01T07:00:00.000Z',
+       landlord: true,
+       gettingCloudMatched: true,
+       uid: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+       propertyVector: [Array] },
+     { fieldOfStudy: 'IndØk',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=56',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NTNU',
+       displayName: 'testUser384',
+       age: 29,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: 'c515d4ff-a83b-4007-868a-9a4e6a3ea675',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male',
+       tos: true,
+       workplace: 'Unacast oslo',
+       workplaceLatLng: [Object] },
+     { workplace: 'Crux Advisers oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Revisor',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=31',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NHH',
+       displayName: 'testUser885',
+       age: 24,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: '0a868568-eba1-4706-9916-f071b4ef4905',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Female',
+       tos: true },
+     { tos: true,
+       workplace: 'Accenture oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'SivilØkonom',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=92',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'BI Oslo',
+       displayName: 'testUser895',
+       age: 29,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: 'd3716ffc-cdc7-495b-b445-3d6fda6ac424',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male' } ],
+  custom: false,
+  createdAt: 2018-05-02T16:55:37.627Z,
+  location: 'Oslo',
+  title: 'The Fantastic Foursome of Oz',
+  propertyAlignment: 100 }
+2018-05-02T17:05:19.984Z - info: about to match
+{ listingURL: '',
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9506883, lng: 10.666044300000067 },
+  readyToMatch: true,
+  title: 'Arnebratveien',
+  uid: '88f8d0cb-45ed-4188-9066-92328cbbfbec',
+  propertyVector: [ 3, 5, 5, 5 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: '4',
+  propertyType: 'house',
+  pricePerRoom: '6000',
+  address: 'Arnebråtveien, Oslo, Norway',
+  tos: true }
+2018-05-02T17:05:19.984Z - info: { bestOrigin: 'Frogner, Oslo, Norway',
+  groupPropertyVector: [ 3, 3, 3, 3 ],
+  flatScore: 86,
+  propertyList: [ { commuteScore: 9127, listing: [Object], groupScore: 91 } ],
+  finnQueryString: 'https://www.finn.no/realestate/lettings/search.html?location=0.20061&undefinedno_of_bedrooms_from=4&property_type=1&property_type=3&property_type=4&property_type=2',
+  uid: '0e9eabe5-94b8-499f-bc93-ffc63978864e',
+  airBnBQueryString: 'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=&adults=4&min_beds=4&min_bedrooms=4&s_tag=2D91el1z',
+  flatmates: 
+   [ { phone: '+4791127607',
+       gender: 'Male',
+       tos: true,
+       email: 'kristian.e.boe@gmail.com',
+       workplace: 'Netlight AS, Karl Johans gate, Oslo, Norway',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Computer Science',
+       matchLocation: 'oslo',
+       photoURL: 'https://graph.facebook.com/1855420214468245/picture?type=large&width=720&height=720',
+       readyToMatch: false,
+       answerVector: [Array],
+       rentTo: '2018-08-31T07:00:00.000Z',
+       university: 'NTNU',
+       displayName: 'Kristian Elset Bø',
+       age: '25',
+       newMatches: false,
+       loginProvider: 'facebook',
+       rentFrom: '2018-06-01T07:00:00.000Z',
+       landlord: true,
+       gettingCloudMatched: true,
+       uid: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+       propertyVector: [Array] },
+     { fieldOfStudy: 'IndØk',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=56',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NTNU',
+       displayName: 'testUser384',
+       age: 29,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: 'c515d4ff-a83b-4007-868a-9a4e6a3ea675',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male',
+       tos: true,
+       workplace: 'Unacast oslo',
+       workplaceLatLng: [Object] },
+     { workplace: 'Crux Advisers oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Revisor',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=31',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NHH',
+       displayName: 'testUser885',
+       age: 24,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: '0a868568-eba1-4706-9916-f071b4ef4905',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Female',
+       tos: true },
+     { tos: true,
+       workplace: 'Accenture oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'SivilØkonom',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=92',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'BI Oslo',
+       displayName: 'testUser895',
+       age: 29,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: 'd3716ffc-cdc7-495b-b445-3d6fda6ac424',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male' } ],
+  custom: false,
+  createdAt: 2018-05-02T16:55:37.627Z,
+  location: 'Oslo',
+  title: 'The Fantastic Foursome of Oz',
+  propertyAlignment: 100 }
+2018-05-02T17:05:19.986Z - info: Execution took 1368 ms, user function completed successfully
+2018-05-02T17:07:00.391Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-02T17:07:00.391Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-05-02T17:07:00.391Z - info: Worker for countTestUsers closed due to file changes.
+2018-05-02T17:07:00.392Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-05-02T17:07:00.392Z - info: Worker for resetDatabase closed due to file changes.
+2018-05-02T17:07:00.392Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-05-02T17:07:00.392Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-05-02T17:07:00.393Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-02T17:07:00.394Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-05-02T17:07:00.394Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-05-02T17:07:00.394Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-05-02T17:07:00.394Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-05-02T17:07:00.395Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-05-02T17:07:00.395Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-05-02T17:07:00.407Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-02T17:07:00.407Z - info: Worker for getFinnURLList closed due to file changes.
+2018-05-02T17:07:00.408Z - info: Worker for updateUsers closed due to file changes.
+2018-05-02T17:07:00.408Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-02T17:07:00.408Z - info: Worker for updateUser closed due to file changes.
+2018-05-02T17:08:21.841Z - info: User function triggered, starting execution
+2018-05-02T17:08:23.692Z - info: 1 2
+2018-05-02T17:08:23.692Z - info: about to match
+2018-05-02T17:08:23.694Z - info: { numberOfBedrooms: 4,
+  propertyType: 'apartment',
+  pricePerRoom: '5000',
+  address: 'Nydalen allé, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9475975, lng: 10.767723499999988 },
+  readyToMatch: true,
+  title: 'Nydalen',
+  uid: '3427f828-cbe8-433f-a7bb-3db1fdc9cb30',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122' }
+2018-05-02T17:08:23.695Z - info: { flatmates: 
+   [ { gender: 'Male',
+       tos: true,
+       email: 'kristian.e.boe@gmail.com',
+       workplace: 'Netlight AS, Karl Johans gate, Oslo, Norway',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Computer Science',
+       matchLocation: 'oslo',
+       photoURL: 'https://graph.facebook.com/1855420214468245/picture?type=large&width=720&height=720',
+       readyToMatch: false,
+       answerVector: [Array],
+       rentTo: '2018-08-31T07:00:00.000Z',
+       university: 'NTNU',
+       displayName: 'Kristian Elset Bø',
+       age: '25',
+       newMatches: false,
+       loginProvider: 'facebook',
+       rentFrom: '2018-06-01T07:00:00.000Z',
+       landlord: true,
+       gettingCloudMatched: true,
+       uid: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+       propertyVector: [Array],
+       phone: '+4791127607' },
+     { gettingCloudMatched: false,
+       uid: 'c515d4ff-a83b-4007-868a-9a4e6a3ea675',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male',
+       tos: true,
+       workplace: 'Unacast oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'IndØk',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=56',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NTNU',
+       displayName: 'testUser384',
+       age: 29,
+       newMatches: true },
+     { age: 24,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: '0a868568-eba1-4706-9916-f071b4ef4905',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Female',
+       tos: true,
+       workplace: 'Crux Advisers oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Revisor',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=31',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NHH',
+       displayName: 'testUser885' },
+     { gettingCloudMatched: false,
+       uid: 'd3716ffc-cdc7-495b-b445-3d6fda6ac424',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male',
+       tos: true,
+       workplace: 'Accenture oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'SivilØkonom',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=92',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'BI Oslo',
+       displayName: 'testUser895',
+       age: 29,
+       newMatches: true } ],
+  custom: false,
+  createdAt: 2018-05-02T16:55:37.627Z,
+  location: 'Oslo',
+  title: 'The Fantastic Foursome of Oz',
+  propertyAlignment: 100,
+  bestOrigin: 'Frogner, Oslo, Norway',
+  groupPropertyVector: [ 3, 3, 3, 3 ],
+  flatScore: 86,
+  propertyList: [ { listing: [Object], groupScore: 91, commuteScore: 9127 } ],
+  finnQueryString: 'https://www.finn.no/realestate/lettings/search.html?location=0.20061&undefinedno_of_bedrooms_from=4&property_type=1&property_type=3&property_type=4&property_type=2',
+  uid: '0e9eabe5-94b8-499f-bc93-ffc63978864e',
+  airBnBQueryString: 'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=&adults=4&min_beds=4&min_bedrooms=4&s_tag=2D91el1z' }
+2018-05-02T17:08:23.695Z - info: 0e9eabe5-94b8-499f-bc93-ffc63978864e
+100
+2018-05-02T17:08:23.696Z - info: about to match
+2018-05-02T17:08:23.696Z - info: { tos: true,
+  listingURL: '',
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9506883, lng: 10.666044300000067 },
+  readyToMatch: true,
+  title: 'Arnebratveien',
+  uid: '88f8d0cb-45ed-4188-9066-92328cbbfbec',
+  propertyVector: [ 3, 5, 5, 5 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'house',
+  pricePerRoom: '6000',
+  address: 'Arnebråtveien, Oslo, Norway' }
+2018-05-02T17:08:23.697Z - info: { flatmates: 
+   [ { gender: 'Male',
+       tos: true,
+       email: 'kristian.e.boe@gmail.com',
+       workplace: 'Netlight AS, Karl Johans gate, Oslo, Norway',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Computer Science',
+       matchLocation: 'oslo',
+       photoURL: 'https://graph.facebook.com/1855420214468245/picture?type=large&width=720&height=720',
+       readyToMatch: false,
+       answerVector: [Array],
+       rentTo: '2018-08-31T07:00:00.000Z',
+       university: 'NTNU',
+       displayName: 'Kristian Elset Bø',
+       age: '25',
+       newMatches: false,
+       loginProvider: 'facebook',
+       rentFrom: '2018-06-01T07:00:00.000Z',
+       landlord: true,
+       gettingCloudMatched: true,
+       uid: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+       propertyVector: [Array],
+       phone: '+4791127607' },
+     { gettingCloudMatched: false,
+       uid: 'c515d4ff-a83b-4007-868a-9a4e6a3ea675',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male',
+       tos: true,
+       workplace: 'Unacast oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'IndØk',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=56',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NTNU',
+       displayName: 'testUser384',
+       age: 29,
+       newMatches: true },
+     { age: 24,
+       newMatches: true,
+       gettingCloudMatched: false,
+       uid: '0a868568-eba1-4706-9916-f071b4ef4905',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Female',
+       tos: true,
+       workplace: 'Crux Advisers oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'Revisor',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=31',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'NHH',
+       displayName: 'testUser885' },
+     { gettingCloudMatched: false,
+       uid: 'd3716ffc-cdc7-495b-b445-3d6fda6ac424',
+       propertyVector: [Array],
+       seeNewUsers: false,
+       currentMatches: [Object],
+       gender: 'Male',
+       tos: true,
+       workplace: 'Accenture oslo',
+       workplaceLatLng: [Object],
+       fieldOfStudy: 'SivilØkonom',
+       matchLocation: 'Oslo',
+       photoURL: 'https://placem.at/people?w=290&h=290&random=92',
+       readyToMatch: false,
+       answerVector: [Array],
+       university: 'BI Oslo',
+       displayName: 'testUser895',
+       age: 29,
+       newMatches: true } ],
+  custom: false,
+  createdAt: 2018-05-02T16:55:37.627Z,
+  location: 'Oslo',
+  title: 'The Fantastic Foursome of Oz',
+  propertyAlignment: 100,
+  bestOrigin: 'Frogner, Oslo, Norway',
+  groupPropertyVector: [ 3, 3, 3, 3 ],
+  flatScore: 86,
+  propertyList: [ { listing: [Object], groupScore: 91, commuteScore: 9127 } ],
+  finnQueryString: 'https://www.finn.no/realestate/lettings/search.html?location=0.20061&undefinedno_of_bedrooms_from=4&property_type=1&property_type=3&property_type=4&property_type=2',
+  uid: '0e9eabe5-94b8-499f-bc93-ffc63978864e',
+  airBnBQueryString: 'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=&adults=4&min_beds=4&min_bedrooms=4&s_tag=2D91el1z' }
+2018-05-02T17:08:23.697Z - info: 0e9eabe5-94b8-499f-bc93-ffc63978864e
+75
+2018-05-02T17:08:23.702Z - info: Execution took 1862 ms, user function completed successfully
+2018-05-02T17:08:24.803Z - info: 6888
+2018-05-02T17:08:24.997Z - info: 5583
+2018-05-02T17:27:43.931Z - info: User function triggered, starting execution
+2018-05-02T17:27:45.538Z - info: 2 2
+2018-05-02T17:27:45.539Z - info: { uid: '3427f828-cbe8-433f-a7bb-3db1fdc9cb30',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'apartment',
+  pricePerRoom: '5000',
+  address: 'Nydalen allé, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '0e9eabe5-94b8-499f-bc93-ffc63978864e' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9475975, lng: 10.767723499999988 },
+  readyToMatch: true,
+  title: 'Nydalen' }
+2018-05-02T17:27:45.540Z - info: 4
+0e9eabe5-94b8-499f-bc93-ffc63978864e
+100
+2018-05-02T17:27:45.541Z - info: { uid: '3427f828-cbe8-433f-a7bb-3db1fdc9cb30',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'apartment',
+  pricePerRoom: '5000',
+  address: 'Nydalen allé, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '0e9eabe5-94b8-499f-bc93-ffc63978864e' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9475975, lng: 10.767723499999988 },
+  readyToMatch: true,
+  title: 'Nydalen' }
+2018-05-02T17:27:45.541Z - info: 4
+f114f4b2-c9c5-4727-b926-8bb2ae3599e7
+66
+2018-05-02T17:27:45.541Z - info: { uid: '88f8d0cb-45ed-4188-9066-92328cbbfbec',
+  propertyVector: [ 3, 5, 5, 5 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'house',
+  pricePerRoom: '6000',
+  address: 'Arnebråtveien, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '0e9eabe5-94b8-499f-bc93-ffc63978864e' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9506883, lng: 10.666044300000067 },
+  readyToMatch: true,
+  title: 'Arnebratveien' }
+2018-05-02T17:27:45.541Z - info: 4
+0e9eabe5-94b8-499f-bc93-ffc63978864e
+75
+2018-05-02T17:27:45.542Z - info: { uid: '88f8d0cb-45ed-4188-9066-92328cbbfbec',
+  propertyVector: [ 3, 5, 5, 5 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'house',
+  pricePerRoom: '6000',
+  address: 'Arnebråtveien, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '0e9eabe5-94b8-499f-bc93-ffc63978864e' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9506883, lng: 10.666044300000067 },
+  readyToMatch: true,
+  title: 'Arnebratveien' }
+2018-05-02T17:27:45.542Z - info: 4
+f114f4b2-c9c5-4727-b926-8bb2ae3599e7
+91
+2018-05-02T17:27:45.548Z - info: Execution took 1619 ms, user function completed successfully
+2018-05-02T17:27:46.326Z - info: 4913
+2018-05-02T17:27:46.333Z - info: 5625
+2018-05-02T17:27:46.335Z - info: 6813
+2018-05-02T17:27:46.345Z - info: 5823

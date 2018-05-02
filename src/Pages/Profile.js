@@ -94,7 +94,7 @@ class Profile extends Component {
             this.setState({
               profileFormLoading: false,
               displayName: userData.displayName ? userData.displayName : '',
-              photoURL: user.photoURL ? user.photoURL : '',
+              photoURL: userData.photoURL ? userData.photoURL : '',
               age: userData.age ? userData.age : '',
               gender: userData.gender ? userData.gender : '',
               fieldOfStudy: userData.fieldOfStudy
@@ -174,13 +174,11 @@ class Profile extends Component {
         errorFlag = true
       }
     })
-
-    console.log(errors)
     if (!errorFlag) {
       const userData = {
         ...formFields,
         uid: this.state.user.uid,
-        photoURL: this.state.user.photoURL,
+        photoURL: this.state.photoURL,
       }
 
       await firestore.collection('users').doc(this.state.user.uid).set(userData, { merge: true })
@@ -249,8 +247,6 @@ class Profile extends Component {
       budget, propertySize, standard, style
     } = this.state
 
-    console.log(this.state)
-
     return (
       <div style={{
         backgroundAttachment: 'fixed',
@@ -318,7 +314,7 @@ class Profile extends Component {
                   <Form.Select
                     fluid
                     style={{ zIndex: 60 }}
-                    label="Where are you moving to?(Currently only supports Oslo)"
+                    label="Where are you moving to? (Currently only supports Oslo)"
                     options={MATCH_LOCATION_OPTIONS}
                     placeholder="Område du vil bli matchet til"
                     value={this.state.matchLocation}
@@ -326,7 +322,7 @@ class Profile extends Component {
                     onChange={this.handleChange}
                   />
                   <Form.Field required>
-                    <label>Address of workplace or university(Please pick a location in Oslo)</label>
+                    <label>Address of workplace or university (Please pick a location in Oslo)</label>
                     <PlacesAutoCompleteWrapper
                       handleChange={this.handleChange}
                       fieldValue={this.state.workplace}

@@ -4,13 +4,14 @@ import Parallax from '../Landing/Parallax'
 import FAQ from '../Landing/FAQ'
 import About from '../Landing/About'
 import Process2 from '../Landing/Process2'
+import Landlords from '../Landing/Landlords'
 
 const Home = () => (
   <div className="Home">
     <Parallax
-      h1Content="Disributed Co-Living"
+      h1Content="Distributed Co-Living"
       h3Content="Home-as-a-Service"
-      h2Content="Get matched into a shared household with AI. All you need to do is register and we will do the rest."
+      h2Content="Get matched into a shared flat with AI - register and we'll do the rest."
       buttonContent="Register today!"
           // buttonOnClick={() => document.getElementById('register-section').scrollIntoView()}
       backgroundImage='url("/assets/images/yap_landing_compressed.jpg")'
@@ -22,9 +23,9 @@ const Home = () => (
       h3Content=""
       h2Content="Find the perfect tenants"
       buttonContent=""
-      backgroundImage='url("/assets/images/yap_man_compressed.jpg")'
+      backgroundImage='url("/assets/images/landlords.jpg")'
     />
-    <Process2 />
+    <Landlords />
     <Parallax
       h1Content="F.A.Q."
       h3Content=""

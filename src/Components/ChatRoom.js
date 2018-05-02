@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Comment, Header, Button } from 'semantic-ui-react'
-import { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 import personAvatar from '../assets/images/personAvatar.png'
 
 class ChatRoom extends Component {
@@ -24,8 +24,15 @@ class ChatRoom extends Component {
         //   .firestore()
         //   .collection('chatRooms')
         //   .doc('RnpKGueTLPA8V0y2A23j')
-        const matchRef = this.props.matchDoc.ref
-        const messagesRef = matchRef.collection('messages').orderBy('dateTime')
+        const { listingId, matchId } = this.props
+        console.log(listingId, matchId)
+
+        const messagesRef = listingId ?
+          firestore.collection('listings').doc(listingId).collection(matchId)
+            .orderBy('dateTime')
+          :
+          firestore.collection('matches').doc(matchId).collection('messages')
+            .orderBy('dateTime')
         this.unsubscribe = messagesRef.onSnapshot((snapshot) => {
           const messages = []
           snapshot.forEach((doc) => {

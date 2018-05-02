@@ -40,6 +40,7 @@ class MatchList extends Component {
       loadingPercent: 0,
       loadingText: '',
       redirectToSignIn: false,
+      profileNotFinished: false,
     }
   }
   componentDidMount() {
@@ -48,9 +49,10 @@ class MatchList extends Component {
       if (user) {
         this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot((doc) => {
           const userData = doc.data()
-          const matches = userData.currentMatches ? userData.currentMatches : {}
+          const { currentMatches, gettingCloudMatched } = userData
+          const matches = currentMatches || {}
 
-          this.setState({ gettingCloudMatched: userData.gettingCloudMatched })
+          this.setState({ gettingCloudMatched: gettingCloudMatched || false })
 
           Promise.all(Object.keys(matches).map(matchId => firestore.collection('matches').doc(matchId).get()))
             .then(results => this.setState({
@@ -74,8 +76,19 @@ class MatchList extends Component {
     }
   }
 
+  readyToMatch() {
+    const { workplace, workplaceLatLng, university } = this.state.userData
+    console.log(workplace, workplaceLatLng, university)
+    if (!workplace || !university || !workplaceLatLng) {
+      this.setState({ profileNotFinished: true })
+      return false
+    }
+    return true
+  }
+
   getMatched = (e) => {
     e.preventDefault()
+    if (!this.readyToMatch()) return
     console.log('about to match')
     firestore.collection('users').doc(this.state.user.uid).update({ gettingCloudMatched: true })
     this.setState({ gettingCloudMatched: true, loadingPercent: 25, loadingText: 'Uploading you to the cloud. Prepare to get matched ;)' })
@@ -90,6 +103,8 @@ class MatchList extends Component {
   }
 
   createNewMatchAndRedirect = () => {
+    if (!this.readyToMatch()) return
+    this.setState({ matchesLoading: true })
     const match = {
       title: 'The One',
       uid: uuid.v4(),
@@ -107,7 +122,8 @@ class MatchList extends Component {
       .then(() => {
         this.state.userDoc.ref.update({ [`currentMatches.${match.uid}`]: Date.now() })
       })
-      .then(() => this.setState({ redirectToNewMatch: true, match }))
+      .then(() => this.setState({ redirectToNewMatch: true, match, matchesLoading: false }))
+      .catch(err => console.log(err) || this.setState({ matchesLoading: false }))
   }
 
   leaveMatch = (match) => {
@@ -163,16 +179,17 @@ class MatchList extends Component {
 
     // loading={this.state.gettingCloudMatched}
 
+    console.log(this.state)
     return (
       <div style={{
         backgroundAttachment: 'fixed',
-          backgroundPosition: 'center center',
-          // backgroundImage: 'url("/assets/images/yap_landing_compressed.jpg")',
-          backgroundImage: 'url("/assets/images/yap_landing_compressed.jpg")',
-          backgroundSize: 'cover',
-          boxShadow: 'inset 0 0 0 2000px rgba(0,0,0,0.4)',
-          height: '-webkit-fill-available'
-          }}
+        backgroundPosition: 'center center',
+        // backgroundImage: 'url("/assets/images/yap_landing_compressed.jpg")',
+        backgroundImage: 'url("/assets/images/yap_landing_compressed.jpg")',
+        backgroundSize: 'cover',
+        boxShadow: 'inset 0 0 0 2000px rgba(0,0,0,0.4)',
+        height: '-webkit-fill-available'
+      }}
       >
         <Container style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
           <Segment loading={this.state.matchesLoading} >
@@ -195,30 +212,30 @@ class MatchList extends Component {
               <Progress active color="blue" percent={this.state.loadingPercent} />
             )}
             {this.state.gettingCloudMatched && (
-            <Segment >
-              {this.state.gettingCloudMatched && (
+              <Segment >
+                {this.state.gettingCloudMatched && (
                 <Dimmer active inverted>
                   <Loader>{this.state.loadingText}</Loader>
                 </Dimmer>
               )}
-              <Link to={`/matches/${fakeMatch.uid}`} >
-                <h3>{fakeMatch.uid}</h3>
-              </Link>
-              <div>{fakeMatch.createdAt}</div>
-              <div>{fakeMatch.bestOrigin}</div>
-              <div>{`Match score: ${fakeMatch.flatScore ? fakeMatch.flatScore : ''}`}</div>
-              <List horizontal>
-                {fakeMatch.flatmates.map(mate => (
-                  <List.Item key={mate.uid} >
-                    <Image avatar src={mate.photoURL} />
-                    <List.Content>
-                      <List.Header>{mate.displayName}</List.Header>
-                      {mate.workplace.split(/[ ,]+/)[0]}
-                    </List.Content>
-                  </List.Item>
+                <Link to={`/matches/${fakeMatch.uid}`} >
+                  <h3>{fakeMatch.uid}</h3>
+                </Link>
+                <div>{fakeMatch.createdAt}</div>
+                <div>{fakeMatch.bestOrigin}</div>
+                <div>{`Match score: ${fakeMatch.flatScore ? fakeMatch.flatScore : ''}`}</div>
+                <List horizontal>
+                  {fakeMatch.flatmates.map(mate => (
+                    <List.Item key={mate.uid} >
+                      <Image avatar src={mate.photoURL} />
+                      <List.Content>
+                        <List.Header>{mate.displayName}</List.Header>
+                        {mate.workplace ? mate.workplace.split(/[ ,]+/)[0] : ''}
+                      </List.Content>
+                    </List.Item>
               ))}
-              </List>
-            </Segment>
+                </List>
+              </Segment>
         )}
             {_.sortBy(this.state.matches, 'createdAt').reverse().map(match => (
               <Segment key={match.uid} clearing >
@@ -238,7 +255,7 @@ class MatchList extends Component {
                       <Image avatar src={mate.photoURL ? mate.photoURL : personAvatar} />
                       <List.Content>
                         <List.Header>{mate.displayName}</List.Header>
-                        {mate.workplace.split(/[ ,]+/)[0]}
+                        {mate.workplace ? mate.workplace.split(/[ ,]+/)[0] : ''}
                       </List.Content>
                     </List.Item>
               ))}
@@ -256,6 +273,11 @@ class MatchList extends Component {
                 content="Do a test match with test users to see what the process looks like"
               />
             </div>
+            {this.state.profileNotFinished &&
+            <Message error >
+              You need to fill out your profile before you can get matched
+            </Message>
+            }
           </Segment>
         </Container>
       </div>
