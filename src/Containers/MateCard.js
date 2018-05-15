@@ -19,12 +19,13 @@ const MateCard = ({
   const sizeDisplay = propertySize === 1 ? 'small' : propertySize === 3 ? '' : 'huge'
   const standardDisplay = standard === 1 ? 'rustic' : standard === 3 ? 'modern' : 'brand new'
   const styleDisplay = style === 1 ? 'rustic' : style === 3 ? 'modern' : 'brand new'
-  let workplaceDisplay = workplace ? workplace.split(/[AS,]+/) : ['Unknown']
+  const workplaceDisplay = workplace.split(/[ ,]+/)[0]
+  /* let workplaceDisplay = workplace ? workplace.split(/[AS,]+/) : ['Unknown']
   if (workplaceDisplay[0].toLowerCase() === 'the') {
     workplaceDisplay = `${workplaceDisplay[0]} ${workplaceDisplay[1]}`
   } else {
     workplaceDisplay = workplaceDisplay[0]
-  }
+  } */
   // ${sizeDisplay}, ${budgetDisplay}
   return (
     <Card centered >

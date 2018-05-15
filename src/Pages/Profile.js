@@ -101,6 +101,8 @@ class Profile extends Component {
                 ? userData.fieldOfStudy
                 : '',
               workplace: userData.workplace ? userData.workplace : '',
+              rentFrom: userData.rentFrom ? moment(userData.rentFrom) : moment('2018-06-01'),
+              rentTo: userData.rentTo ? moment(userData.rentTo) : moment('2018-08-31'),
               budget,
               propertySize,
               standard,
@@ -195,8 +197,11 @@ class Profile extends Component {
   }
 
   handleDateChange = (name, date) => {
+    const rentFromError = name === 'rentFrom' && date.isAfter(this.state.rentTo)
+    const rentToError = name === 'rentTo' && date.isBefore(this.state.rentFrom)
     this.setState({
-      [name]: date
+      [name]: date,
+      dateError: (rentFromError || rentToError)
     })
   }
 
@@ -362,6 +367,7 @@ class Profile extends Component {
                     rentFrom={this.state.rentFrom}
                     rentTo={this.state.rentTo}
                     handleDateChange={this.handleDateChange}
+                    dateError={this.state.dateError}
                   />
                   <PropertyVectorQuestions
                     propertyVector={[budget, propertySize, standard, style]}

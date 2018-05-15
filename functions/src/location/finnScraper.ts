@@ -1,8 +1,8 @@
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 
-export async function getListingDetails(finnListingURL: string) {
-  const response:any = await axios.get(finnListingURL).catch(err => console.log('Error in getting Finn url'))
+export async function getListingDetails(listingURL: string) {
+  const response:any = await axios.get(listingURL).catch(err => console.log('Error in getting Finn url'))
   if (response.status === 200) {
     const html = response.data
     const $ = cheerio.load(html)
@@ -23,7 +23,7 @@ export async function getListingDetails(finnListingURL: string) {
     dlItems.children().each((i, ele) => {
       if (ele.name === 'dt') {
         let key = ele.children[0].data.trim()
-        let value = ele.next.next.children[0].data.trim()
+        let value:any = ele.next.next.children[0].data.trim()
         switch (key) {
           case 'Boligtype':
            key = 'propertyType' 
@@ -41,6 +41,13 @@ export async function getListingDetails(finnListingURL: string) {
             break
           case 'Leieperiode':
             key="rentFrom"
+            try {
+              const [day, month, year] = value.split('.')
+              value= new Date(year, month-1, day-1)
+              // new Date(year, month [, day [, hours [, minutes [, seconds [, milliseconds]]]]]);
+            } catch (error) {
+              console.log(error)
+            }
           default:
             break;
         }
@@ -76,7 +83,7 @@ export async function getListingDetails(finnListingURL: string) {
       pricePerRoom,
       propertyVector,
       facilities,
-      finnListingURL,
+      listingURL,
     }
     return listing
   }
@@ -96,8 +103,8 @@ export async function getPropertyList(url) {
     
     const listings = $('div.unit.flex.align-items-stretch.result-item').children().each((i, ele) => {
       const href = ele.attribs.href
-      const finnListingURL = `https://www.finn.no${href}`
-      listingURLs.push(finnListingURL)
+      const listingURL = `https://www.finn.no${href}`
+      listingURLs.push(listingURL)
     })
   }
   console.log(listingURLs)

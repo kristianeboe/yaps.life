@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Comment, Header, Button } from 'semantic-ui-react'
+import _ from 'underscore'
 import { auth, firestore } from '../firebase'
 import personAvatar from '../assets/images/personAvatar.png'
 
@@ -7,7 +8,6 @@ class ChatRoom extends Component {
   constructor(props) {
     super(props)
     this.unsubscribe = null
-
     this.state = {
       user: null,
       messageText: '',
@@ -25,20 +25,19 @@ class ChatRoom extends Component {
         //   .collection('chatRooms')
         //   .doc('RnpKGueTLPA8V0y2A23j')
         const { listingId, matchId } = this.props
-        console.log(listingId, matchId)
 
         const messagesRef = listingId ?
           firestore.collection('listings').doc(listingId).collection(matchId)
-            .orderBy('dateTime')
           :
           firestore.collection('matches').doc(matchId).collection('messages')
-            .orderBy('dateTime')
+
+        messagesRef.orderBy('dateTime')
         this.unsubscribe = messagesRef.onSnapshot((snapshot) => {
           const messages = []
           snapshot.forEach((doc) => {
             messages.push(doc.data())
           })
-          this.setState({ messages })
+          this.setState({ messages, messagesRef })
         })
       } else {
         console.log('did mount auth state log out')
@@ -56,11 +55,17 @@ class ChatRoom extends Component {
     //   .firestore()
     //   .collection('matches')
     //   .doc(this.props.matchDoc.id)
-    const matchRef = this.props.matchDoc.ref
-    const messagesRef = matchRef.collection('messages')
+    /* const matchRef = this.props.matchDoc.ref
+    const messagesRef = matchRef.collection('messages') */
+    /* const messagesRef = listingId ?
+      firestore.collection('listings').doc(listingId).collection(matchId)
+        .orderBy('dateTime')
+      :
+      firestore.collection('matches').doc(matchId).collection('messages')
+        .orderBy('dateTime') */
     const dateTime = Date.now()
 
-    messagesRef
+    this.state.messagesRef
       .add({
         text: messageText,
         dateTime,
@@ -78,14 +83,16 @@ class ChatRoom extends Component {
     const { user } = this.state
 
     return (
-      <Comment.Group style={{ maxWidth: '100%' }}>
+      <Comment.Group style={{ maxWidth: '100%' }} size={this.props.groupChat ? 'large' : 'small'} >
+        {this.props.groupChat &&
         <Header as="h3" dividing >
           Chat
           <Header.Subheader>
             Here you can get to know your new flatmates and discuss apartments you consider moving into
           </Header.Subheader>
         </Header>
-        {this.state.messages.map((message) => {
+      }
+        {_.sortBy(this.state.messages, 'dateTime').map((message) => {
           const avatarStyle = { overflow: 'hidden', maxHeight: '35px' }
           let contentStyle = {}
           const userMessage = user.uid === message.from.uid
@@ -93,7 +100,7 @@ class ChatRoom extends Component {
             avatarStyle.float = 'right'
             contentStyle = { marginRight: '3.5em', textAlign: 'right' }
           }
-          const timeOfWriting = new Date(message.dateTime).toString().slice(0, 24)
+          const timeOfWriting = new Date(message.dateTime).toLocaleString().slice(0, 24)
           return (
             <Comment key={message.dateTime} >
               <Comment.Avatar src={message.from.photoURL} style={avatarStyle} />
@@ -118,7 +125,7 @@ class ChatRoom extends Component {
             value={this.state.messageText}
             onChange={this.handleChange}
           />
-          <Button type="submit" content="Add message" labelPosition="left" icon="edit" primary />
+          <Button type="submit" content="Add message" labelPosition="left" icon="edit" primary size={this.props.groupChat ? 'medium' : 'tiny'} />
         </Form>
       </Comment.Group>
     )

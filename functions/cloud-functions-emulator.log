@@ -24700,3 +24700,214 @@ f114f4b2-c9c5-4727-b926-8bb2ae3599e7
 2018-05-02T17:27:46.333Z - info: 5625
 2018-05-02T17:27:46.335Z - info: 6813
 2018-05-02T17:27:46.345Z - info: 5823
+2018-05-03T18:04:03.966Z - info: User function triggered, starting execution
+2018-05-03T18:04:06.002Z - info: 27 real users updated
+2018-05-03T18:04:07.048Z - info: 1000 test users ready to match
+2018-05-03T18:04:07.057Z - info: Execution took 3093 ms, user function completed successfully
+2018-05-03T18:13:03.614Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-05-03T18:13:03.615Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-03T18:13:03.615Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-05-03T18:13:03.615Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-03T18:13:03.615Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-05-03T18:13:03.615Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-05-03T18:13:03.616Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-05-03T18:13:03.616Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-03T18:13:03.617Z - info: Worker for getSingleMatchByKNNOnSave closed due to file changes.
+2018-05-03T18:13:03.617Z - info: Worker for resetDatabase closed due to file changes.
+2018-05-03T18:13:03.617Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-03T18:13:03.618Z - info: Worker for countTestUsers closed due to file changes.
+2018-05-03T18:13:03.618Z - info: Worker for updateUser closed due to file changes.
+2018-05-03T18:13:03.618Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-05-03T18:13:03.625Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-05-03T18:13:03.627Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-05-03T18:13:03.627Z - info: Worker for updateUsers closed due to file changes.
+2018-05-03T18:13:03.627Z - info: Worker for getFinnURLList closed due to file changes.
+2018-05-03T18:13:03.627Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-05-03T18:27:17.396Z - info: User function triggered, starting execution
+2018-05-03T18:27:18.904Z - info: 1 3
+2018-05-03T18:27:18.905Z - info: { uid: '3427f828-cbe8-433f-a7bb-3db1fdc9cb30',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'apartment',
+  pricePerRoom: '5000',
+  address: 'Nydalen allé, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '0e9eabe5-94b8-499f-bc93-ffc63978864e' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9475975, lng: 10.767723499999988 },
+  readyToMatch: true,
+  title: 'Nydalen' }
+2018-05-03T18:27:18.906Z - info: 4
+504cef35-4432-457b-9ad3-565473070fc7
+100
+2018-05-03T18:27:18.907Z - info: { address: 'Bjølsengata, Oslo, Norway',
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '68938156-fccc-49b2-a15f-4b88f1d70da0' ],
+  matchLocation: 'Oslo',
+  addressLatLng: { lng: 10.757795100000067, lat: 59.9408052 },
+  readyToMatch: true,
+  title: 'Home in Oslo for 1',
+  uid: '3cf85472-6097-4663-81e8-80a1645e9833',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: '3neRxD0eNheokKQbeN9ozlIsorJ2',
+  numberOfBedrooms: 1,
+  propertyType: 'single_room_in_apartment',
+  pricePerRoom: '5000' }
+2018-05-03T18:27:18.907Z - info: 4
+2018-05-03T18:27:18.907Z - info: { listingURL: '',
+  matchedWith: [ '0e9eabe5-94b8-499f-bc93-ffc63978864e' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9506883, lng: 10.666044300000067 },
+  readyToMatch: true,
+  title: 'Arnebratveien',
+  uid: '88f8d0cb-45ed-4188-9066-92328cbbfbec',
+  propertyVector: [ 3, 5, 5, 5 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'house',
+  pricePerRoom: '6000',
+  address: 'Arnebråtveien, Oslo, Norway',
+  tos: true }
+4
+2018-05-03T18:27:18.907Z - info: 504cef35-4432-457b-9ad3-565473070fc7
+75
+2018-05-03T18:27:18.912Z - info: Execution took 1518 ms, user function completed successfully
+2018-05-03T18:46:02.088Z - info: User function triggered, starting execution
+2018-05-03T18:46:03.514Z - info: 1 3
+2018-05-03T18:46:03.515Z - info: { numberOfBedrooms: 4,
+  propertyType: 'apartment',
+  pricePerRoom: '5000',
+  address: 'Nydalen allé, Oslo, Norway',
+  showChat: true,
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '504cef35-4432-457b-9ad3-565473070fc7' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9475975, lng: 10.767723499999988 },
+  readyToMatch: true,
+  title: 'Nydalen',
+  uid: '3427f828-cbe8-433f-a7bb-3db1fdc9cb30',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122' }
+2018-05-03T18:46:03.515Z - info: 4
+1320edbd-8262-4dc2-b90e-3b149b548dcc
+100
+2018-05-03T18:46:03.517Z - info: { tos: true,
+  listingURL: '',
+  matchedWith: [ '68938156-fccc-49b2-a15f-4b88f1d70da0' ],
+  matchLocation: 'Oslo',
+  addressLatLng: { lat: 59.9408052, lng: 10.757795100000067 },
+  readyToMatch: true,
+  title: 'Home in Oslo for 1',
+  uid: '3cf85472-6097-4663-81e8-80a1645e9833',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: '3neRxD0eNheokKQbeN9ozlIsorJ2',
+  numberOfBedrooms: 1,
+  propertyType: 'single_room_in_apartment',
+  pricePerRoom: '5000',
+  address: 'Bjølsengata, Oslo, Norway',
+  showChat: true }
+2018-05-03T18:46:03.517Z - info: 4
+2018-05-03T18:46:03.517Z - info: { propertyVector: [ 3, 5, 5, 5 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'house',
+  pricePerRoom: '6000',
+  address: 'Arnebråtveien, Oslo, Norway',
+  showChat: true,
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '504cef35-4432-457b-9ad3-565473070fc7' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9506883, lng: 10.666044300000067 },
+  readyToMatch: true,
+  title: 'Arnebratveien',
+  uid: '88f8d0cb-45ed-4188-9066-92328cbbfbec' }
+4
+1320edbd-8262-4dc2-b90e-3b149b548dcc
+2018-05-03T18:46:03.517Z - info: 75
+2018-05-03T18:46:03.522Z - info: Execution took 1435 ms, user function completed successfully
+2018-05-03T18:47:07.477Z - info: User function triggered, starting execution
+2018-05-03T18:47:08.929Z - info: 27 real users updated
+2018-05-03T18:47:09.888Z - info: 1000 test users ready to match
+2018-05-03T18:47:09.892Z - info: Execution took 2416 ms, user function completed successfully
+2018-05-03T20:00:43.339Z - info: User function triggered, starting execution
+2018-05-03T20:00:44.847Z - info: 1 3
+2018-05-03T20:00:44.849Z - info: { uid: '3427f828-cbe8-433f-a7bb-3db1fdc9cb30',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'apartment',
+  pricePerRoom: '5000',
+  address: 'Nydalen allé, Oslo, Norway',
+  showChat: true,
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '1320edbd-8262-4dc2-b90e-3b149b548dcc' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9475975, lng: 10.767723499999988 },
+  readyToMatch: true,
+  title: 'Nydalen' }
+2018-05-03T20:00:44.850Z - info: 4
+98a0de31-d9a6-4863-b189-7f8f11d44935
+100
+2018-05-03T20:00:44.851Z - info: { addressLatLng: { lat: 59.9408052, lng: 10.757795100000067 },
+  readyToMatch: true,
+  title: 'Home in Oslo for 1',
+  uid: '3cf85472-6097-4663-81e8-80a1645e9833',
+  propertyVector: [ 3, 3, 3, 3 ],
+  ownerId: '3neRxD0eNheokKQbeN9ozlIsorJ2',
+  numberOfBedrooms: 1,
+  propertyType: 'single_room_in_apartment',
+  pricePerRoom: '5000',
+  address: 'Bjølsengata, Oslo, Norway',
+  showChat: true,
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '68938156-fccc-49b2-a15f-4b88f1d70da0' ],
+  matchLocation: 'Oslo' }
+2018-05-03T20:00:44.851Z - info: 4
+2018-05-03T20:00:44.852Z - info: { propertyVector: [ 3, 5, 5, 5 ],
+  ownerId: 'uwUbPIgqAudqPDItgfOkEqVgl122',
+  numberOfBedrooms: 4,
+  propertyType: 'house',
+  pricePerRoom: '6000',
+  address: 'Arnebråtveien, Oslo, Norway',
+  showChat: true,
+  tos: true,
+  listingURL: '',
+  matchedWith: [ '1320edbd-8262-4dc2-b90e-3b149b548dcc' ],
+  matchLocation: 'oslo',
+  addressLatLng: { lat: 59.9506883, lng: 10.666044300000067 },
+  readyToMatch: true,
+  title: 'Arnebratveien',
+  uid: '88f8d0cb-45ed-4188-9066-92328cbbfbec' }
+2018-05-03T20:00:44.852Z - info: 4
+98a0de31-d9a6-4863-b189-7f8f11d44935
+75
+2018-05-03T20:00:44.857Z - info: Execution took 1519 ms, user function completed successfully
+2018-05-07T19:59:19.819Z - info: User function triggered, starting execution
+2018-05-07T19:59:21.490Z - info: 2 3
+2018-05-07T19:59:21.498Z - info: Execution took 1680 ms, user function completed successfully
+2018-05-07T20:02:22.948Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-07T20:02:22.949Z - info: Worker for getMatchedByClusterOnSave closed due to file changes.
+2018-05-07T20:02:22.949Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-07T20:02:22.950Z - info: Worker for aggregateMatchInfo closed due to file changes.
+2018-05-07T20:02:22.950Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-07T20:02:22.950Z - info: Worker for deleteTestUsers closed due to file changes.
+2018-05-07T20:02:22.950Z - info: Worker for populateDatabaseWithTestUsersHTTPS closed due to file changes.
+2018-05-07T20:02:22.951Z - info: Worker for addListingToMatchHTTPS closed due to file changes.
+2018-05-07T20:02:22.952Z - info: Worker for updateUsers closed due to file changes.
+2018-05-07T20:02:22.953Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-07T20:02:22.953Z - info: Worker for getFinnURLList closed due to file changes.
+2018-05-07T20:02:22.953Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-07T20:02:22.953Z - info: Worker for getMatchedByCluster closed due to file changes.
+2018-05-07T20:02:22.953Z - info: Worker for resetDatabase closed due to file changes.
+2018-05-07T20:02:22.969Z - info: Worker for scoreApartmentHTTPS closed due to file changes.
+2018-05-07T20:02:22.969Z - info: Worker for updateUser closed due to file changes.
+2018-05-07T20:02:22.970Z - info: Worker for countTestUsers closed due to file changes.
+2018-05-07T20:02:22.971Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
+2018-05-07T20:02:22.971Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.

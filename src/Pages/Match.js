@@ -119,7 +119,7 @@ class Match extends Component {
     const {
       matchTitle, flatmatesLoading, flatmates, propertyList, finnQueryString, airBnBQueryString
     } = this.state
-    console.log(this.state)
+
     return (
       <div style={{
     backgroundAttachment: 'fixed',
@@ -216,14 +216,14 @@ class Match extends Component {
                         The ones already here are the two first listings from Finn.no, feel free to add more.
                       </Header.Subheader>
                     </Header>
-                    <FlatList matchId={this.props.match.params.matchId} flats={propertyList} />
+                    <FlatList matchId={this.props.match.params.matchId} flats={propertyList} flatmates={flatmates} />
                   </Segment>
                 </Grid.Column>
               </Grid>
               {this.state.showChatRoom && (
                 <Segment loading={!this.state.matchDoc}>
                   {this.state.matchDoc && (
-                    <ChatRoom matchId={this.state.matchDoc} />
+                    <ChatRoom groupChat matchId={this.state.matchDoc.id} />
                   )}
                 </Segment>
               )}

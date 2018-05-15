@@ -78,7 +78,6 @@ class MatchList extends Component {
 
   readyToMatch() {
     const { workplace, workplaceLatLng, university } = this.state.userData
-    console.log(workplace, workplaceLatLng, university)
     if (!workplace || !university || !workplaceLatLng) {
       this.setState({ profileNotFinished: true })
       return false
@@ -88,13 +87,12 @@ class MatchList extends Component {
 
   getMatched = (e) => {
     e.preventDefault()
-    if (!this.readyToMatch()) return
     console.log('about to match')
     firestore.collection('users').doc(this.state.user.uid).update({ gettingCloudMatched: true })
-    this.setState({ gettingCloudMatched: true, loadingPercent: 25, loadingText: 'Uploading you to the cloud. Prepare to get matched ;)' })
+    this.setState({ loadingPercent: 25, loadingText: 'Uploading you to the cloud. Prepare to get matched ;)' }) // gettingCloudMatched: true,
     setTimeout(() => this.setState({ loadingPercent: 50, loadingText: 'Matching underway. Stay tuned.' }), 8000)
     axios
-      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getSingleMatchByKNNOnSave', { userUid: this.state.user.uid })
+      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getDemoMatched', { userUid: this.state.user.uid })
       .then((response) => {
         this.setState({ loadingPercent: 75, loadingText: 'Wrapping up, almost done now.' })
         console.log(response)
@@ -179,7 +177,6 @@ class MatchList extends Component {
 
     // loading={this.state.gettingCloudMatched}
 
-    console.log(this.state)
     return (
       <div style={{
         backgroundAttachment: 'fixed',
@@ -265,7 +262,7 @@ class MatchList extends Component {
             <div>
               <Popup
                 trigger={
-                  <Button onClick={this.createNewMatchAndRedirect} >Create new custom match</Button>}
+                  <Button onClick={this.createNewMatchAndRedirect} >Create new solo match to find single rooms or add friends</Button>}
                 content="Create your own match and invite your friends"
               />
               <Popup

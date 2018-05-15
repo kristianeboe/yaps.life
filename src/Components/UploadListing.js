@@ -10,6 +10,7 @@ import {
   Header
 } from 'semantic-ui-react'
 import uuid from 'uuid'
+import moment from 'moment'
 import {
   geocodeByAddress,
   getLatLng
@@ -21,6 +22,7 @@ import PropertyVectorQuestions from '../Containers/PropertyVectorQuestions'
 import PlacesAutoCompleteWrapper from '../Containers/PlacesAutoCompleteWrapper'
 import { MATCH_LOCATION_OPTIONS, PROPERTY_TYPE_OPTIONS } from '../utils/CONSTANTS'
 import { UploadListingFormValidation } from '../utils/FormValidations'
+import RentFromDateRange from '../Containers/RentfromDateRange'
 
 const numberOfBedroomsOptions = [
   { key: '1', text: '1', value: 1 },
@@ -50,6 +52,8 @@ const initialFormState = {
   listingURL: '',
   tos: false,
   readyToMatch: false,
+  rentFrom: moment('2018-06-01'),
+  rentTo: moment('2018-08-31'),
   errors: {},
 }
 
@@ -68,6 +72,15 @@ class UploadListing extends Component {
     this.setState({ [name]: value })
   }
 
+  handleDateChange = (name, date) => {
+    const rentFromError = name === 'rentFrom' && date.isAfter(this.state.rentTo)
+    const rentToError = name === 'rentTo' && date.isBefore(this.state.rentFrom)
+    this.setState({
+      [name]: date,
+      dateError: (rentFromError || rentToError)
+    })
+  }
+
   handleSubmit = async () => {
     this.setState({ uploadFormLoading: true })
     const uid = uuid.v4()
@@ -78,6 +91,8 @@ class UploadListing extends Component {
       propertyType: this.state.propertyType,
       matchLocation: this.state.matchLocation,
       address: this.state.address,
+      rentFrom: this.state.rentFrom,
+      rentTo: this.state.rentTo,
       propertyVector: [this.budgetFromPricePerRoom(this.state.pricePerRoom), this.state.propertySize, this.state.standard, this.state.style],
       addressLatLng: this.state.addressLatLng,
       listingURL: this.state.listingURL, // ? this.state.listingURL : uid,
@@ -109,6 +124,7 @@ class UploadListing extends Component {
       const listing = {
         ...formFields,
         uid,
+        showChat: true,
         ownerId: this.props.user.uid,
         readyToMatch: this.state.readyToMatch,
       }
@@ -217,6 +233,12 @@ class UploadListing extends Component {
                   landlord
                 />
               </Form.Field>
+              <RentFromDateRange
+                rentFrom={this.state.rentFrom}
+                rentTo={this.state.rentTo}
+                handleDateChange={this.handleDateChange}
+                dateError={this.state.dateError}
+              />
               <PropertyVectorQuestions
                 propertyVector={[budget, propertySize, standard, style]}
                 landlord
@@ -276,10 +298,12 @@ class UploadListing extends Component {
                   title: this.state.title,
                   pricePerRoom: this.state.pricePerRoom,
                   address: this.state.address,
+                  rentFrom: this.state.rentFrom,
+                  rentTo: this.state.rentTo,
                   propertyVector: [budget, this.state.propertySize, this.state.style, this.state.standard],
                   matchLocation: this.state.matchLocation,
                   numberOfBedrooms: this.state.numberOfBedrooms,
-                  listingURL: this.state.listingURL
+                  listingURL: this.state.listingURL,
                 }}
             />
           </Grid.Column>

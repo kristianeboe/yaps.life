@@ -178,7 +178,7 @@ class LandlordProfile extends Component {
             <Grid.Column width="6" >
               <Segment loading={this.state.myListingsLoading} >
                 <Header>My listings</Header>
-                <FlatList flats={this.state.listings} />
+                <FlatList landlord flats={this.state.listings} />
               </Segment>
             </Grid.Column>
           </Grid>

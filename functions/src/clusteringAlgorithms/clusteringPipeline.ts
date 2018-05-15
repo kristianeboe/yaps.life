@@ -140,43 +140,28 @@ export function initChatRoom(matchRef) {
       console.log('error adding original message to match', err))
 }
 
-export async function matchAllAvailableUsers(userUid) {
+export async function matchAllAvailableUsers() {
   console.log('Getting test users')
-  const usersToBeMatched = await admin.firestore().collection('testUsers')
+  const usersToBeMatched = []
+  const usersToBeMatchedSnapshot = await admin.firestore().collection('users')
     .where('matchLocation', '==', 'Oslo')
-    // .where('readyToMatch', '==', true)
+    .where('readyToMatch', '==', true)
     .get()
-    .then((snapshot) => {
-      const testUsers = []
-      snapshot.forEach((doc) => {
-        const testUser = doc.data()
-        testUsers.push(testUser)
-      })
-      return testUsers
-    }).catch(err => {console.log(err)
-    return []} )
-
-  console.log(`got ${usersToBeMatched.length} test users`)
-  if (usersToBeMatched.length < 10) {
-    console.log('Not enough users to do a match')
-    return []
-  }
-  console.log('getting real users')
-
-  const usersRef = admin.firestore().collection('users')
-  console.log(userUid)
-  const results = await Promise.all([usersRef.doc(userUid).get()])
-  console.log(`got ${results.length} real users`)
-  results.forEach((doc) => {
-    const realUser = doc.data()
-    usersToBeMatched.push(realUser)
+  usersToBeMatchedSnapshot.forEach(userDoc => {
+    const user = userDoc.data()
+    usersToBeMatched.push(user)
   })
-  console.log(`${usersToBeMatched.length} will be matched`)
-  
+
+  console.log(`got ${usersToBeMatched.length} users`)
+  if (usersToBeMatched.length < 16) {
+    console.log('Not enough users to do a match')
+    return false
+  }
+
   // Cluster
   console.log('starting clustering')
   const vectors = extractVectorsFromUsers(usersToBeMatched, false)
-  const clusters = await kMeansClustering(vectors)
+  const clusters = await knnClusteringOneMatchPerUser(vectors, 4)
   // console.log(`${clusters.length} clusters created`)
   
   // Turn clusters into flats
@@ -204,7 +189,7 @@ export async function matchAllAvailableUsers(userUid) {
   })
 }
  */
-export async function createMatchFromFlatmates(flatmates) {
+export async function createMatchFromFlatmates(flatmates, demo=false, test=false) {
   const flatScore = calculateFlatScore(flatmates)
   const propertyAlignment = calculatePropertyAlignment(flatmates)
   const groupPropertyVector = createGroupPropertyVector(flatmates)
@@ -221,7 +206,8 @@ export async function createMatchFromFlatmates(flatmates) {
     groupPropertyVector,
     propertyList: [],
     custom: false,
-    createdAt: admin.firestore.FieldValue.serverTimestamp()
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    demo
   }
   const matchRef = admin.firestore().collection('matches').doc(matchUid)
   
@@ -231,6 +217,7 @@ export async function createMatchFromFlatmates(flatmates) {
   await initChatRoom(matchRef)
 
   // Update users with new match
+  if (demo) {
   return Promise.all(
     match.flatmates.map((mate) => {
       let collectionName = 'testUsers'
@@ -243,7 +230,6 @@ export async function createMatchFromFlatmates(flatmates) {
         .doc(mate.uid)
         .update({
           [`currentMatches.${matchUid}`]: Date.now(),
-          readyToMatch: false,
           newMatches: true,
           gettingCloudMatched: false,
         })
@@ -252,4 +238,8 @@ export async function createMatchFromFlatmates(flatmates) {
           )
     })
   ).catch(err => console.log('error with updating users with currentMatchId', err))
+}
+else {
+  return match
+}
 }

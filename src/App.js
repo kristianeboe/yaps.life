@@ -8,6 +8,7 @@ import Create from './Pages/Create'
 import Profile from './Pages/Profile'
 import Match from './Pages/Match'
 import MatchList from './Pages/MatchList'
+import AccountSettings from './Pages/AccountSettings'
 import LandlordProfie from './Components/LandlordProfile'
 import TOS from './Pages/TOS'
 
@@ -48,6 +49,7 @@ class App extends Component {
           <Route path="/profile" component={Profile} />
           <Route path="/landlord-view" component={LandlordProfie} />
           <Route path="/TOS" component={TOS} />
+          <Route path="/account-settings" component={AccountSettings} />
         </Switch>
       </div>
     )

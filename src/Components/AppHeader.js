@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Menu, Label, Icon, Responsive, Header, Image } from 'semantic-ui-react'
+import { Menu, Label, Icon, Responsive, Header, Image, Dropdown } from 'semantic-ui-react'
 import { HashLink } from 'react-router-hash-link'
 import { slide as BurgerMenu } from 'react-burger-menu'
 import { Link } from 'react-router-dom'
@@ -128,6 +128,11 @@ class AppHeader extends Component {
         </Link>
       </Menu.Item>
     )
+    const LogoTextLong = () => (
+      <Menu.Item >
+        <i>Young Aspiring Professionals</i>
+      </Menu.Item>
+    )
 
 
     return (
@@ -211,6 +216,7 @@ class AppHeader extends Component {
           <Menu fixed="top" inverted style={{ height: '3em' }}>
             <Logo />
             <LogoText />
+            <LogoTextLong />
             <Menu.Menu position="right">
               <Menu.Item as="div" name="process" onClick={this.handleItemClick} >
                 <HashLink smooth to="/#process">
@@ -243,11 +249,23 @@ class AppHeader extends Component {
                 </Link>
               </Menu.Item>
               {user && (
-              <Menu.Item as="div" name="logout" onClick={this.logout}>
-                <Link to="/">
-                  <Icon name="log out" />
-                Log out
-                </Link>
+              <Menu.Item as="div" name="logout">
+                <Dropdown
+                  trigger={<span>{this.props.user.displayName}<Image spaced="left" src={this.props.user.photoURL} avatar /> </span>}
+                  options={[
+                    {
+                      key: 'settings',
+                      text: <Link style={{ color: 'black' }} to="/account-settings">Settings</Link>,
+                      icon: 'settings'
+                    },
+                    {
+                      key: 'sign-out',
+                      text: <Link style={{ color: 'black' }} onClick={this.logout} to="/">Log out</Link>,
+                      icon: 'sign out'
+                    },
+                  ]}
+                  icon={null}
+                />
               </Menu.Item>
           )}
               {!user && (

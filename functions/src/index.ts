@@ -95,13 +95,13 @@ export const setTestUsersReadyToMatch = functions.https.onRequest(async (req, re
 
 export const resetDatabase = functions.https.onRequest(async (req, res) => {
   await setTestUsersReadyToMatch(req, res)
-  const snapshot = await admin
+  /* const snapshot = await admin
     .firestore()
     .collection('users')
     .get()
   snapshot.forEach(doc =>
     doc.ref.update({ readyToMatch: true, currentMatches: {} }))
-  console.log(`${snapshot.size} real users updated`)
+  console.log(`${snapshot.size} real users updated`) */
   await deleteMatchClusterCollection() // .catch(err => console.log(err) || res.status(500).send(err))
   res.status(200).end()
 })
@@ -170,53 +170,25 @@ export const aggregateMatchInfo = functions.https.onRequest(async (req, res) => 
   return true
 })
 
-export const getMatchedByCluster = functions.https.onRequest((req, res) => {
+export const matchAllAvailableUsersHTTPS = functions.https.onRequest((req, res) => {
   // const userData = event.data.data()
   // const { readyToMatch } = req.body
   cors(req, res, async () => {
-    await matchAllAvailableUsers('PmzsNVCnUSMVSMu2WGRa4omxez52')
+    await matchAllAvailableUsers()
     res.status(200).end()
   })
 })
 
-export const getMatchedByClusterOnSave = functions.https.onRequest((req, res) => {
-  // const userData = event.data.data()
-  // const { readyToMatch } = req.body
-  let { userUid } = req.body
-  console.log(userUid)
-  if (!userUid) {
-    userUid = 'PmzsNVCnUSMVSMu2WGRa4omxez52'
-    console.log('default', userUid)
-  }
 
+export const getDemoMatched = functions.https.onRequest((req, res) => {
+  const { userUid } = req.body
   cors(req, res, async () => {
-    const testUsers = createTestUsers(50)
-    await Promise.all(testUsers.map(testUser =>
-      admin
-        .firestore()
-        .collection('testUsers')
-        .doc(testUser.uid)
-        .set(testUser)
-        .catch(err => console.log('LOG: Error adding test user', err)))).catch(err => console.log('ERROR: Error in creating test users', err))
-    const matches = await matchAllAvailableUsers(userUid)
-    console.log('matches created', matches.length)
-    res.status(200).end()
-  })
-})
-
-export const getSingleMatchByKNNOnSave = functions.https.onRequest((req, res) => {
-  let { userUid } = req.body
-  console.log(userUid)
-  if (!userUid) {
-    userUid = 'PmzsNVCnUSMVSMu2WGRa4omxez52'
-    console.log('default', userUid)
-  }
-  cors(req, res, async () => {
-    const userRef = await admin
+    if (!userUid) res.status(500).send("Error in doing demo match, usedID not defined")
+    const userRef = admin
       .firestore()
       .collection('users')
       .doc(userUid)
-      .get()
+    const userDoc = await userRef.get()  
     const testUsersSnapshot = await admin
       .firestore()
       .collection('testUsers')
@@ -226,13 +198,13 @@ export const getSingleMatchByKNNOnSave = functions.https.onRequest((req, res) =>
       testUsers.push(testUser.data())
     })
     console.log(testUsers.length)
-    const userData = userRef.data()
+    const userData = userDoc.data()
     const vectors = extractVectorsFromUsers(testUsers, false)
     const userVector = extractVectorsFromUsers([userData], false)[0]
     const topK = knnClusteringSingleMatchTestUsers(userVector, vectors, 4)
-    console.log(topK)
     const flatmates = [userData].concat(topK.map(id => testUsers[id]))
-    const match = await createMatchFromFlatmates(flatmates)
+    const match = await createMatchFromFlatmates(flatmates, true)
+    // await userRef.update({readyToMatch: true})
     res.status(200).end()
   })
 })
@@ -245,59 +217,12 @@ export const onMatchCreate = functions.firestore
 
     const updatedMatch = await getBestOriginForMatch(match)
     const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
-    const listings: any = await Promise.all(listingURLs.slice(0, 2).map(url => getListingDetails(url))).catch(err => console.log(err))
+    const listings: any = await Promise.all(listingURLs.slice(0, 10).map(url => getListingDetails(url))).catch(err => console.log(err))
 
     listings.forEach(async listing => {
       await addListingToMatch(listing, updatedMatch)
     })
 
-
-    /* const scores = await Promise.all(listings.map((listing) => {
-
-      await addListingToMatch(listing, updatedMatch.uid)
-      let { address, price, propertySize } = listing
-
-      const pricePerRoom =
-          price < 15000
-            ? price
-            : Math.floor(price / updatedMatch.flatmates.length)
-
-      propertySize = propertySize > 100 ? 5 : propertySize < 60 ? 1 : 3
-      const budget =
-          pricePerRoom > 12000 ? 5 : pricePerRoom < 7000 ? 1 : 3
-      const standard = 3
-      const style = 3
-      const propertyVector = [budget, propertySize, standard, style]
-
-      listing.groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
-        updatedMatch.groupPropertyVector,
-        propertyVector
-      ))
-      listing.propertyVector = propertyVector
-      listing.pricePerRoom = pricePerRoom
-      
-      return scoreApartment(listing.address, updatedMatch.flatmates)
-    }))
-    scores.forEach((score, i) => (listings[i].commuteScore = score))
-    console.log(listings[0])
-
-    return admin
-      .firestore()
-      .collection('matches')
-      .doc(updatedMatch.uid)
-      .update({
-        propertyList: listings
-      }) */
-
-    /* if (!match) {
-        console.log('LOG: No match provided to get best origin for')
-      }
-
-      if (match.flatmates.length < 3) {
-        console.log('LOG: Not enough people to do a location cluster match')
-      }
-
-      if (match && match.flatmates.length > 3) */
   })
 
 export const onListingCreate = functions.firestore
@@ -314,22 +239,21 @@ export const onListingCreate = functions.firestore
 async function matchListingWithMatch(listingDoc, matchDoc) {
   const listing = listingDoc.data()
   const match = matchDoc.data()
-  console.log(listing)
-  console.log(match.flatmates.length)
   if(listing.numberOfBedrooms === match.flatmates.length) {
     const propScore = mapPropScoreToPercentage(euclidianDistanceSquared(
       match.groupPropertyVector,
       listing.propertyVector
     ))
-    console.log(matchDoc.id)
-    console.log(propScore)
-    if (propScore > 50) {
-      const commuteScore = await scoreApartment(listing.address, match.flatmates)
+    // add distance metric
+    if (propScore > 70) {
+      await addListingToMatch(listing, match)
+      /* const commuteScore = await scoreApartment(listing.address, match.flatmates)
       console.log(commuteScore)
-      matchDoc.ref.update({propertyList: [...match.propertyList, {listingId: listingDoc.id, commuteScore, groupScore: propScore}]})
+      matchDoc.ref.update({propertyList: [...match.propertyList, {listingId: listingDoc.id, commuteScore, groupScore: propScore}]}) */
       listingDoc.ref.update({matchedWith: [matchDoc.id]})
       // const newChat = admin.firestore().collection('chats').doc(matchDoc.id + listing.doc.id)
       // Set metadata about chat
+      // create chat between parties
       listingDoc.ref.collection(matchDoc.id)
       .add({
         text: "It's a match! Time to set up a viewing" ,
@@ -341,9 +265,8 @@ async function matchListingWithMatch(listingDoc, matchDoc) {
               'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
         }
       })
-      await addListingToMatch(listing, match)
       // Send email to parties
-      // create chat between parties
+      
     }
   }
 }
@@ -454,47 +377,7 @@ export const updateUsers = functions.https.onRequest((req, res) => {
   })
 })
 
-export const getFinnURLList = functions.https.onRequest(async (req, res) => {
-  const URL =
-    'https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20508&no_of_bedrooms_from=4&property_type=1&property_type=3&property_type=4&property_type=2'
-  const updatedMatch = exampleMatch
-  const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
-  const listings: any = await Promise.all(listingURLs.slice(0, 2).map(url => getListingDetails(url))).catch(err => console.log(err))
-  const scores = await Promise.all(listings.map((listing) => {
-    let { address, price, propertySize } = listing
 
-    const pricePerRoom =
-        price < 15000
-          ? price
-          : Math.floor(price / updatedMatch.flatmates.length)
-
-    propertySize = propertySize > 100 ? 5 : propertySize < 60 ? 1 : 3
-    const budget = pricePerRoom > 12000 ? 5 : pricePerRoom < 7000 ? 1 : 3
-    const standard = 3
-    const style = 3
-    const propertyVector = [budget, propertySize, standard, style]
-
-    listing.groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
-      updatedMatch.groupPropertyVector,
-      propertyVector
-    ))
-    listing.propertyVector = propertyVector
-    listing.pricePerRoom = pricePerRoom
-    return scoreApartment(listing.address, updatedMatch.flatmates)
-  }))
-  scores.forEach((score, i) => (listings[i].commuteScore = score))
-  console.log(listings[0])
-  await admin
-    .firestore()
-    .collection('matches')
-    .doc(updatedMatch.uid)
-    .update({
-      propertyList: listings
-    })
-  res.status(200).end()
-})
-/*   console.log(score, groupScore, propertyVector)
-  console.log(listing) */
 
 export const addListingToMatchHTTPS = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
@@ -526,16 +409,16 @@ async function addListingToMatch(listing, match){
 
   const {groupPropertyVector, flatmates, propertyList} = match
 
-  // commute score
-  const commuteScore = await scoreApartment(listing.address, flatmates)
-
   // group score
   const groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
     groupPropertyVector,
     listing.propertyVector
   ))
-  // add to match
 
+  // commute score
+  const commuteScore = await scoreApartment(listing.address, flatmates)
+
+  // add to match
   await admin.firestore().collection('matches').doc(match.uid).update({
     propertyList: [...propertyList, {listing, commuteScore, groupScore}]
   })

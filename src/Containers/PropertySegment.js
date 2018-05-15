@@ -1,5 +1,6 @@
 import React from 'react'
 import { List, Label, Header, Segment, Button, Grid } from 'semantic-ui-react'
+import moment from 'moment'
 import { BUDGET_TO_TEXT, STANDARD_TO_TEXT, STYLE_TO_TEXT, PROPERTY_SIZE_TO_TEXT } from '../utils/CONSTANTS'
 import { secondsToMinutes } from '../utils/FormattingFunctions'
 import ChatAccordion from '../Components/ChatAccordion'
@@ -14,13 +15,13 @@ import ChatAccordion from '../Components/ChatAccordion'
 }
  */
 const PropertySegment = ({
-  property, index, commuteScore, groupScore, matchId
+  property, index, commuteScore, groupScore, matchId, landlord, flatmates
 }) => {
   const {
-    title, address, pricePerRoom, propertyVector, listingURL, uid,
+    title, address, pricePerRoom, propertyVector, listingURL, uid, showChat, rentFrom, rentTo
   } = property
-  console.log(uid)
   const [budget, propertySize, standard, style] = propertyVector
+  const dateString = `Rent from ${moment(rentFrom).format('MMMM Do')}`
   return (
     <Segment key={index || uid || listingURL} clearing>
       <Header as="h4">{index + 1 ? `${index + 1}.` : ''} {title || address}
@@ -28,6 +29,7 @@ const PropertySegment = ({
           <List size="small" >
             <List.Item icon="home" content={address} />
             <List.Item icon="money" content={`${pricePerRoom} kr per person`} />
+            {rentFrom && <List.Item icon="calendar" content={dateString.concat(rentTo ? ` to ${moment(rentTo).format('MMMM Do')}` : '')} />}
           </List>
         </Header.Subheader>
       </Header>
@@ -40,17 +42,19 @@ const PropertySegment = ({
         <Label as="a">{STANDARD_TO_TEXT[standard]}</Label>
       </Label.Group>
 
-      {commuteScore && (
+      {commuteScore && flatmates && (
         <Grid columns="equal">
           <Grid.Column>
-            {`Average commute time: ${commuteScore ? secondsToMinutes(commuteScore / 4) : ''} minutes`}
+            {`Average commute time: ${commuteScore ? secondsToMinutes(commuteScore / flatmates.length) : ''} minutes`}
           </Grid.Column>
           <Grid.Column>
             {`Group property alignment: ${groupScore || ''}`}
           </Grid.Column>
         </Grid>
       )}
-      <ChatAccordion listingId={uid || null} matchId={matchId || null} />
+      {showChat &&
+        <ChatAccordion landlord={landlord} listingId={uid || null} matchId={landlord ? null : matchId} />
+      }
     </Segment>
   )
 }

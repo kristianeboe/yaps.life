@@ -5,7 +5,7 @@ import ChatRoom from './ChatRoom'
 export default class ChatAccordion extends Component {
   constructor(props) {
     super(props)
-    this.state = { activeIndex: 0 }
+    this.state = { activeIndex: -1 }
   }
 
   handleClick = (e, titleProps) => {
@@ -18,12 +18,12 @@ export default class ChatAccordion extends Component {
 
   render() {
     const { activeIndex } = this.state
-    const { listingId, matchId } = this.props
+    const { listingId, matchId, landlord } = this.props
     return (
       <Accordion styled>
         <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
           <Icon name="dropdown" />
-          Chat with landlord
+          Chat with {landlord ? 'tenants' : 'landlord'}
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 0}>
           {listingId && matchId &&

@@ -127,6 +127,7 @@ export const FIELD_OF_STUDY_OPTIONS = [
   { key: 'des', text: 'Design', value: 'Design' },
   { key: 'arc', text: 'Architecture', value: 'Architecture' },
   { key: 'law', text: 'Law', value: 'Law' },
+  { key: 'mechanical_engineer', text: 'Mechanical Engineering', value: 'mechanical_engineering' },
   { key: 'pm', text: 'Physics & Mathematics', value: 'Physics & Mathematics' },
   { key: 'con', text: 'Construction', value: 'Construction' },
   { key: 'een', text: 'Electrical Engineering', value: 'Electrical Engineering' },

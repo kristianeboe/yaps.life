@@ -156,6 +156,7 @@ class FlatRank extends Component {
       standard,
       style,
     } = this.state
+    const { flatmates } = this.props
 
     return (
       <Segment loading={evaluateListingLoading} >
@@ -223,7 +224,7 @@ class FlatRank extends Component {
               trigger={
                 <Form.Input
                   width="4"
-                  value={pricePerMonth ? pricePerMonth / 4 : ''}
+                  value={pricePerMonth ? pricePerMonth / flatmates.length : ''}
                   name="price"
                   fluid
                   readOnly
