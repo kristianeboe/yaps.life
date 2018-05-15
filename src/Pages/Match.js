@@ -108,7 +108,7 @@ class Match extends Component {
     })
     if (flatmates.length > 2) {
       axios
-        .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getBestOriginHTTPforMatch', { matchId })
+        .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getBestOriginForMatchHTTPS', { matchId })
         .then((response) => {
           console.log(response)
         })

@@ -133,9 +133,9 @@ export async function getBestOriginForMatch(match) {
 }
 
 
-export async function scoreApartment(address, flatmates) {
+export async function getAverageCommuteTime(address, flatmates) {
   const origins = [encodeURI(address)]
   const originsToDestinationsObject = await getOriginsToDestinationsObject(origins,flatmates)
-  const score = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
-  return score
+  const commuteTime = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
+  return commuteTime
 }
