@@ -1,3 +1,5 @@
+env:
+  - CI=true
 language: node_js
 node_js:
   - 6.11.5
@@ -13,9 +15,9 @@ install:
   - yarn install
   - cd ..
 script:
-  - yarn build
+  - CI=false yarn build
   - cd functions
-  - yarn build
+  - CI=false yarn build
   - cd ..
   - echo "Deploying!"
   - yarn test
