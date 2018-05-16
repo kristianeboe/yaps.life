@@ -76,14 +76,6 @@ class MatchList extends Component {
     }
   }
 
-  readyToMatch() {
-    const { workplace, workplaceLatLng, university } = this.state.userData
-    if (!workplace || !university || !workplaceLatLng) {
-      this.setState({ profileNotFinished: true })
-      return false
-    }
-    return true
-  }
 
   getMatched = (e) => {
     e.preventDefault()
@@ -100,6 +92,15 @@ class MatchList extends Component {
       })
   }
 
+  readyToMatch() {
+    const { workplace, workplaceLatLng, university } = this.state.userData
+    if (!workplace || !university || !workplaceLatLng) {
+      this.setState({ profileNotFinished: true })
+      return false
+    }
+    return true
+  }
+
   createNewMatchAndRedirect = () => {
     if (!this.readyToMatch()) return
     this.setState({ matchesLoading: true })
@@ -111,7 +112,7 @@ class MatchList extends Component {
       bestOrigin: '',
       flatScore: 100,
       propertyAlignment: 100,
-      propertyList: [],
+      currentListings: {},
       groupPropertyVector: this.state.userData.propertyVector,
       custom: true,
       createdAt: new Date()

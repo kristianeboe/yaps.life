@@ -109,7 +109,7 @@ export async function getBestOriginForMatch(match) {
   }
 
   const nrOfBedroomsFrom = `no_of_bedrooms_from=${nrOfFlatmates}&`
-  const propertyTypes =
+  const propertyTypes = nrOfFlatmates === 1 ? 'property_type=17' : 
     'property_type=1&property_type=3&property_type=4&property_type=2'
 
   const finnQueryString =

@@ -7,8 +7,8 @@ import {
   Header,
   Label
 } from 'semantic-ui-react'
-import { calculateSimilarityScoreBetweenUsers, calculateFlatScore, createGroupPropertyVector, calculatePropertyAlignment } from '../utils/alignMentFunctions'
 import axios from 'axios'
+import { calculateSimilarityScoreBetweenUsers, calculateFlatScore, createGroupPropertyVector, calculatePropertyAlignment } from '../utils/alignMentFunctions'
 import { auth, firestore } from '../firebase'
 import ChatRoom from '../Components/ChatRoom'
 import FlatRank from '../Components/FlatRank'
@@ -50,15 +50,16 @@ class Match extends Component {
     this.matchUnsubscribe()
   }
 
-  getPropertyList = async propertyList => Promise.all(propertyList.map(async (listing) => {
-    if (listing.listingId) {
-      return firestore.collection('listings').doc(listing.listingId).get()
-        .then((doc) => {
-          const listingData = doc.data()
-          return { listing: listingData, commuteScore: listing.commuteScore, groupScore: listing.groupScore }
-        })
+
+  getPropertyList = async currentListings => Promise.all(Object.values(currentListings).map(async (listing) => {
+    if (listing.source === 'external') {
+      return listing
     }
-    return listing
+    const listingDoc = await firestore.collection('listings').doc(listing.listingId).get()
+    const listingData = listingDoc.data()
+    return {
+      listingData, listingId: listing.listingId, commuteTime: listing.commuteTime, groupScore: listing.groupScore
+    }
   }))
 
   subscribeToMatch = async (matchId) => {
@@ -67,7 +68,7 @@ class Match extends Component {
       .doc(matchId)
       .onSnapshot(async (matchDoc) => {
         const {
-          title, flatmates, flatScore, finnQueryString, airBnBQueryString, propertyAlignment, bestOrigin, propertyList, location
+          title, flatmates, flatScore, finnQueryString, airBnBQueryString, propertyAlignment, bestOrigin, currentListings, location
         } = matchDoc.data()
         this.setState({
           matchTitle: title,
@@ -81,7 +82,8 @@ class Match extends Component {
           flatmatesLoading: false,
           showChatRoom: true,
         })
-        const matchPropertyList = await this.getPropertyList(propertyList)
+        const matchPropertyList = await this.getPropertyList(currentListings)
+        console.log(matchPropertyList)
         this.setState({
           propertyList: matchPropertyList,
         })
@@ -138,7 +140,7 @@ class Match extends Component {
                 <Header as="h1">
                   {matchTitle}
                   <Header.Subheader>
-                  Here are your new (potential) flatmates
+                  Here are your new (potential) flatmates, there is a chat where you can communicate at the bottom of this page.
                   </Header.Subheader>
                 </Header>
                 <Grid stackable columns="equal">
@@ -188,7 +190,7 @@ class Match extends Component {
                         <h2>
                           <a
                             target="_blank"
-                            href={finnQueryString || `https://www.finn.no/realestate/lettings/search.html?location=0.20061&no_of_bedrooms_from=${flatmates.length}&property_type=3`}
+                            href={finnQueryString || `https://www.finn.no/realestate/lettings/search.html?location=0.20061&no_of_bedrooms_from=${flatmates.length}&property_type=${flatmates.length === 1 ? '17' : '3'}`}
                           >
                         Finn.no
                           </a>
@@ -209,7 +211,7 @@ class Match extends Component {
                   <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} />
                 </Grid.Column>
                 <Grid.Column>
-                  <Segment>
+                  <Segment style={{ overflow: 'auto', maxHeight: '80vh' }} >
                     <Header as="h3" dividing >
                         3. See your list of options here, sorted by average commute time and group score
                       <Header.Subheader>

@@ -15,15 +15,15 @@ import ChatAccordion from '../Components/ChatAccordion'
 }
  */
 const PropertySegment = ({
-  property, index, commuteScore, groupScore, matchId, landlord, flatmates
+  property, index, commuteTime, groupScore, matchId, landlord, flatmates, listingId,
 }) => {
   const {
-    title, address, pricePerRoom, propertyVector, listingURL, uid, showChat, rentFrom, rentTo
+    title, address, pricePerRoom, propertyVector, listingURL, showChat, rentFrom, rentTo
   } = property
   const [budget, propertySize, standard, style] = propertyVector
   const dateString = `Rent from ${moment(rentFrom).format('MMMM Do')}`
   return (
-    <Segment key={index || uid || listingURL} clearing>
+    <Segment clearing>
       <Header as="h4">{index + 1 ? `${index + 1}.` : ''} {title || address}
         <Header.Subheader>
           <List size="small" >
@@ -42,10 +42,10 @@ const PropertySegment = ({
         <Label as="a">{STANDARD_TO_TEXT[standard]}</Label>
       </Label.Group>
 
-      {commuteScore && flatmates && (
+      {commuteTime && flatmates && (
         <Grid columns="equal">
           <Grid.Column>
-            {`Average commute time: ${commuteScore ? secondsToMinutes(commuteScore / flatmates.length) : ''} minutes`}
+            {`Average commute time: ${commuteTime ? secondsToMinutes(commuteTime / flatmates.length) : ''} minutes`}
           </Grid.Column>
           <Grid.Column>
             {`Group property alignment: ${groupScore || ''}`}
@@ -53,7 +53,7 @@ const PropertySegment = ({
         </Grid>
       )}
       {showChat &&
-        <ChatAccordion landlord={landlord} listingId={uid || null} matchId={landlord ? null : matchId} />
+        <ChatAccordion landlord={landlord} listingId={listingId || null} matchId={landlord ? null : matchId} />
       }
     </Segment>
   )

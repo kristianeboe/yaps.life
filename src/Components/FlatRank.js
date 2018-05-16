@@ -93,7 +93,7 @@ class FlatRank extends Component {
         listing,
         matchId: this.props.matchDoc.id
       }
-      const url = 'https://us-central1-yaps-1496498804190.cloudfunctions.net/addListingToMatchHTTPS'
+      const url = 'https://us-central1-yaps-1496498804190.cloudfunctions.net/addExternalListingToMatchHTTPS'
       const response = await axios.post(url, data)
 
       this.setState({

@@ -69,52 +69,51 @@ export function deleteMatchClusterCollection() {
 }
 
 
-export const updateUser = functions.https.onRequest((req, res) => {
-  cors(req, res, () => {
-    admin
-      .firestore()
-      .collection('users')
-      .doc('4spel7y5oJg0OarPxcHxhdwkgPF2')
-      .get()
-      .then((doc) => {
-        const data = doc.data()
-        const oldAnswerVector = data.answerVector
-        const answerVector = oldAnswerVector.map(el => el - 3)
-        doc.ref.update({ answerVector })
-      })
-      .then(() => {
-        console.log('User updated')
-        res.status(200).end()
-      })
-      .catch((err) => {
-        console.log('Error in updating user', err)
-        res.status(300).end()
-      })
-  })
-})
+export async function updateDocument(req, res) {
+  const response = await admin
+    .firestore()
+    .collection('users')
+    .doc('4spel7y5oJg0OarPxcHxhdwkgPF2')
+    .get()
+    .then((doc) => {
+      const data = doc.data()
+      const oldAnswerVector = data.answerVector
+      const answerVector = oldAnswerVector.map(el => el - 3)
+      doc.ref.update({ answerVector })
+    })
+    .catch((err) => {
+      console.log('Error in updating user', err)
+      res.status(300).end()
+    })
+    console.log('User updated')
+    res.status(200).end()
+}
 
-export const updateUsers = functions.https.onRequest((req, res) => {
-  cors(req, res, async () => {
+export async function updateCollection(req, res) {
     await admin
       .firestore()
-      .collection('testUsers')
+      .collection('listings')
       .get()
       .then((snapshot) => {
         snapshot.forEach(doc => {
           const data = doc.data()
           /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
           propertyVector.push(3) */
-          doc.ref.update({ fieldOfStudy: data.studyProgramme })
-          console.log('User ' + doc.id + 'updated')
+          doc.ref.update({ 
+            source: 'internal',
+           })
+          /* if (data.flatmates.length === 0) {
+            console.log('match ' + doc.id + 'deleted')
+            doc.ref.delete()
+          } */
         })
       }).catch((err) => {
         console.log('Error in updating users', err)
         res.status(300).end()
       })
-        
       res.status(200).end()
-  })
-})
+  }
+
 
 
 export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest(async (req, res) => {
@@ -194,7 +193,7 @@ export const resetDatabase = functions.https.onRequest(async (req, res) => {
   res.status(200).end()
 })
 
-export const aggregateMatchInfo = functions.https.onRequest(async (req, res) => {
+export async function aggregateMatchInfo(req, res) {
   let aggregateInfoObject = {}
   const matchSimilarityScores = []
   const matchSizes = {
@@ -256,4 +255,4 @@ export const aggregateMatchInfo = functions.https.onRequest(async (req, res) => 
   res.status(200).end()
 
   return true
-})
+}

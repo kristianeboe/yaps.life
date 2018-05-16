@@ -1,0 +1,43 @@
+[debug] [2018-05-16T11:11:22.604Z] ----------------------------------------------------------------------
+[debug] [2018-05-16T11:11:22.606Z] Command:       /usr/local/Cellar/node/9.11.1/bin/node /usr/local/bin/firebase experimental:functions:shell
+[debug] [2018-05-16T11:11:22.607Z] CLI Version:   3.18.0
+[debug] [2018-05-16T11:11:22.607Z] Platform:      darwin
+[debug] [2018-05-16T11:11:22.607Z] Node Version:  v9.11.1
+[debug] [2018-05-16T11:11:22.607Z] Time:          Wed May 16 2018 13:11:22 GMT+0200 (CEST)
+[debug] [2018-05-16T11:11:22.608Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-05-16T11:11:22.620Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-05-16T11:11:22.620Z] > authorizing via signed-in user
+[debug] [2018-05-16T11:11:22.622Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yaps-1496498804190  
+  
+ Wed May 16 2018 13:11:22 GMT+0200 (CEST)
+[debug] [2018-05-16T11:11:23.465Z] <<< HTTP RESPONSE 200
+[debug] [2018-05-16T11:11:23.466Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yaps-1496498804190/tokens  
+  
+ Wed May 16 2018 13:11:23 GMT+0200 (CEST)
+[debug] [2018-05-16T11:11:24.092Z] <<< HTTP RESPONSE 200
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-05-16T11:11:24.604Z] Fetching environment
+[debug] [2018-05-16T11:11:24.605Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/yaps-1496498804190  
+  
+ Wed May 16 2018 13:11:24 GMT+0200 (CEST)
+[debug] [2018-05-16T11:11:25.656Z] <<< HTTP RESPONSE 200
+[debug] [2018-05-16T11:11:25.656Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/569081698642:getServerAppConfig  
+  
+ Wed May 16 2018 13:11:25 GMT+0200 (CEST)
+[debug] [2018-05-16T11:11:26.375Z] <<< HTTP RESPONSE 200
+[debug] [2018-05-16T11:11:26.375Z] Starting @google-cloud/functions-emulator
+[debug] [2018-05-16T11:11:27.931Z] Parsing function triggers
+[debug] [2018-05-16T11:11:28.314Z] Deploying functions locally
+[debug] [2018-05-16T11:11:28.314Z] Deploying functions locally
+[info] ✔  functions: matchAllAvailableUsersHTTPS
+[info] ✔  functions: updateDocumentHTTPS
+[info] ✔  functions: matchListingsWithMatches
+[info] ✔  functions: getDemoMatched
+[info] ✔  functions: onMatchCreate
+[info] ✔  functions: getBestOriginForMatchHTTPS
+[info] ✔  functions: aggregateMatchInfoHTTPS
+[info] ✔  functions: updateCollectionHTTPS
+[info] ✔  functions: onListingCreate
+[info] ✔  functions: getListingDetailsHTTPS
+[info] ✔  functions: addExternalListingToMatchHTTPS

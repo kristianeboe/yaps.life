@@ -177,18 +177,7 @@ export async function matchAllAvailableUsers() {
 
 }
     
-/*             })
-            
-          
-        })).then((results) => {
-          console.log(`${results.length} matches created`)
-          return resolve('Operation complete')
-        })
-      })
-      .catch(error => console.log('Error in creating matches', error) || reject(error))
-  })
-}
- */
+
 export async function createMatchFromFlatmates(flatmates, demo=false, test=false) {
   const flatScore = calculateFlatScore(flatmates)
   const propertyAlignment = calculatePropertyAlignment(flatmates)
@@ -204,7 +193,7 @@ export async function createMatchFromFlatmates(flatmates, demo=false, test=false
     flatScore,
     propertyAlignment,
     groupPropertyVector,
-    propertyList: [],
+    currentListings: {},
     custom: false,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     demo
@@ -229,7 +218,7 @@ export async function createMatchFromFlatmates(flatmates, demo=false, test=false
         .collection(collectionName)
         .doc(mate.uid)
         .update({
-          [`currentMatches.${matchUid}`]: Date.now(),
+          [`currentMatches.${matchUid}`]: {matchId: matchUid, timeStamp: Date.now()},
           newMatches: true,
           gettingCloudMatched: false,
         })

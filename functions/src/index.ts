@@ -1,5 +1,6 @@
-import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
+import * as functions from 'firebase-functions'
+import * as uuid from 'uuid'
 
 const euclidianDistanceSquared = require('euclidean-distance/squared')
 const cors = require('cors')({ origin: true })
@@ -15,7 +16,7 @@ import {
   getOriginsToDestinationsObject,
   getAverageCommuteTime
 } from './location/locationAlgorithms'
-import { deleteMatchClusterCollection } from './utils/dbFunctions'
+import { deleteMatchClusterCollection, updateDocument, updateCollection, aggregateMatchInfo } from './utils/dbFunctions'
 import { getListingDetails, getPropertyList } from './location/finnScraper'
 import { extractVectorsFromUsers } from './utils/vectorFunctions'
 import { knnClusteringSingleMatchTestUsers } from './clusteringAlgorithms/knnClustering'
@@ -23,6 +24,23 @@ import { knnClusteringSingleMatchTestUsers } from './clusteringAlgorithms/knnClu
 admin.initializeApp()
 
 
+export const updateDocumentHTTPS = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    return updateDocument(req, res)
+  })
+})
+
+export const updateCollectionHTTPS = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    return updateCollection(req, res)
+  })
+})
+
+export const aggregateMatchInfoHTTPS = functions.https.onRequest(async (req, res) => {
+  cors(req, res, async () => {
+    return aggregateMatchInfo(req, res)
+  })
+})
 
 export const matchAllAvailableUsersHTTPS = functions.https.onRequest((req, res) => {
   // const userData = event.data.data()
@@ -88,7 +106,8 @@ export const onMatchCreate = functions.firestore
     // Get best origin and data from external sources
     const updatedMatch = await getBestOriginForMatch(match)
     const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
-    const finnListings: any = await Promise.all(listingURLs.slice(0, 10).map(url => getListingDetails(url))).catch(err => console.log(err))
+    const finnListings= await Promise.all(listingURLs.slice(0, 5).map(url => getListingDetails(url)))
+    console.log(finnListings.length)
 
     finnListings.forEach(async listing => {
       // score listing
@@ -98,7 +117,7 @@ export const onMatchCreate = functions.firestore
         // commute score
         const commuteTime = await getAverageCommuteTime(listing.address, updatedMatch.flatmates)
         // add external listing to match
-        await addListingToMatch(listing, groupScore, commuteTime, updatedMatch)
+        await addExternalListingToMatch(listing, groupScore, commuteTime, updatedMatch)
       }
     })
 
@@ -128,14 +147,17 @@ async function matchListingWithMatch(listingDoc, matchDoc) {
     if (groupScore > 70) {
       const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
       const {groupPropertyVector, flatmates, propertyList} = match
-      await matchDoc.update({
-        propertyList: [...propertyList, {listing, commuteTime, groupScore}]
+      await matchDoc.ref.update({
+        [`currentListings.${listingDoc.id}`]: {listingId: listingDoc.id, commuteTime, groupScore, timeStamp: Date.now(), source: 'internal'},
       })
-      listingDoc.ref.update({matchedWith: [matchDoc.id]})
-
+      await listingDoc.ref.update({
+        [`currentMatches.${matchDoc.id}`]: {matchId: matchDoc.id, timeStamp: Date.now()}
+      })
+      
+      
       // Set metadata about chat
       // create chat between parties
-      listingDoc.ref.collection(matchDoc.id)
+      await listingDoc.ref.collection(matchDoc.id)
       .add({
         text: "It's a match! Time to set up a viewing" ,
         dateTime: Date.now(),
@@ -174,7 +196,7 @@ export const getListingDetailsHTTPS = functions.https.onRequest((req, res) => {
   })
 })
 
-export const addListingToMatchHTTPS = functions.https.onRequest((req, res) => {
+export const addExternalListingToMatchHTTPS = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     const {listing, matchId} = req.body
     console.log(req.body)
@@ -186,31 +208,30 @@ export const addListingToMatchHTTPS = functions.https.onRequest((req, res) => {
       if (groupScore > 70) {
         // commute score
         const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
-        await addListingToMatch(listing, groupScore, commuteTime, match)
+        await addExternalListingToMatch(listing, groupScore, commuteTime, match)
       }
-    
-
+  
 
     res.status(200).end()
   })
 })
 
-async function addListingToMatch(listing, commuteTime, groupScore, match){
-  const {groupPropertyVector, flatmates, propertyList} = match
-
-  // add to match
+async function addExternalListingToMatch(listing, groupScore, commuteTime, match) {
+  const { propertyList} = match
+  const listingId = uuid.v4()
   await admin.firestore().collection('matches').doc(match.uid).update({
-    propertyList: [...propertyList, {listing, commuteTime, groupScore}]
+    [`currentListings.${listingId}`]: {listingId, listingData: listing, commuteTime, groupScore, timeStamp: Date.now(), source: 'external'},
   })
 }
 
 function scoreListing(listing, match){
-  const {groupPropertyVector} = match
+  const {groupPropertyVector} = match.map((item, index) => index > 1 ? item * 0.4 : item) // negates most of the effects of standard and style
+  const {propertyVector} = listing.map((item, index) => index > 1 ? item * 0.4 : item)
 
   // group score
   const groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
     groupPropertyVector,
-    listing.propertyVector
+    propertyVector
   ))
   return groupScore
 }

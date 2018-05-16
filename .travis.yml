@@ -7,16 +7,16 @@ cache:
   - functions/node_modules
 before_install:
   - yarn global add firebase-tools
+script:
   - yarn install
   - cd functions
   - yarn install
   - yarn build
   - cd ..
-script:
+  - yarn build
   - echo "Deploying!"
   - yarn test
 after_success:
-  - yarn build
   - firebase deploy -m "Travis deploy" --non-interactive --token $FIREBASE_TOKEN
 branches:
   only:

@@ -24911,3 +24911,167 @@ f114f4b2-c9c5-4727-b926-8bb2ae3599e7
 2018-05-07T20:02:22.970Z - info: Worker for countTestUsers closed due to file changes.
 2018-05-07T20:02:22.971Z - info: Worker for setTestUsersReadyToMatch closed due to file changes.
 2018-05-07T20:02:22.971Z - info: Worker for getBestOriginHTTPforMatch closed due to file changes.
+2018-05-15T15:47:47.606Z - error:  code=500, status=INTERNAL, message=Function worker killed by signal: SIGTERM, errors=[Function worker killed by signal: SIGTERM]
+2018-05-15T15:47:48.215Z - error:  code=500, status=INTERNAL, message=Function worker killed by signal: SIGKILL, errors=[Function worker killed by signal: SIGKILL]
+2018-05-15T15:47:48.294Z - error:  code=500, status=INTERNAL, message=Function worker killed by signal: SIGKILL, errors=[Function worker killed by signal: SIGKILL]
+2018-05-15T15:47:48.294Z - error:  code=500, status=INTERNAL, message=Function worker killed by signal: SIGKILL, errors=[Function worker killed by signal: SIGKILL]
+2018-05-15T15:48:25.495Z - error: SUPERVISOR error Error: listen EADDRINUSE 127.0.0.1:5000
+    at Server.setupListenHandle [as _listen2] (net.js:1346:14)
+    at listenInCluster (net.js:1387:12)
+    at GetAddrInfoReqWrap.doListen [as callback] (net.js:1502:7)
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:72:10)
+2018-05-15T15:48:25.496Z - error: supervisorPort (5000) is already in use
+2018-05-15T15:48:25.497Z - error: restPort (5001) is already in use
+2018-05-15T15:48:45.669Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-15T15:48:45.671Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-15T15:48:45.671Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-15T15:48:45.671Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-15T15:48:45.671Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-15T15:48:45.671Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T09:52:31.874Z - error: SUPERVISOR error Error: listen EADDRINUSE 127.0.0.1:5000
+    at Server.setupListenHandle [as _listen2] (net.js:1346:14)
+    at listenInCluster (net.js:1387:12)
+    at GetAddrInfoReqWrap.doListen [as callback] (net.js:1502:7)
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:72:10)
+2018-05-16T09:52:31.875Z - error: supervisorPort (5000) is already in use
+2018-05-16T09:52:31.876Z - error: restPort (5001) is already in use
+2018-05-16T09:55:12.051Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T09:55:12.055Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T09:55:12.055Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T09:55:12.055Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T09:55:12.055Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T09:55:12.055Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T09:55:12.056Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T10:04:46.732Z - info: User function triggered, starting execution
+2018-05-16T10:04:49.394Z - info: { averageScore: 80.55,
+  matchSizes: { '0': 4, '1': 8, '2': 0, '3': 9, '4': 11, '5': 0 },
+  matchCounter: 32,
+  matchesWithBestOrigins: 28,
+  numberOfUsersCounted: 79,
+  ratioOfPeopleIn3or4or5Flats: 0.8987341772151899,
+  ratioOfPeopleLessThan3: 0.10126582278481013,
+  customMatchCounter: 12 }
+2018-05-16T10:04:49.396Z - info: Execution took 2666 ms, user function completed successfully
+2018-05-16T10:06:24.333Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-16T10:06:24.333Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T10:06:24.333Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T10:06:24.334Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T10:06:24.334Z - info: Worker for updateUserHTTPS closed due to file changes.
+2018-05-16T10:06:24.334Z - info: Worker for updateUsersHTTPS closed due to file changes.
+2018-05-16T10:06:24.334Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T10:06:24.335Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T10:06:24.336Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T10:06:24.336Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T10:35:13.431Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-16T10:35:13.434Z - info: Worker for updateDocumentHTTPS closed due to file changes.
+2018-05-16T10:35:13.434Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T10:35:13.434Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T10:35:13.434Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T10:35:13.435Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T10:35:13.435Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-16T10:35:13.435Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T10:35:13.435Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T10:35:13.435Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T10:35:13.435Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T10:36:28.362Z - info: User function triggered, starting execution
+2018-05-16T10:36:30.652Z - info: match 0470e20f-f875-425f-9349-1e7e1fb9fcb6updated
+2018-05-16T10:36:30.653Z - info: match 097fb15d-e8b2-4aad-872a-390741fb2ef8updated
+2018-05-16T10:36:30.653Z - info: match 0b2b7414-8872-4fb7-959e-78ded4f45740updated
+2018-05-16T10:36:30.654Z - info: match 0e2bfff3-b48c-40e2-9cf5-a386fc0adf59updated
+2018-05-16T10:36:30.654Z - info: match 11330629-1f14-403c-bba3-44a966c3661eupdated
+2018-05-16T10:36:30.654Z - info: match 154b0b45-48c6-48da-9d0b-b7dcf37190fdupdated
+2018-05-16T10:36:30.655Z - info: match 1e6d56e2-0d25-44b3-b74f-4d32a5319618updated
+2018-05-16T10:36:30.655Z - info: match 2b055d1d-486d-45a7-bea6-7c62ed3305f4updated
+2018-05-16T10:36:30.655Z - info: match 3840e03a-1c53-4807-8bca-e52ea8b2944fupdated
+2018-05-16T10:36:30.656Z - info: match 3d763a84-01b0-4168-a7e4-4301ec996a0aupdated
+2018-05-16T10:36:30.656Z - info: match 4490d967-6329-445a-8e6f-981fb481e460updated
+2018-05-16T10:36:30.656Z - info: match 456941f7-2e2d-4303-aada-239d1dc0c867updated
+2018-05-16T10:36:30.656Z - info: match 5b41eddb-c856-4a2a-a9ce-013b5ddea6c0updated
+2018-05-16T10:36:30.657Z - info: match 5efb3b0c-6319-4a16-813e-735839179b96updated
+2018-05-16T10:36:30.657Z - info: match 6f9b4c82-cf03-4c1d-8e48-59838931751aupdated
+2018-05-16T10:36:30.657Z - info: match 9577fea3-20d9-4d0b-a477-7f8573497714updated
+2018-05-16T10:36:30.657Z - info: match 9e225858-467f-4bdb-98b5-0061dfa322e1updated
+2018-05-16T10:36:30.658Z - info: match a4bd52a4-9842-4161-a35d-d239d376898eupdated
+2018-05-16T10:36:30.658Z - info: match b5c27fde-ebd3-46b8-bb79-6acb945f832bupdated
+2018-05-16T10:36:30.658Z - info: match b6de426f-e4f7-40f6-b915-fc7be7559eafupdated
+2018-05-16T10:36:30.659Z - info: match ca6544c3-b8e4-4a29-8edb-7a2287e87a0dupdated
+2018-05-16T10:36:30.659Z - info: match d0fd985c-7180-4965-be52-3fc98dac35a9updated
+2018-05-16T10:36:30.659Z - info: match dde87ece-a891-4f8c-8d5b-ce381dd5998fupdated
+2018-05-16T10:36:30.659Z - info: match dfd75ce1-53d5-4162-8ca2-91d96ec5c033updated
+2018-05-16T10:36:30.660Z - info: match e0c60c3e-dd89-451c-8931-80d332bdc436updated
+2018-05-16T10:36:30.660Z - info: match e2a2ab94-220e-41e0-92fa-4551cf3d2566updated
+2018-05-16T10:36:30.660Z - info: match e7dc1e18-bb9d-4e24-9232-97f28b6a7f89updated
+2018-05-16T10:36:30.660Z - info: match eab4a4f4-462d-40c4-ac54-108e762ae23aupdated
+2018-05-16T10:36:30.660Z - info: match f4c2c169-e580-4c8d-a46a-42a4b044f347updated
+2018-05-16T10:36:30.661Z - info: match f6e98997-f680-4162-9736-d081d239e1a7updated
+2018-05-16T10:36:30.662Z - info: match f80c5532-4851-49ff-b9d9-13e70902339aupdated
+2018-05-16T10:36:30.662Z - info: match f9088bce-8c21-47f2-b9be-a753ed931e84updated
+2018-05-16T10:36:30.662Z - info: match fa1cf038-71a6-4f43-90c4-ebd935269822updated
+2018-05-16T10:36:30.664Z - info: Execution took 2304 ms, user function completed successfully
+2018-05-16T10:37:00.748Z - info: User function triggered, starting execution
+2018-05-16T10:37:02.955Z - info: 33 4
+2018-05-16T10:37:02.995Z - info: Execution took 2248 ms, user function completed successfully
+2018-05-16T10:41:45.050Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T10:41:45.051Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-16T10:41:45.051Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T10:41:45.052Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T10:41:45.052Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T10:41:45.052Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T10:41:45.052Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T10:41:45.052Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T10:41:45.052Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-16T10:48:01.653Z - info: User function triggered, starting execution
+2018-05-16T10:48:04.133Z - info: Execution took 2481 ms, user function completed successfully
+2018-05-16T10:48:29.540Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T10:48:29.541Z - info: Worker for updateDocumentHTTPS closed due to file changes.
+2018-05-16T10:48:29.541Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T10:48:29.541Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-16T10:48:29.541Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T10:48:29.542Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T10:48:29.542Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T10:48:29.542Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T10:48:29.543Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-16T10:48:29.543Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T10:48:29.543Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T10:52:09.798Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T10:52:09.800Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T10:52:09.800Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-16T10:52:09.801Z - info: Worker for updateDocumentHTTPS closed due to file changes.
+2018-05-16T10:52:09.801Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T10:52:09.801Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T10:52:09.802Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T10:52:09.802Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-16T10:52:09.802Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T10:52:09.802Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T10:54:12.530Z - info: User function triggered, starting execution
+2018-05-16T10:54:14.877Z - info: match 154b0b45-48c6-48da-9d0b-b7dcf37190fddeleted
+2018-05-16T10:54:14.879Z - info: match 1afe94d9-1bb2-46ad-b8f6-e30b0889bdf5deleted
+2018-05-16T10:54:14.879Z - info: match 2b055d1d-486d-45a7-bea6-7c62ed3305f4deleted
+2018-05-16T10:54:14.880Z - info: match 456941f7-2e2d-4303-aada-239d1dc0c867deleted
+2018-05-16T10:54:14.880Z - info: match a4bd52a4-9842-4161-a35d-d239d376898edeleted
+2018-05-16T10:54:14.880Z - info: match b5c27fde-ebd3-46b8-bb79-6acb945f832bdeleted
+2018-05-16T10:54:14.881Z - info: match e0c60c3e-dd89-451c-8931-80d332bdc436deleted
+2018-05-16T10:54:14.882Z - info: match fa1cf038-71a6-4f43-90c4-ebd935269822deleted
+2018-05-16T10:54:14.885Z - info: Execution took 2355 ms, user function completed successfully
+2018-05-16T11:05:54.923Z - info: User function triggered, starting execution
+2018-05-16T11:05:56.866Z - info: Execution took 1943 ms, user function completed successfully
+2018-05-16T11:11:14.815Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-16T11:11:14.816Z - info: Worker for updateDocumentHTTPS closed due to file changes.
+2018-05-16T11:11:14.817Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T11:11:14.817Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T11:11:14.817Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T11:11:14.817Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T11:11:14.817Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T11:11:14.817Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T11:11:14.818Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T11:19:11.481Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T11:19:11.484Z - info: Worker for updateDocumentHTTPS closed due to file changes.
+2018-05-16T11:19:11.484Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T11:19:11.484Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T11:19:11.484Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T11:19:11.485Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-16T11:19:11.485Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T11:19:11.485Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-16T11:19:11.485Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T11:19:11.485Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T11:19:11.486Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
