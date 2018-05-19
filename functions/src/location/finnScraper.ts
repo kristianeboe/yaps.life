@@ -16,34 +16,38 @@ export async function getListingDetails(listingURL: string) {
   // const price = $('.word-break div')['5'].text()
   // console.log(price)
 
-  const listingTemp = {}
+  // need to init object for TypeScript
+  const listingTemp = {
+    propertyType: '',
+    floor: 0,
+    numberOfBedrooms: 0,
+    propertySize: 0,
+  }
 
   const dlItems = $('dl.r-prl.mhn.multicol.col-count1upto640.col-count2upto768.col-count1upto990.col-count2from990')
   dlItems.children().each((i, ele) => {
     if (ele.name === 'dt') {
-      let key = ele.children[0].data.trim()
+      const key = ele.children[0].data.trim()
       let value:any = ele.next.next.children[0].data.trim()
       switch (key) {
         case 'Boligtype':
-         key = 'propertyType' 
          value = value === 'Leilighet' ? 'apartment' : value
-          break;
+         listingTemp.propertyType = value
+         break
         case 'Etasje':
-          key= 'floor'
-          break
+          listingTemp.floor = value
         case 'Soverom':
-          key='numberOfBedrooms'
+          listingTemp.numberOfBedrooms = value
           break
         case 'Primærrom':
-          key='propertySize'
           value = value.split(' ')[0]
+          listingTemp.propertySize = value
           break
         case 'Leieperiode':
-          key="rentFrom"
           try {
             const [from, to ] = value.split('-')
             const [day, month, year] = from.split('.')
-            value= new Date(year, month-1, day)
+            listingTemp['rentFrom'] = new Date(year, month-1, day)
             if (to) {
               const [rentToDay, rentToMonth, rentToYear] = to
               if (rentToYear === year) {
@@ -51,14 +55,14 @@ export async function getListingDetails(listingURL: string) {
               }
 
             }
+            break
             // new Date(year, month [, day [, hours [, minutes [, seconds [, milliseconds]]]]]);
           } catch (error) {
             console.log(error)
           }
         default:
-          break;
+          listingTemp[key] = value
       }
-      listingTemp[key] = value
     }
   })
 

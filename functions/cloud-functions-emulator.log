@@ -25403,3 +25403,65 @@ f114f4b2-c9c5-4727-b926-8bb2ae3599e7
 2018-05-19T17:22:13.988Z - info: Worker for updateDocumentHTTPS closed due to file changes.
 2018-05-19T17:22:13.988Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
 2018-05-19T17:22:13.988Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-19T17:24:20.634Z - info: User function triggered, starting execution
+2018-05-19T17:24:24.147Z - info: match 1cf875db-c891-4189-858a-c0ce1b3df958deleted
+2018-05-19T17:24:24.148Z - info: match 2c0dbcc5-4e8c-4a75-97ca-4bf5233302f4deleted
+2018-05-19T17:24:24.149Z - info: match 3d763a84-01b0-4168-a7e4-4301ec996a0adeleted
+2018-05-19T17:24:24.150Z - info: match 5b016c93-070d-4376-8550-55b80116f7c4deleted
+2018-05-19T17:24:24.151Z - info: match af3ea766-f97b-4a0b-b247-1b38fc4b7642deleted
+2018-05-19T17:24:24.153Z - info: match c2dc83bd-9ee3-4f8a-895a-3afaf28d8936deleted
+2018-05-19T17:24:24.153Z - info: match d0fd985c-7180-4965-be52-3fc98dac35a9deleted
+2018-05-19T17:24:24.154Z - info: match e7dc1e18-bb9d-4e24-9232-97f28b6a7f89deleted
+2018-05-19T17:24:24.155Z - info: match f9088bce-8c21-47f2-b9be-a753ed931e84deleted
+2018-05-19T17:24:24.158Z - info: Execution took 3524 ms, user function completed successfully
+2018-05-19T17:24:25.080Z - error: (node:16416) UnhandledPromiseRejectionWarning: Error: 5 NOT_FOUND: No document to update: projects/yaps-1496498804190/databases/(default)/documents/matches/d0fd985c-7180-4965-be52-3fc98dac35a9
+    at new createStatusError (/Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:64:15)
+    at /Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:583:15
+2018-05-19T17:24:25.080Z - error: (node:16416) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 2)
+(node:16416) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+2018-05-19T17:24:25.101Z - error: (node:16416) UnhandledPromiseRejectionWarning: Error: 5 NOT_FOUND: No document to update: projects/yaps-1496498804190/databases/(default)/documents/matches/2c0dbcc5-4e8c-4a75-97ca-4bf5233302f4
+    at new createStatusError (/Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:64:15)
+    at /Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:583:15
+2018-05-19T17:24:25.101Z - error: (node:16416) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 4)
+2018-05-19T17:24:25.107Z - error: (node:16416) UnhandledPromiseRejectionWarning: Error: 5 NOT_FOUND: No document to update: projects/yaps-1496498804190/databases/(default)/documents/matches/f9088bce-8c21-47f2-b9be-a753ed931e84
+    at new createStatusError (/Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:64:15)
+    at /Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:583:15
+2018-05-19T17:24:25.108Z - error: (node:16416) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 6)
+2018-05-19T17:24:25.110Z - error: (node:16416) UnhandledPromiseRejectionWarning: Error: 5 NOT_FOUND: No document to update: projects/yaps-1496498804190/databases/(default)/documents/matches/e7dc1e18-bb9d-4e24-9232-97f28b6a7f89
+    at new createStatusError (/Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:64:15)
+    at /Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:583:15
+2018-05-19T17:24:25.111Z - error: (node:16416) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 8)
+2018-05-19T17:27:48.226Z - error: Function worker killed by signal: SIGTERM
+2018-05-19T17:29:00.514Z - info: User function triggered, starting execution
+2018-05-19T17:29:02.693Z - info: { averageScore: 80.6086956521739,
+  matchSizes: { '0': 0, '1': 5, '2': 0, '3': 14, '4': 9, '5': 0 },
+  matchCounter: 28,
+  matchesWithBestOrigins: 24,
+  numberOfUsersCounted: 83,
+  ratioOfPeopleIn3or4or5Flats: 0.9397590361445783,
+  ratioOfPeopleLessThan3: 0.060240963855421686,
+  customMatchCounter: 5 }
+2018-05-19T17:29:02.695Z - info: Execution took 2182 ms, user function completed successfully
+2018-05-19T19:06:23.896Z - info: User function triggered, starting execution
+2018-05-19T19:06:26.145Z - info: { averageScore: 80.64,
+  matchSizes: { '0': 1, '1': 8, '2': 0, '3': 15, '4': 10, '5': 0 },
+  matchCounter: 34,
+  matchesWithBestOrigins: 30,
+  numberOfUsersCounted: 93,
+  ratioOfPeopleIn3or4or5Flats: 0.9139784946236559,
+  ratioOfPeopleLessThan3: 0.08602150537634409,
+  customMatchCounter: 9 }
+2018-05-19T19:06:26.146Z - info: Execution took 2252 ms, user function completed successfully
+2018-05-19T19:06:26.821Z - info: User function triggered, starting execution
+2018-05-19T19:06:29.960Z - info: match 34a00f4d-380a-4bf7-9fc2-4cf93f6a20a0deleted
+2018-05-19T19:06:29.960Z - info: match 405323c2-ee80-487b-b1c1-11e1ad556529deleted
+2018-05-19T19:06:29.961Z - info: match 6ac141bf-6227-4f9e-aaee-f02a67dbb5e5deleted
+2018-05-19T19:06:29.963Z - info: match a9512d0f-6634-4674-928e-28c063c3b897deleted
+2018-05-19T19:06:29.965Z - info: match e499d746-724c-4608-a322-7656792f3ef1deleted
+2018-05-19T19:06:29.968Z - info: Execution took 3148 ms, user function completed successfully
+2018-05-19T19:06:30.905Z - error: (node:18126) UnhandledPromiseRejectionWarning: Error: 5 NOT_FOUND: No document to update: projects/yaps-1496498804190/databases/(default)/documents/matches/a9512d0f-6634-4674-928e-28c063c3b897
+    at new createStatusError (/Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:64:15)
+    at /Users/Kristian/Developer/yaps.life/functions/node_modules/google-gax/node_modules/grpc/src/client.js:583:15
+2018-05-19T19:06:30.906Z - error: (node:18126) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 2)
+(node:18126) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+2018-05-19T19:15:35.367Z - error: Function worker killed by signal: SIGTERM

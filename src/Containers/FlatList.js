@@ -6,6 +6,7 @@ import PropertySegment from './PropertySegment'
 
 const FlatList = (props) => {
   const { flats, landlord, matchDoc } = props
+  console.log(_.sortBy(flats, 'listingScore'))
   return _.sortBy(flats, 'listingScore')
     .map((flat, index) => (
       <PropertySegment

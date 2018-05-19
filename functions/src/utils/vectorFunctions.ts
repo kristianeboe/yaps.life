@@ -7,7 +7,7 @@ export function normalize(vector) {
 export function extractVectorsFromUsers(users, normalizeVectors) {
   const userVectors = []
   users.forEach((user) => {
-    const enhancedPropVector = user.propertyVector.map(el => el * 5)
+    const enhancedPropVector = user.propertyVector.map((el, index )=> index < 2 ? el * 5 : el *3)
     userVectors.push(normalizeVectors ? normalize(user.answerVector) : user.answerVector.concat(enhancedPropVector))
   })
 

@@ -37,12 +37,12 @@ const PropertySegment = ({
       </Header>
       <Button floated="right" icon="external" color="blue" as="a" target="_blank" href={listingURL} />
 
-      <Label.Group circular>
+      {/* <Label.Group circular>
         <Label as="a">{BUDGET_TO_TEXT[budget]}</Label>
         <Label as="a">{PROPERTY_SIZE_TO_TEXT[propertySize]}</Label>
-        <Label as="a">{STYLE_TO_TEXT[style]}</Label>
+        {/* <Label as="a">{STYLE_TO_TEXT[style]}</Label>
         <Label as="a">{STANDARD_TO_TEXT[standard]}</Label>
-      </Label.Group>
+      </Label.Group> */}
 
       {commuteTime && flatmates && (
         <Grid columns="equal">
@@ -53,7 +53,7 @@ const PropertySegment = ({
             {`Group score: ${groupScore || ''}`}
           </Grid.Column>
           <Grid.Column>
-            {`Listing score: ${listingScore || ''}`}
+            {`Listing score: ${`${Math.floor((1 - listingScore) * 100)}%` || ''}`}
           </Grid.Column>
         </Grid>
       )}

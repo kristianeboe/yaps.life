@@ -106,21 +106,17 @@ export const onMatchCreate = functions.firestore
     // Get best origin and data from external sources
     const updatedMatch = await getBestOriginForMatch(match)
     const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
-    const finnListings= await Promise.all(listingURLs.slice(0, 5).map(url => getListingDetails(url)))
+    const finnListings= await Promise.all(listingURLs.slice(0, 20).map(url => getListingDetails(url)))
     console.log(finnListings.length)
 
-    finnListings.forEach(async listing => {
-      // score listing
+    const top5Listings = finnListings.filter( listing => 75 > getInitialGroupScoreForListing(listing, updatedMatch)).forEach( async listing => {
       const groupScore = getInitialGroupScoreForListing(listing, updatedMatch)
-      
-      if (groupScore > 70) {
-        // commute score
-        const commuteTime = await getAverageCommuteTime(listing.address, updatedMatch.flatmates)
-        // add external listing to match
-        await addExternalListingToMatch(listing, groupScore, commuteTime, updatedMatch)
-      }
-    })
+      const commuteTime = await getAverageCommuteTime(listing.address, updatedMatch.flatmates)
+      // add external listing to match
+      await addExternalListingToMatch(listing, groupScore, commuteTime, updatedMatch)
 
+    })
+    
     const listingsSnapshot = await admin.firestore().collection('listings').get()
     listingsSnapshot.forEach(async listingDoc => {
       await matchListingWithMatch(listingDoc, snap)
@@ -207,12 +203,11 @@ export const addExternalListingToMatchHTTPS = functions.https.onRequest((req, re
     const match = matchDoc.data()
     const groupScore = getInitialGroupScoreForListing(listing, match)
     
-      if (groupScore > 70) {
-        // commute score
-        const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
-        await addExternalListingToMatch(listing, groupScore, commuteTime, match)
-      }
-  
+    if (groupScore > 70) {
+      // commute score
+      const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
+      await addExternalListingToMatch(listing, groupScore, commuteTime, match)
+    }
 
     res.status(200).end()
   })
@@ -228,8 +223,8 @@ async function addExternalListingToMatch(listing, groupScore, commuteTime, match
 }
 
 function getInitialGroupScoreForListing(listing, match){
-  const groupPropertyVector = match.groupPropertyVector// .map((item, index) => index > 1 ? item * 0.4 : item) // negates most of the effects of standard and style
-  const propertyVector = listing.propertyVector// .map((item, index) => index > 1 ? item * 0.4 : item)
+  const groupPropertyVector = match.groupPropertyVector//.map((el, index )=> index < 2 ? el * 5 : el *3)
+  const propertyVector = listing.propertyVector// .map((el, index )=> index < 2 ? el * 5 : el *3)
 
   // group score
   const groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
@@ -242,7 +237,7 @@ function getInitialGroupScoreForListing(listing, match){
 
 function getFinalListingScore(commuteTime, groupPropertyVector, propertyVector){
   const weights = [0.3, 0.3, 0.2, 0.1, 0.1]
-  const commuteScore = commuteTime < 700 ? 5 : commuteTime < 1500 ? 4 : commuteTime < 2600 ? 2 : 1
+  const commuteScore = commuteTime < 720 ? 5 : commuteTime < 1000 ? 4.5 : commuteTime < 1200 ? 4 : commuteTime < 1500 ? 3.5 : commuteTime < 1820 ? 3 : commuteTime < 2200 ? 2.5 : commuteTime < 2450 ? 2 : 1
 
   const expandedGroupVector = [4].concat(groupPropertyVector)
   const expandedPropertyVector = [commuteScore].concat(propertyVector)
@@ -253,8 +248,6 @@ function getFinalListingScore(commuteTime, groupPropertyVector, propertyVector){
   const WexpandedPropertyVector = expandedPropertyVector.map((el, i) => el * weights[i])
 
   const WlistingScore = euclidianDistanceSquared(WexpandedGroupVector, WexpandedPropertyVector)
-
-  console.log(listingScore, WlistingScore)
 
   return WlistingScore
 }

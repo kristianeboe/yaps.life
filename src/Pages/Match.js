@@ -5,7 +5,9 @@ import {
   Segment,
   Container,
   Header,
-  Label
+  Label,
+  Dimmer,
+  Loader
 } from 'semantic-ui-react'
 import axios from 'axios'
 import euclidianDistanceSquared from 'euclidean-distance/squared'
@@ -44,6 +46,7 @@ class Match extends Component {
       matchTitle: '',
       user: null,
       flatmatesLoading: true,
+      flatsLoading: true,
       chatLoading: true,
       matchDoc: null,
       flatmates: [],
@@ -81,7 +84,7 @@ class Match extends Component {
     const listingData = listingDoc.data()
     // const listingScore = getListingScore(listing.commuteTime, groupPropertyVector, listingData.propertyVector)
     return {
-      listingData, listingId: listing.listingId, commuteTime: listing.commuteTime, groupScore: listing.groupScore,
+      listingData, listingId: listing.listingId, commuteTime: listing.commuteTime, groupScore: listing.groupScore, listingScore: listing.listingScore
     }
   }))
 
@@ -107,7 +110,6 @@ class Match extends Component {
           showChatRoom: true,
         })
         const matchPropertyList = await this.getPropertyList(currentListings, groupPropertyVector)
-        console.log(matchPropertyList)
         this.setState({
           propertyList: matchPropertyList,
         })
@@ -239,15 +241,18 @@ class Match extends Component {
                     <Header as="h3" dividing >
                         3. See your list of options here, sorted by average commute time and group score
                       <Header.Subheader>
-                        The ones already here are the two first listings from Finn.no, feel free to add more.
+                        The ones already here are the some listings from Finn.no, feel free to add more.
                       </Header.Subheader>
                     </Header>
+                    {propertyList.length === 0 &&
+                    <Segment style={{ minHeight: '4em' }} loading={propertyList.length === 0} />
+                  }
                     <FlatList matchDoc={this.state.matchDoc} flats={propertyList} />
                   </Segment>
                 </Grid.Column>
               </Grid>
               {this.state.showChatRoom && (
-                <Segment loading={!this.state.matchDoc}>
+                <Segment loading={!this.state.matchDoc} style={{ minHeight: '4em' }} >
                   {this.state.matchDoc && (
                     <ChatRoom groupChat matchId={this.state.matchDoc.id} />
                   )}

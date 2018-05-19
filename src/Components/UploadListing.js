@@ -137,7 +137,7 @@ class UploadListing extends Component {
     }
   }
 
-  budgetFromPricePerRoom = pricePerRoom => (pricePerRoom === '' ? 0 : pricePerRoom < 5000 ? 1 : pricePerRoom > 9000 ? 5 : 3)
+  budgetFromPricePerRoom = pricePerRoom => (pricePerRoom === '' ? 0 : pricePerRoom < 5500 ? 1 : pricePerRoom < 7000 ? 3 : 5)
   render() {
     const {
       uploadListingSuccess, uploadListingError, title, numberOfBedrooms, pricePerRoom, matchLocation, propertyType, tos, readyToMatch, listingURL, propertySize, standard, style, errors

@@ -108,31 +108,31 @@ export async function updateCollection(req, res) {
           } */
         })
       }).catch((err) => {
-        console.log('Error in updating users', err)
+        console.log('Error in updating listings', err)
         res.status(300).end()
       })
-      await admin
-      .firestore()
-      .collection('matches')
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach(doc => {
-          const data = doc.data()
-          /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
-          propertyVector.push(3) */
-          doc.ref.update({ 
-            currentListings: {}
-           })
-          if (data.flatmates.length === 0 || data.flatmates.find(mate => mate.displayName === "Kristian Elset Bø")) {
-            console.log('match ' + doc.id + 'deleted')
-            doc.ref.delete()
-          }
-        })
-      }).catch((err) => {
-        console.log('Error in updating users', err)
-        res.status(300).end()
+    await admin
+    .firestore()
+    .collection('matches')
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
+        propertyVector.push(3) */
+        doc.ref.update({ 
+          currentListings: {}
+          })
+        if (data.flatmates.length === 0 || data.flatmates.find(mate => mate.displayName === "Kristian Elset Bø")) {
+          console.log('match ' + doc.id + 'deleted')
+          doc.ref.delete()
+        }
       })
-      res.status(200).end()
+    }).catch((err) => {
+      console.log('Error in updating users', err)
+      res.status(300).end()
+    })
+    res.status(200).end()
   }
 
 
