@@ -111,7 +111,7 @@ export const onMatchCreate = functions.firestore
 
     finnListings.forEach(async listing => {
       // score listing
-      const groupScore = scoreListing(listing, updatedMatch)
+      const groupScore = getInitialGroupScoreForListing(listing, updatedMatch)
       
       if (groupScore > 70) {
         // commute score
@@ -142,13 +142,14 @@ async function matchListingWithMatch(listingDoc, matchDoc) {
   const listing = listingDoc.data()
   const match = matchDoc.data()
   if(listing.numberOfBedrooms === match.flatmates.length) {
-    const groupScore = scoreListing(listing, match)
+    const groupScore = getInitialGroupScoreForListing(listing, match)
     // add distance metric/heuristic
     if (groupScore > 70) {
       const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
+      const listingScore = getFinalListingScore(commuteTime, match.groupPropertyVector, listing.propertyVector)
       const {groupPropertyVector, flatmates, propertyList} = match
       await matchDoc.ref.update({
-        [`currentListings.${listingDoc.id}`]: {listingId: listingDoc.id, commuteTime, groupScore, timeStamp: Date.now(), source: 'internal'},
+        [`currentListings.${listingDoc.id}`]: {listingId: listingDoc.id, commuteTime, listingScore, groupScore, timeStamp: Date.now(), source: 'internal'},
       })
       await listingDoc.ref.update({
         [`currentMatches.${matchDoc.id}`]: {matchId: matchDoc.id, timeStamp: Date.now()}
@@ -203,7 +204,7 @@ export const addExternalListingToMatchHTTPS = functions.https.onRequest((req, re
 
     const matchDoc = await admin.firestore().collection('matches').doc(matchId).get()
     const match = matchDoc.data()
-    const groupScore = scoreListing(listing, match)
+    const groupScore = getInitialGroupScoreForListing(listing, match)
     
       if (groupScore > 70) {
         // commute score
@@ -219,14 +220,15 @@ export const addExternalListingToMatchHTTPS = functions.https.onRequest((req, re
 async function addExternalListingToMatch(listing, groupScore, commuteTime, match) {
   const { propertyList} = match
   const listingId = uuid.v4()
+  const listingScore = getFinalListingScore(commuteTime, match.groupPropertyVector, listing.propertyVector)
   await admin.firestore().collection('matches').doc(match.uid).update({
-    [`currentListings.${listingId}`]: {listingId, listingData: listing, commuteTime, groupScore, timeStamp: Date.now(), source: 'external'},
+    [`currentListings.${listingId}`]: {listingId, listingData: listing, commuteTime, listingScore,  groupScore, timeStamp: Date.now(), source: 'external'},
   })
 }
 
-function scoreListing(listing, match){
-  const {groupPropertyVector} = match.map((item, index) => index > 1 ? item * 0.4 : item) // negates most of the effects of standard and style
-  const {propertyVector} = listing.map((item, index) => index > 1 ? item * 0.4 : item)
+function getInitialGroupScoreForListing(listing, match){
+  const groupPropertyVector = match.groupPropertyVector// .map((item, index) => index > 1 ? item * 0.4 : item) // negates most of the effects of standard and style
+  const propertyVector = listing.propertyVector// .map((item, index) => index > 1 ? item * 0.4 : item)
 
   // group score
   const groupScore = mapPropScoreToPercentage(euclidianDistanceSquared(
@@ -234,4 +236,24 @@ function scoreListing(listing, match){
     propertyVector
   ))
   return groupScore
+}
+
+
+const getFinalListingScore = (commuteTime, groupPropertyVector, propertyVector) => {
+  const weights = [0.3, 0.3, 0.2, 0.1, 0.1]
+  const commuteScore = commuteTime < 700 ? 5 : commuteTime < 1500 ? 4 : commuteTime < 2600 ? 2 : 1
+
+  const expandedGroupVector = [4].concat(groupPropertyVector)
+  const expandedPropertyVector = [commuteScore].concat(propertyVector)
+
+  const listingScore = euclidianDistanceSquared(expandedGroupVector, expandedPropertyVector)
+
+  const WexpandedGroupVector = expandedGroupVector.map((el, i) => el * weights[i])
+  const WexpandedPropertyVector = expandedPropertyVector.map((el, i) => el * weights[i])
+
+  const WlistingScore = euclidianDistanceSquared(WexpandedGroupVector, WexpandedPropertyVector)
+
+  console.log(listingScore, WlistingScore)
+
+  return WlistingScore
 }

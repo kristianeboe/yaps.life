@@ -14,12 +14,14 @@ import ChatAccordion from '../Components/ChatAccordion'
   style: 3,
 }
  */
+
 const PropertySegment = ({
-  property, index, commuteTime, groupScore, matchId, landlord, flatmates, listingId,
+  property, index, commuteTime, groupScore, listingScore, landlord, matchDoc, listingId,
 }) => {
   const {
     title, address, pricePerRoom, propertyVector, listingURL, showChat, rentFrom, rentTo
   } = property
+  const { flatmates } = matchDoc.data()
   const [budget, propertySize, standard, style] = propertyVector
   const dateString = `Rent from ${moment(rentFrom).format('MMMM Do')}`
   return (
@@ -45,15 +47,18 @@ const PropertySegment = ({
       {commuteTime && flatmates && (
         <Grid columns="equal">
           <Grid.Column>
-            {`Average commute time: ${commuteTime ? secondsToMinutes(commuteTime / flatmates.length) : ''} minutes`}
+            {`Average commute time: ${commuteTime ? secondsToMinutes(commuteTime) : ''} minutes`}
           </Grid.Column>
           <Grid.Column>
-            {`Group property alignment: ${groupScore || ''}`}
+            {`Group score: ${groupScore || ''}`}
+          </Grid.Column>
+          <Grid.Column>
+            {`Listing score: ${listingScore || ''}`}
           </Grid.Column>
         </Grid>
       )}
       {showChat &&
-        <ChatAccordion landlord={landlord} listingId={listingId || null} matchId={landlord ? null : matchId} />
+        <ChatAccordion landlord={landlord} listingId={listingId || null} matchId={landlord ? null : matchDoc.id} />
       }
     </Segment>
   )

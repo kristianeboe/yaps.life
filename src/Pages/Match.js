@@ -8,12 +8,32 @@ import {
   Label
 } from 'semantic-ui-react'
 import axios from 'axios'
+import euclidianDistanceSquared from 'euclidean-distance/squared'
 import { calculateSimilarityScoreBetweenUsers, calculateFlatScore, createGroupPropertyVector, calculatePropertyAlignment } from '../utils/alignMentFunctions'
 import { auth, firestore } from '../firebase'
 import ChatRoom from '../Components/ChatRoom'
 import FlatRank from '../Components/FlatRank'
 import Flatmates from '../Containers/Flatmates'
 import FlatList from '../Containers/FlatList'
+
+/* const getListingScore = (commuteTime, groupPropertyVector, propertyVector) => {
+  const weights = [0.3, 0.3, 0.2, 0.1, 0.1]
+  const commuteScore = commuteTime < 700 ? 5 : commuteTime < 1500 ? 4 : commuteTime < 2600 ? 2 : 1
+
+  const expandedGroupVector = [4].concat(groupPropertyVector)
+  const expandedPropertyVector = [commuteScore].concat(propertyVector)
+
+  const listingScore = euclidianDistanceSquared(expandedGroupVector, expandedPropertyVector)
+
+  const WexpandedGroupVector = expandedGroupVector.map((el, i) => el * weights[i])
+  const WexpandedPropertyVector = expandedPropertyVector.map((el, i) => el * weights[i])
+
+  const WlistingScore = euclidianDistanceSquared(WexpandedGroupVector, WexpandedPropertyVector)
+
+  console.log(listingScore, WlistingScore)
+
+  return WlistingScore
+} */
 
 class Match extends Component {
   constructor(props) {
@@ -27,6 +47,7 @@ class Match extends Component {
       chatLoading: true,
       matchDoc: null,
       flatmates: [],
+      groupPropertyVector: [],
       bestOrigin: '',
       showChatRoom: true,
       showAddUserCard: false,
@@ -51,14 +72,16 @@ class Match extends Component {
   }
 
 
-  getPropertyList = async currentListings => Promise.all(Object.values(currentListings).map(async (listing) => {
+  getPropertyList = async (currentListings, groupPropertyVector) => Promise.all(Object.values(currentListings).map(async (listing) => {
     if (listing.source === 'external') {
-      return listing
+      // const listingScore = getListingScore(listing.commuteTime, groupPropertyVector, listing.listingData.propertyVector)
+      return { ...listing }
     }
     const listingDoc = await firestore.collection('listings').doc(listing.listingId).get()
     const listingData = listingDoc.data()
+    // const listingScore = getListingScore(listing.commuteTime, groupPropertyVector, listingData.propertyVector)
     return {
-      listingData, listingId: listing.listingId, commuteTime: listing.commuteTime, groupScore: listing.groupScore
+      listingData, listingId: listing.listingId, commuteTime: listing.commuteTime, groupScore: listing.groupScore,
     }
   }))
 
@@ -68,13 +91,14 @@ class Match extends Component {
       .doc(matchId)
       .onSnapshot(async (matchDoc) => {
         const {
-          title, flatmates, flatScore, finnQueryString, airBnBQueryString, propertyAlignment, bestOrigin, currentListings, location
+          title, flatmates, flatScore, finnQueryString, airBnBQueryString, propertyAlignment, groupPropertyVector, bestOrigin, currentListings, location
         } = matchDoc.data()
         this.setState({
           matchTitle: title,
           matchDoc,
           flatmates,
           flatScore,
+          groupPropertyVector,
           finnQueryString,
           airBnBQueryString,
           propertyAlignment,
@@ -82,7 +106,7 @@ class Match extends Component {
           flatmatesLoading: false,
           showChatRoom: true,
         })
-        const matchPropertyList = await this.getPropertyList(currentListings)
+        const matchPropertyList = await this.getPropertyList(currentListings, groupPropertyVector)
         console.log(matchPropertyList)
         this.setState({
           propertyList: matchPropertyList,
@@ -211,14 +235,14 @@ class Match extends Component {
                   <FlatRank matchDoc={this.state.matchDoc} flatmates={flatmates} />
                 </Grid.Column>
                 <Grid.Column>
-                  <Segment style={{ overflow: 'auto', maxHeight: '80vh' }} >
+                  <Segment style={{ overflow: 'auto', maxHeight: '54em' }} >
                     <Header as="h3" dividing >
                         3. See your list of options here, sorted by average commute time and group score
                       <Header.Subheader>
                         The ones already here are the two first listings from Finn.no, feel free to add more.
                       </Header.Subheader>
                     </Header>
-                    <FlatList matchId={this.props.match.params.matchId} flats={propertyList} flatmates={flatmates} />
+                    <FlatList matchDoc={this.state.matchDoc} flats={propertyList} />
                   </Segment>
                 </Grid.Column>
               </Grid>

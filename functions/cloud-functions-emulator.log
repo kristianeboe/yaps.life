@@ -25075,3 +25075,320 @@ f114f4b2-c9c5-4727-b926-8bb2ae3599e7
 2018-05-16T11:19:11.485Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
 2018-05-16T11:19:11.485Z - info: Worker for onListingCreate closed due to file changes.
 2018-05-16T11:19:11.486Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T15:19:22.745Z - info: User function triggered, starting execution
+2018-05-16T15:19:26.462Z - info: match e1c95be7-e2f9-4376-bbf8-7eba99afb16fdeleted
+2018-05-16T15:19:26.467Z - info: Execution took 3723 ms, user function completed successfully
+2018-05-16T15:20:54.433Z - info: User function triggered, starting execution
+2018-05-16T15:20:56.635Z - info: 26 4
+2018-05-16T15:20:56.647Z - info: Execution took 2215 ms, user function completed successfully
+2018-05-16T15:20:56.649Z - error: (node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+2018-05-16T15:20:56.649Z - error: (node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 49)
+(node:4158) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 50)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 51)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 52)
+2018-05-16T15:20:56.649Z - error: (node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 53)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 54)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 55)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 56)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 57)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 58)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 59)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+2018-05-16T15:20:56.650Z - error: (node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 60)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 61)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 62)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 63)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 64)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 65)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 66)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 67)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+2018-05-16T15:20:56.651Z - error: (node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 68)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 69)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 70)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 71)
+(node:4158) UnhandledPromiseRejectionWarning: TypeError: match.map is not a function
+    at scoreListing (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:201:43)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:129:32
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+    at new Promise (<anonymous>)
+    at __awaiter (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:3:12)
+    at matchListingWithMatch (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:125:12)
+    at Object.<anonymous> (/Users/Kristian/Developer/yaps.life/functions/lib/index.js:55:23)
+    at Generator.next (<anonymous>)
+    at /Users/Kristian/Developer/yaps.life/functions/lib/index.js:7:71
+(node:4158) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 72)
+2018-05-16T15:21:49.408Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T15:21:49.408Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-16T15:21:49.408Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-16T15:21:49.408Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T15:21:49.409Z - info: Worker for updateDocumentHTTPS closed due to file changes.
+2018-05-16T15:21:49.409Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T15:21:49.409Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T15:21:49.409Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T15:21:49.410Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-16T15:21:49.410Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T15:21:49.410Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T15:22:43.739Z - info: User function triggered, starting execution
+2018-05-16T15:22:45.927Z - info: 26 4
+2018-05-16T15:22:45.963Z - info: Execution took 2224 ms, user function completed successfully
+2018-05-16T15:23:16.088Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-16T15:23:16.088Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-16T15:23:16.089Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-16T15:23:16.089Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-16T15:23:16.089Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-16T15:23:16.089Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
+2018-05-16T15:23:16.090Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-16T15:23:16.090Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.

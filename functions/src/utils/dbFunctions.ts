@@ -101,11 +101,33 @@ export async function updateCollection(req, res) {
           propertyVector.push(3) */
           doc.ref.update({ 
             source: 'internal',
+            currentMatches: {},
            })
           /* if (data.flatmates.length === 0) {
             console.log('match ' + doc.id + 'deleted')
             doc.ref.delete()
           } */
+        })
+      }).catch((err) => {
+        console.log('Error in updating users', err)
+        res.status(300).end()
+      })
+      await admin
+      .firestore()
+      .collection('matches')
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach(doc => {
+          const data = doc.data()
+          /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
+          propertyVector.push(3) */
+          doc.ref.update({ 
+            currentListings: {}
+           })
+          if (data.flatmates.length === 0) {
+            console.log('match ' + doc.id + 'deleted')
+            doc.ref.delete()
+          }
         })
       }).catch((err) => {
         console.log('Error in updating users', err)

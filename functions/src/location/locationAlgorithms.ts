@@ -136,6 +136,6 @@ export async function getBestOriginForMatch(match) {
 export async function getAverageCommuteTime(address, flatmates) {
   const origins = [encodeURI(address)]
   const originsToDestinationsObject = await getOriginsToDestinationsObject(origins,flatmates)
-  const commuteTime = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration
-  return commuteTime
+  const averageCommuteTime = originsToDestinationsObject[Object.keys(originsToDestinationsObject)[0]].combinedDuration / flatmates.length
+  return averageCommuteTime
 }

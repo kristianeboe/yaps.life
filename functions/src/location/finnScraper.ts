@@ -75,7 +75,7 @@ export async function getListingDetails(listingURL: string) {
 
     const propertySize = listingTemp['propertySize'] > 100 ? 5 : listingTemp['propertySize'] < 60 ? 1 : 3
     const budget =
-        pricePerRoom > 9000 ? 5 : pricePerRoom < 5500 ? 1 : 3
+        pricePerRoom > 7900 ? 5 : pricePerRoom < 5500 ? 1 : 3
     const standard = 3
     const style = 3
     const propertyVector = [budget, propertySize, standard, style]
