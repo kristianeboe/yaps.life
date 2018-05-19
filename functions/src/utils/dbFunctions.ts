@@ -100,7 +100,6 @@ export async function updateCollection(req, res) {
           /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
           propertyVector.push(3) */
           doc.ref.update({ 
-            source: 'internal',
             currentMatches: {},
            })
           /* if (data.flatmates.length === 0) {
@@ -124,7 +123,7 @@ export async function updateCollection(req, res) {
           doc.ref.update({ 
             currentListings: {}
            })
-          if (data.flatmates.length === 0) {
+          if (data.flatmates.length === 0 || data.flatmates.find(mate => mate.displayName === "Kristian Elset Bø")) {
             console.log('match ' + doc.id + 'deleted')
             doc.ref.delete()
           }

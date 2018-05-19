@@ -25392,3 +25392,14 @@ f114f4b2-c9c5-4727-b926-8bb2ae3599e7
 2018-05-16T15:23:16.089Z - info: Worker for getListingDetailsHTTPS closed due to file changes.
 2018-05-16T15:23:16.090Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
 2018-05-16T15:23:16.090Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-19T17:22:13.981Z - info: Worker for updateCollectionHTTPS closed due to file changes.
+2018-05-19T17:22:13.984Z - info: Worker for matchAllAvailableUsersHTTPS closed due to file changes.
+2018-05-19T17:22:13.985Z - info: Worker for addExternalListingToMatchHTTPS closed due to file changes.
+2018-05-19T17:22:13.985Z - info: Worker for matchListingsWithMatches closed due to file changes.
+2018-05-19T17:22:13.985Z - info: Worker for getDemoMatched closed due to file changes.
+2018-05-19T17:22:13.985Z - info: Worker for aggregateMatchInfoHTTPS closed due to file changes.
+2018-05-19T17:22:13.987Z - info: Worker for onListingCreate closed due to file changes.
+2018-05-19T17:22:13.988Z - info: Worker for onMatchCreate closed due to file changes.
+2018-05-19T17:22:13.988Z - info: Worker for updateDocumentHTTPS closed due to file changes.
+2018-05-19T17:22:13.988Z - info: Worker for getBestOriginForMatchHTTPS closed due to file changes.
+2018-05-19T17:22:13.988Z - info: Worker for getListingDetailsHTTPS closed due to file changes.

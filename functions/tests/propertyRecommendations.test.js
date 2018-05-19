@@ -34,7 +34,7 @@ const getListingScore = (commuteTime, groupPropertyVector, propertyVector) => {
 
 const printFlatList = (flatList) => {
   flatList.forEach((flat, index) => {
-    console.log(index + 1, flat.address, flat.commuteTime, flat.listingScore)
+    console.log(index + 1, flat.address, flat.listingScore)
   })
 }
 
@@ -65,7 +65,7 @@ test('FlatListRank', () => {
     return { address: flat.address, listingScore }
   })
 
-  printFlatList(updatedFlatlist)
+  printFlatList(updatedFlatlist.sort((a, b) => a.listingScore - b.listingScore))
 
   expect(updatedFlatlist[0].address).toBe('Grunerløkka')
 })
