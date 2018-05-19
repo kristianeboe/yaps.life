@@ -73,12 +73,20 @@ export async function getListingDetails(listingURL: string) {
           ? Number(pricePerMonth)
           : Math.floor(Number(pricePerMonth) / 4) //updatedMatch.flatmates.length)
 
-    const propertySize = listingTemp['propertySize'] > 100 ? 5 : listingTemp['propertySize'] < 60 ? 1 : 3
-    const budget =
-        pricePerRoom > 7900 ? 5 : pricePerRoom < 5500 ? 1 : 3
-    const standard = 3
-    const style = 3
-    const propertyVector = [budget, propertySize, standard, style]
+  let propertySize =  listingTemp['propertySize']
+  if (propertySize > 40) {
+    propertySize = propertySize <  65 ? 1 : propertySize <  80 ? 2 : propertySize <  90 ? 2.5 : propertySize <  100 ? 3 : propertySize < 110 ? 3.5 : propertySize < 120 ? 4 : 5
+  } else {
+    propertySize = propertySize <  8 ? 1 : propertySize <  10 ? 2 : propertySize <  12 ? 3 : propertySize <  15 ? 4 : 5
+  }
+
+  const budget =
+      pricePerRoom < 5000 ? 1 : pricePerRoom < 5500 ? 1.5 : pricePerRoom < 6000 ? 2 : pricePerRoom < 6500 ? 2.5 : pricePerRoom < 7000 ? 3 : pricePerRoom < 8000 ? 3.5 : pricePerRoom < 9000 ? 4 : pricePerRoom < 10500 ? 4.5 : 5
+  
+  const standard = 3
+  const style = 3
+
+  const propertyVector = [budget, propertySize, standard, style]
 
 
 
@@ -112,27 +120,6 @@ export async function getPropertyList(url) {
     })
   }
   return listingURLs
-    /* $('div.line.flex.align-items-stretch.wrap.cols1upto480.cols2upto990.cols3from990')
-      .children()
-      .each((i, ele) => {
-        // console.log(ele.children)
-        ele.children.forEach((tag) => {
-          if (tag.name === 'a') {
-            console.log(tag.attribs.href)
-            urlList.push(tag.attribs.href)
-          }
-        })
-        // console.log(ele.children[0])
-      })
-    } */
-
-  /* urlList.forEach(async (href) => {
-    const finnURL = `https://www.finn.no/${href}`
-    console.log(finnURL)
-    const listing = await getListingDetails(finnURL)
-    console.log(listing)
-  }) */
-  
 
 }
 

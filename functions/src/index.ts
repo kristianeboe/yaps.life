@@ -179,7 +179,8 @@ export const getBestOriginForMatchHTTPS = functions.https.onRequest((req, res) =
   cors(req, res, async () => {
     const { matchId } = req.body
     const matchDoc = await admin.firestore().collection('matches').doc(matchId).get()
-    await getBestOriginForMatch(matchDoc.data())
+    const match = matchDoc.data()
+    await getBestOriginForMatch(match)
     res.status(200).end()
   })
 })
@@ -239,7 +240,7 @@ function getInitialGroupScoreForListing(listing, match){
 }
 
 
-const getFinalListingScore = (commuteTime, groupPropertyVector, propertyVector) => {
+function getFinalListingScore(commuteTime, groupPropertyVector, propertyVector){
   const weights = [0.3, 0.3, 0.2, 0.1, 0.1]
   const commuteScore = commuteTime < 700 ? 5 : commuteTime < 1500 ? 4 : commuteTime < 2600 ? 2 : 1
 

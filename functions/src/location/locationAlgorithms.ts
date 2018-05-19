@@ -79,7 +79,7 @@ export async function getBestOriginForMatch(match) {
   const originsOsloSmall = {
     'Grunerløkka Oslo': 'location=1.20061.20511&', // Grunerløkka - Sofienberg
     'Majorstuen Oslo': 'location=1.20061.20508&', // Majorstuen, Uranienborg, Nationaltheateret
-    'Fronger Oslo': 'location=1.20061.20507&',
+    'Frogner Oslo': 'location=1.20061.20507&',
     'Gamle Oslo': 'location=1.20061.20512&'
   }
   const origins = Object.keys(originsOsloSmall).map(origin => encodeURI(origin))

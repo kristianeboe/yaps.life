@@ -62,10 +62,10 @@ test('FlatListRank', () => {
 
   const updatedFlatlist = flatList.map((flat) => {
     const listingScore = getListingScore(flat.commuteTime, groupPropertyVector, flat.propertyVector)
-    return { ...flat, listingScore }
+    return { address: flat.address, listingScore }
   })
 
   printFlatList(updatedFlatlist)
 
-  expect(updatedFlatlist.length).toBe(3)
+  expect(updatedFlatlist[0].address).toBe('Grunerløkka')
 })
