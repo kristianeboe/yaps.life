@@ -105,17 +105,20 @@ export const onMatchCreate = functions.firestore
 
     // Get best origin and data from external sources
     const updatedMatch = await getBestOriginForMatch(match)
-    const listingURLs = await getPropertyList(updatedMatch.finnQueryString)
-    const finnListings= await Promise.all(listingURLs.slice(0, 20).map(url => getListingDetails(url)))
-    console.log(finnListings.length)
-
-    const top5Listings = finnListings.filter( listing => 75 > getInitialGroupScoreForListing(listing, updatedMatch)).forEach( async listing => {
+    const localListingURLs = await getPropertyList(updatedMatch.finnQueryString)//'https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20507&location=1.20061.20512&location=1.20061.20511&location=1.20061.20510&location=1.20061.20513&location=1.20061.20509&location=1.20061.20508&no_of_bedrooms_from=' + updatedMatch.flatmates.length + '&property_type=1&property_type=3&property_type=4&property_type=2&sort=0')//updatedMatch.finnQueryString)
+    const globalListingURLs = await getPropertyList('https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20507&location=1.20061.20512&location=1.20061.20511&location=1.20061.20510&location=1.20061.20513&location=1.20061.20509&location=1.20061.20508&no_of_bedrooms_from=' + updatedMatch.flatmates.length + '&property_type=1&property_type=3&property_type=4&property_type=2&sort=0')//updatedMatch.finnQueryString)
+    const localFinnListings= await Promise.all(localListingURLs.slice(0, 10).map(url => getListingDetails(url)))
+    const globalFinnListings= await Promise.all(globalListingURLs.slice(0, 20).map(url => getListingDetails(url)))
+    const finnListings = localFinnListings.concat(globalFinnListings)
+    const topListings = finnListings.filter(listing => (Number(listing.numberOfBedrooms) === match.flatmates.length) && (getInitialGroupScoreForListing(listing, updatedMatch) > 70)).sort((a,b) => getInitialGroupScoreForListing(b, updatedMatch) - getInitialGroupScoreForListing(a, updatedMatch) ).slice(0, 6)
+    console.log(topListings)
+    await Promise.all(topListings.map( async listing => {
       const groupScore = getInitialGroupScoreForListing(listing, updatedMatch)
       const commuteTime = await getAverageCommuteTime(listing.address, updatedMatch.flatmates)
       // add external listing to match
       await addExternalListingToMatch(listing, groupScore, commuteTime, updatedMatch)
 
-    })
+    }))
     
     const listingsSnapshot = await admin.firestore().collection('listings').get()
     listingsSnapshot.forEach(async listingDoc => {
@@ -236,7 +239,7 @@ function getInitialGroupScoreForListing(listing, match){
 
 
 function getFinalListingScore(commuteTime, groupPropertyVector, propertyVector){
-  const weights = [0.3, 0.3, 0.2, 0.1, 0.1]
+  const weights = [0.3, 0.35, 0.2, 0.05, 0.1]
   const commuteScore = commuteTime < 720 ? 5 : commuteTime < 1000 ? 4.5 : commuteTime < 1200 ? 4 : commuteTime < 1500 ? 3.5 : commuteTime < 1820 ? 3 : commuteTime < 2200 ? 2.5 : commuteTime < 2450 ? 2 : 1
 
   const expandedGroupVector = [4].concat(groupPropertyVector)
@@ -248,6 +251,7 @@ function getFinalListingScore(commuteTime, groupPropertyVector, propertyVector){
   const WexpandedPropertyVector = expandedPropertyVector.map((el, i) => el * weights[i])
 
   const WlistingScore = euclidianDistanceSquared(WexpandedGroupVector, WexpandedPropertyVector)
+  // const finalScore = Math.floor((1 - WlistingScore) * 100) moved to client side
 
   return WlistingScore
 }

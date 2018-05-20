@@ -43,6 +43,10 @@ export async function getListingDetails(listingURL: string) {
           value = value.split(' ')[0]
           listingTemp.propertySize = value
           break
+        case 'Bruksareal':
+          value = value.split(' ')[0]
+          listingTemp.propertySize = value
+          break
         case 'Leieperiode':
           try {
             const [from, to ] = value.split('-')
@@ -88,7 +92,7 @@ export async function getListingDetails(listingURL: string) {
       pricePerRoom < 5000 ? 1 : pricePerRoom < 5500 ? 1.5 : pricePerRoom < 6000 ? 2 : pricePerRoom < 6500 ? 2.5 : pricePerRoom < 7000 ? 3 : pricePerRoom < 8000 ? 3.5 : pricePerRoom < 9000 ? 4 : pricePerRoom < 10500 ? 4.5 : 5
   
   const standard = 3
-  const style = 3
+  const style = facilities.find(el => el === 'Moderne') ? 5 : 3
 
   const propertyVector = [budget, propertySize, standard, style]
 
