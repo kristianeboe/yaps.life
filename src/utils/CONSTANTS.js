@@ -6,7 +6,9 @@ export const BUDGET_TO_TEXT = {
 
 export const PROPERTY_SIZE_TO_TEXT = {
   1: 'Small',
+  2: 'Smallish',
   3: 'Medium size',
+  4: 'Large',
   5: 'Huge'
 }
 

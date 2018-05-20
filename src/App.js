@@ -10,6 +10,7 @@ import Match from './Pages/Match'
 import MatchList from './Pages/MatchList'
 import AccountSettings from './Pages/AccountSettings'
 import LandlordProfie from './Components/LandlordProfile'
+import ApartmentFinder from './Pages/ApartmentFinder'
 import TOS from './Pages/TOS'
 
 class App extends Component {
@@ -47,7 +48,8 @@ class App extends Component {
           <Route path="/matches/:matchId" component={Match} />
           <Route path="/matches" component={MatchList} />
           <Route path="/profile" component={Profile} />
-          <Route path="/landlord-view" component={LandlordProfie} />
+          {/* <Route path="/landlord-view" component={LandlordProfie} /> */}
+          <Route path="/apartment-finder/:matchId" component={ApartmentFinder} />
           <Route path="/TOS" component={TOS} />
           <Route path="/account-settings" component={AccountSettings} />
         </Switch>

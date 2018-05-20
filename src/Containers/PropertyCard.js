@@ -1,9 +1,10 @@
 import React from 'react'
-import { List, Card, Label, Header, Segment, Button, Grid, Rating } from 'semantic-ui-react'
+import { List, Card, Label, Header, Segment, Button, Grid, Rating, Image } from 'semantic-ui-react'
 import moment from 'moment'
 import { BUDGET_TO_TEXT, STANDARD_TO_TEXT, STYLE_TO_TEXT, PROPERTY_SIZE_TO_TEXT } from '../utils/CONSTANTS'
 import { secondsToMinutes } from '../utils/FormattingFunctions'
 import ChatAccordion from '../Components/ChatAccordion'
+import wireframeImage from '../assets/images/imageWireframe.png'
 /* const fakeProp = {
   title: 'Penthouse på møllenberg',
   address: 'Wessels gate 22b',
@@ -32,6 +33,11 @@ const PropertyCard = ({
       centered
       fluid
     >
+      {/* <Image
+        fluid
+        label={(cheapest && <Label color="red" ribbon="right">Cheapest</Label>) || (fastest && <Label color="blue" ribbon="right">Fastest</Label>)}
+        src={wireframeImage}
+      /> */}
       <Card.Content>
         <Header as="h4">
           {index + 1 ? `${index + 1}.` : ''} {title || address}
@@ -51,7 +57,7 @@ const PropertyCard = ({
               <List size="small" >
                 <List.Item icon="bed" content={`${numberOfBedrooms} bedroom${numberOfBedrooms > 1 ? 's' : ''}`} />
                 {rentFrom && <List.Item icon="calendar" content={dateString.concat(rentTo ? ` to ${moment(rentTo).format('MMMM Do')}` : '')} />}
-                <List.Item icon="cube" content={PROPERTY_SIZE_TO_TEXT[propertySize1]} />
+                <List.Item icon="cube" content={PROPERTY_SIZE_TO_TEXT[Math.floor(propertySize1)]} />
 
                 {/* <Button floated="right" icon="external" color="blue" as="a" target="_blank" href={listingURL} /> */}
               </List>
@@ -61,8 +67,32 @@ const PropertyCard = ({
       </Card.Content>
       <Card.Content extra>
         <Rating size="huge" defaultRating={(Math.floor((1 - listingScore) * 10) / 2) + 1} maxRating={5} disabled />
-        { cheapest && <Label color="red" ribbon="right">Cheapest</Label>}
-        { fastest && <Label color="blue" ribbon="right">Fastest</Label>}
+        { cheapest &&
+          <Label
+            color="red"
+            ribbon="right"
+            style={{
+              position: 'absolute',
+              bottom: '14px',
+              marginLeft: '-14px'
+            }}
+          >
+          Cheapest
+          </Label>
+        }
+        { fastest &&
+        <Label
+          color="blue"
+          ribbon="right"
+          style={{
+              position: 'absolute',
+              bottom: '14px',
+              marginLeft: '-14px'
+            }}
+        >
+        Fastest
+        </Label>
+      }
       </Card.Content>
 
       {/* <Label.Group circular>
