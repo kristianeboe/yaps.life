@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 
-export async function getListingDetails(listingURL: string) {
+export async function getListingDetails(listingURL: string, nrOfFlatmates) {
   const response:any = await axios.get(listingURL).catch(err => console.log('Error in getting Finn url'))
   const html = response.data
   const $ = cheerio.load(html)
@@ -76,10 +76,9 @@ export async function getListingDetails(listingURL: string) {
     facilities.push(ele.children[0].data.trim())
   })
 
-  const pricePerRoom =
-        Number(pricePerMonth) < 15000
-          ? Number(pricePerMonth)
-          : Math.floor(Number(pricePerMonth) / 4) //updatedMatch.flatmates.length)
+
+  const pricePerRoom = listingTemp.numberOfBedrooms === 1 ?  Number(pricePerMonth) : Math.floor(Number(pricePerMonth) / nrOfFlatmates) //updatedMatch.flatmates.length)
+  
 
   let propertySize =  listingTemp['propertySize']
   if (propertySize > 40) {

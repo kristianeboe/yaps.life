@@ -6,14 +6,14 @@ export const BUDGET_TO_TEXT = {
 
 export const PROPERTY_SIZE_TO_TEXT = {
   1: 'Small',
-  3: 'Largeish',
+  3: 'Medium size',
   5: 'Huge'
 }
 
 
 export const STANDARD_TO_TEXT = {
   1: 'Fixer upper',
-  3: 'Not new',
+  3: 'Standard',
   5: 'Good as new'
 }
 

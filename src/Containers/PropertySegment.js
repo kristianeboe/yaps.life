@@ -54,7 +54,7 @@ const PropertySegment = ({
           <List size="small" >
             <List.Item icon="bed" content={`${numberOfBedrooms} bedrooms`} />
             {rentFrom && <List.Item icon="calendar" content={dateString.concat(rentTo ? ` to ${moment(rentTo).format('MMMM Do')}` : '')} />}
-            <List.Item icon="star" content={`${propertySize} <sup>2</sup>`} />
+            <List.Item icon="star" content={<sup>2</sup>} />
 
             <Button floated="right" icon="external" color="blue" as="a" target="_blank" href={listingURL} />
           </List>

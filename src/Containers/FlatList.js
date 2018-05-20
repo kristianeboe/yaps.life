@@ -2,6 +2,7 @@ import React from 'react'
 import { Header, Segment } from 'semantic-ui-react'
 import _ from 'underscore'
 import PropertySegment from './PropertySegment'
+import PropertyCard from './PropertyCard'
 
 
 const FlatList = (props) => {
@@ -33,7 +34,7 @@ const FlatList = (props) => {
 
   return _.sortBy(flats, 'listingScore')
     .map((flat, index) => (
-      <PropertySegment
+      <PropertyCard
         key={flat.listingId}
         property={flat.listingData}
         commuteTime={flat.commuteTime}
