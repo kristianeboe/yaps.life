@@ -1,4 +1,4 @@
-const euclidianDistance = require('euclidean-distance')
+const euclidianDistanceSquared = require('euclidean-distance/squared')
 
 export function knnClustering(vectors, K) {
   const clusters = []
@@ -8,15 +8,13 @@ export function knnClustering(vectors, K) {
     for (let j = 0; j < vectors.length; j += 1) {
       const v = vectors[j]
       if (i !== j) {
-        const score = euclidianDistance(u, v)
+        const score = euclidianDistanceSquared(u, v)
         scores.push({ j, score })
       }
     }
-
-    const topK = scores
-      .sort((a, b) => a.score - b.score)
-      .slice(0, K)
-      .map(el => el.j)
+    scores.sort((a, b) => a.score - b.score)
+    let topK = scores.slice(0, K)
+    topK = topK.map(el => el.j)
     clusters.push(topK)
   }
   return clusters
@@ -29,11 +27,14 @@ export function knnClusteringOneMatchPerUser(vectors, K) {
     const scores = []
     const u = vectorsWithIndex.pop()
     vectorsWithIndex.forEach((v, j) => {
-      const score = euclidianDistance(u.v, v.v)
+      const score = euclidianDistanceSquared(u.v, v.v)
       scores.push({ i: v.i, j, score })
     })
-    const topK = scores.sort((a, b) => a.score - b.score).slice(0, K - 1)
-    topK.forEach(el => vectorsWithIndex.pop(el.j))
+    scores.sort((a, b) => a.score - b.score)
+    const topK = scores.slice(0, K-1).sort((a, b) => b.j - a.j)
+    topK.forEach(el => {
+      vectorsWithIndex.splice(el.j, 1)
+    })
     clusters.push([u.i].concat(topK.map(el => el.i)))
   }
 
@@ -49,11 +50,11 @@ export function knnClusteringSingleMatchTestUsers(
   const scores = []
   for (let j = 0; j < testUserVectors.length; j += 1) {
     const v = testUserVectors[j]
-    const score = euclidianDistance(u, v)
+    const score = euclidianDistanceSquared(u, v)
     scores.push({ j, score })
   }
   const topK = scores
-      .sort((a, b) => a.score - b.score)
+      .sort((a, b) =>  a.score - b.score)
       .slice(0, K-1)
       .map(el => el.j)
   

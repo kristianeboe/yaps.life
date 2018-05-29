@@ -9,7 +9,7 @@ import Profile from './Pages/Profile'
 import Match from './Pages/Match'
 import MatchList from './Pages/MatchList'
 import AccountSettings from './Pages/AccountSettings'
-import LandlordProfie from './Components/LandlordProfile'
+// import LandlordProfie from './Components/LandlordProfile'
 import ApartmentFinder from './Pages/ApartmentFinder'
 import TOS from './Pages/TOS'
 

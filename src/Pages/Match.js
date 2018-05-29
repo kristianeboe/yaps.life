@@ -6,12 +6,9 @@ import {
   Container,
   Header,
   Label,
-  Dimmer,
-  Loader
 } from 'semantic-ui-react'
 import axios from 'axios'
-import euclidianDistanceSquared from 'euclidean-distance/squared'
-import { calculateSimilarityScoreBetweenUsers, calculateFlatScore, createGroupPropertyVector, calculatePropertyAlignment } from '../utils/alignMentFunctions'
+import { calculateSimilarityScoreBetweenUsers, createGroupPropertyVector, calculateAlignment } from '../utils/alignMentFunctions'
 import { auth, firestore } from '../firebase'
 import ChatRoom from '../Components/ChatRoom'
 import FlatRank from '../Components/FlatRank'
@@ -55,7 +52,7 @@ class Match extends Component {
       showChatRoom: true,
       showAddUserCard: false,
       matchData: {},
-      flatScore: 0,
+      personalityAlignment: 0,
       propertyAlignment: 0,
       propertyList: [],
     }
@@ -94,13 +91,13 @@ class Match extends Component {
       .doc(matchId)
       .onSnapshot(async (matchDoc) => {
         const {
-          title, flatmates, flatScore, finnQueryString, airBnBQueryString, propertyAlignment, groupPropertyVector, bestOrigin, currentListings, location
+          title, flatmates, personalityAlignment, finnQueryString, airBnBQueryString, propertyAlignment, groupPropertyVector, bestOrigin, currentListings, location
         } = matchDoc.data()
         this.setState({
           matchTitle: title,
           matchDoc,
           flatmates,
-          flatScore,
+          personalityAlignment,
           groupPropertyVector,
           finnQueryString,
           airBnBQueryString,
@@ -116,13 +113,13 @@ class Match extends Component {
       })
   }
 
-  addFlatmateToMatch = (userData) => {
+  /* addFlatmateToMatch = (userData) => {
     const flatmates = [...this.state.flatmates, userData]
-    const flatScore = calculateFlatScore(flatmates)
+    const personalityAlignment = calculatepersonalityAlignment(flatmates)
     const propertyAlignment = calculatePropertyAlignment(flatmates)
     const groupPropertyVector = createGroupPropertyVector(flatmates)
     const matchTitle = flatmates.length === 2 ? 'The Dynamic Duo' : flatmates.length === 3 ? 'Triple threat' : flatmates.length === 4 ? 'Fantastic Four' : flatmates.length === 5 ? 'The Quintessentials' : flatmates.length === 6 ? 'The Avengers' : 'The Horde'
-    console.log(flatScore)
+    console.log(personalityAlignment)
     const { matchId } = this.props.match.params
     this.setState({
       flatmates,
@@ -130,9 +127,9 @@ class Match extends Component {
       groupPropertyVector,
       showAddUserCard: false
     })
-    firestore.collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
+    firestore.collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: new Date() })
     firestore.collection('matches').doc(matchId).update({
-      flatmates, flatScore, propertyAlignment, groupPropertyVector, title: matchTitle
+      flatmates, personalityAlignment, propertyAlignment, groupPropertyVector, title: matchTitle
     })
     if (flatmates.length > 2) {
       axios
@@ -141,12 +138,14 @@ class Match extends Component {
           console.log(response)
         })
     }
-  }
+  } */
 
   render() {
     const {
       matchTitle, flatmatesLoading, flatmates, propertyList, finnQueryString, airBnBQueryString
     } = this.state
+
+    console.log(flatmates)
 
     return (
       <div style={{
@@ -198,7 +197,7 @@ class Match extends Component {
                     )}
                   </Grid.Row>
                 </Grid>
-                <Label as="a" color="blue" ribbon>Personality alignment: {this.state.flatScore} <br />Property alignment: {this.state.propertyAlignment}</Label>
+                <Label as="a" color="blue" ribbon>Personality alignment: {this.state.personalityAlignment} <br />Property alignment: {this.state.propertyAlignment}</Label>
               </Segment>
               <Grid stackable columns="equal">
                 <Grid.Column>

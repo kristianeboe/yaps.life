@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Loader, Image, Dimmer, Button, Container, Segment, List, Progress, Header, Popup, Message } from 'semantic-ui-react'
 import { Link, Redirect } from 'react-router-dom'
-import uuid from 'uuid'
 import _ from 'underscore'
 import axios from 'axios'
 import { auth, firestore } from '../firebase'
@@ -18,11 +17,20 @@ const fakeMatch = {
   }, {
     photoURL: personAvatar, uid: 't4', displayName: 'cloud', workplace: 'cloud'
   }],
-  flatScore: 100,
+  personalityAlignment: 100,
   location: 'Oslo',
   bestOrigin: '',
   custom: true,
   createdAt: ''
+}
+
+const cloudMatchText = {
+  0: '',
+  10: 'Uploading you to the cloud. Prepare to get matched ;)',
+  25: 'Matching underway. Stay tuned.',
+  45: '',
+  70: 'Wrapping up, almost done now.',
+  90: 'Just a few seconds more.'
 }
 
 class MatchList extends Component {
@@ -34,35 +42,31 @@ class MatchList extends Component {
       matches: [],
       redirectToNewMatch: false,
       userData: null,
-      userDoc: null,
       matchesLoading: true,
-      gettingCloudMatched: false,
-      loadingPercent: 0,
-      loadingText: '',
+      gettingCloudMatched: 0,
       redirectToSignIn: false,
       profileNotFinished: false,
     }
   }
   componentDidMount() {
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged((user) => { // Check if user is logged in
       this.setState({ user })
-      if (user) {
-        this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot((doc) => {
+      if (user) { // If logged in
+        this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot((doc) => { // Subscribe to datastream for user object from firestore
           const userData = doc.data()
           const { currentMatches, gettingCloudMatched } = userData
           const matches = currentMatches || {}
 
-          this.setState({ gettingCloudMatched: gettingCloudMatched || false })
+          this.setState({ gettingCloudMatched }) // Signal the user that something is happening
 
-          Promise.all(Object.keys(matches).map(matchId => firestore.collection('matches').doc(matchId).get()))
-            .then(results => this.setState({
+          Promise.all(Object.keys(matches).map(matchId => firestore.collection('matches').doc(matchId).get())) // Get match documents
+            .then(results => this.setState({ // Update state with the matches
               matchesLoading: false,
               userData,
-              userDoc: doc,
               matches: results.map(res => res.data())
             }))
         })
-      } else {
+      } else { // If not signed in, redirect to log in page
         this.setState({
           redirectToSignIn: true
         })
@@ -80,16 +84,9 @@ class MatchList extends Component {
   getMatched = (e) => {
     e.preventDefault()
     console.log('about to match')
-    firestore.collection('users').doc(this.state.user.uid).update({ gettingCloudMatched: true })
-    this.setState({ loadingPercent: 25, loadingText: 'Uploading you to the cloud. Prepare to get matched ;)' }) // gettingCloudMatched: true,
-    setTimeout(() => this.setState({ loadingPercent: 50, loadingText: 'Matching underway. Stay tuned.' }), 8000)
+    this.setState({ gettingCloudMatched: 10 })
     axios
       .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getDemoMatched', { userUid: this.state.user.uid })
-      .then((response) => {
-        this.setState({ loadingPercent: 75, loadingText: 'Wrapping up, almost done now.' })
-        console.log(response)
-        setTimeout(() => this.setState({ loadingPercent: 90, loadingText: 'Just a few seconds more.' }), 8000)
-      })
   }
 
   readyToMatch() {
@@ -101,28 +98,13 @@ class MatchList extends Component {
     return true
   }
 
-  createNewMatchAndRedirect = () => {
+  createNewCustomMatch = (e) => {
     if (!this.readyToMatch()) return
-    this.setState({ matchesLoading: true })
-    const match = {
-      title: 'The One',
-      uid: uuid.v4(),
-      flatmates: [this.state.userData],
-      location: 'Oslo',
-      bestOrigin: '',
-      flatScore: 100,
-      propertyAlignment: 100,
-      currentListings: {},
-      groupPropertyVector: this.state.userData.propertyVector,
-      custom: true,
-      createdAt: new Date()
-    }
-    firestore.collection('matches').doc(match.uid).set(match)
-      .then(() => {
-        this.state.userDoc.ref.update({ [`currentMatches.${match.uid}`]: Date.now() })
-      })
-      .then(() => this.setState({ redirectToNewMatch: true, match, matchesLoading: false }))
-      .catch(err => console.log(err) || this.setState({ matchesLoading: false }))
+    e.preventDefault()
+    this.setState({ gettingCloudMatched: 10 })
+    console.log('about to match')
+    axios
+      .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getSoloMatched', { userUid: this.state.user.uid })
   }
 
   leaveMatch = (match) => {
@@ -134,7 +116,7 @@ class MatchList extends Component {
       matchRef.update({ flatmates }),
       matchRef.collection('messages').add({
         text: `${userData.displayName} left the match`,
-        dateTime: Date.now(),
+        dateTime: new Date(),
         from: {
           uid: userData.uid,
           displayName: userData.displayName,
@@ -160,24 +142,14 @@ class MatchList extends Component {
         <Redirect
           push
           to={{
-            pathname: '/create',
-            state: { redirectToProfile: true }
-          }}
+          pathname: '/create',
+          state: { redirectToProfile: true }
+        }}
         />
       )
     }
 
-    /* const interval = setInterval(() => {
-      const { loadingPercent } = this.state
-      console.log(loadingPercent)
-      this.setState({ loadingPercent: loadingPercent + 1 })
-      if (loadingPercent > 1000) {
-        clearInterval(interval) // If exceeded 100, clear interval
-      }
-    }, 1000) */
-
-    // loading={this.state.gettingCloudMatched}
-
+    console.log(this.state.user)
     return (
       <div style={{
         backgroundAttachment: 'fixed',
@@ -206,22 +178,20 @@ class MatchList extends Component {
               />
           )
             }
-            {this.state.gettingCloudMatched && (
-              <Progress active color="blue" percent={this.state.loadingPercent} />
+            {this.state.gettingCloudMatched > 0 && (
+              <Progress active color="blue" percent={this.state.gettingCloudMatched} />
             )}
-            {this.state.gettingCloudMatched && (
+            {this.state.gettingCloudMatched > 0 && (
               <Segment >
-                {this.state.gettingCloudMatched && (
                 <Dimmer active inverted>
-                  <Loader>{this.state.loadingText}</Loader>
+                  <Loader>{cloudMatchText[this.state.gettingCloudMatched]}</Loader>
                 </Dimmer>
-              )}
                 <Link to={`/matches/${fakeMatch.uid}`} >
                   <h3>{fakeMatch.uid}</h3>
                 </Link>
                 <div>{fakeMatch.createdAt}</div>
                 <div>{fakeMatch.bestOrigin}</div>
-                <div>{`Match score: ${fakeMatch.flatScore ? fakeMatch.flatScore : ''}`}</div>
+                <div>{`Match score: ${fakeMatch.personalityAlignment ? fakeMatch.personalityAlignment : ''}`}</div>
                 <List horizontal>
                   {fakeMatch.flatmates.map(mate => (
                     <List.Item key={mate.uid} >
@@ -234,7 +204,7 @@ class MatchList extends Component {
               ))}
                 </List>
               </Segment>
-        )}
+            )}
             {_.sortBy(this.state.matches, 'createdAt').reverse().map(match => (
               <Segment key={match.uid} clearing >
                 <Button floated="right" icon="user delete" color="red" onClick={() => this.leaveMatch(match)} />
@@ -244,7 +214,7 @@ class MatchList extends Component {
                 <div>{match.createdAt.toDateString()}</div>
                 <div>{match.bestOrigin ? match.bestOrigin : match.location}</div>
                 <div>
-                  <div>{`Personality alignment: ${match.flatScore ? match.flatScore : ''}`}</div>
+                  <div>{`Personality alignment: ${match.personalityAlignment ? match.personalityAlignment : ''}`}</div>
                   <div>{`Property alignment: ${match.propertyAlignment ? match.propertyAlignment : ''}`}</div>
                 </div>
                 <List horizontal>
@@ -263,7 +233,7 @@ class MatchList extends Component {
             <div>
               <Popup
                 trigger={
-                  <Button onClick={this.createNewMatchAndRedirect} >Create new solo match to find single rooms or add friends</Button>}
+                  <Button onClick={this.createNewCustomMatch} >Create new solo match to find single rooms or add friends</Button>}
                 content="Create your own match and invite your friends"
               />
               <Popup

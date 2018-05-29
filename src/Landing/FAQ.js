@@ -1,13 +1,13 @@
 import React from 'react'
 import { Segment, Container, Header } from 'semantic-ui-react'
 
-const FAQ = props => (
+const FAQ = () => (
   <Container>
     <Segment vertical style={{ padding: '5em 0em' }}>
       <Header size="large">
-        I've landed an internship somewhere else than Oslo, can you still match me into a shared flat where I'm going?
+        I have landed an internship somewhere else than Oslo, can you still match me into a shared flat where I am going?
       </Header>
-      <p>As of today the service only operates in Oslo, Norway, but send us an <a href="mailto:hello@yaps.no" >email</a> at about where you want to go and we'll see about setting up the service there.</p>
+      <p>As of today the service only operates in Oslo, Norway, but send us an <a href="mailto:hello@yaps.no" >email</a> at about where you want to go and we will see about setting up the service there.</p>
       <Header size="large">Is the service free?</Header>
       <p>
         YES!

@@ -3,7 +3,7 @@ import Process from '../Landing/Process'
 import Parallax from '../Landing/Parallax'
 import FAQ from '../Landing/FAQ'
 import About from '../Landing/About'
-import Process2 from '../Landing/Process2'
+// import Process2 from '../Landing/Process2'
 import Landlords from '../Landing/Landlords'
 
 const Home = () => (

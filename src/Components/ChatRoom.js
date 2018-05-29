@@ -63,7 +63,7 @@ class ChatRoom extends Component {
       :
       firestore.collection('matches').doc(matchId).collection('messages')
         .orderBy('dateTime') */
-    const dateTime = Date.now()
+    const dateTime = new Date()
 
     this.state.messagesRef
       .add({

@@ -39,10 +39,10 @@ class Profile extends Component {
     super(props)
 
     const questions = {}
-    const answerVector = new Array(20 + 1).join('0').split('').map(parseFloat)
-    for (let index = 0; index < answerVector.length; index += 1) {
-      const answer = answerVector[index]
-      questions[`q${index + 1}`] = answer + 3
+    const personalityVector = new Array(20 + 1).join('0').split('').map(parseFloat)
+    for (let index = 0; index < personalityVector.length; index += 1) {
+      const answer = personalityVector[index]
+      questions[`q${index + 1}`] = answer
     }
     this.state = {
       user: null,
@@ -84,11 +84,11 @@ class Profile extends Component {
           .then((doc) => {
             const userData = doc.data()
             const questions = {}
-            const { answerVector, propertyVector } = userData
+            const { personalityVector, propertyVector } = userData
 
-            for (let index = 0; index < answerVector.length; index += 1) {
-              const answer = answerVector[index]
-              questions[`q${index + 1}`] = answer + 3
+            for (let index = 0; index < personalityVector.length; index += 1) {
+              const answer = personalityVector[index]
+              questions[`q${index + 1}`] = answer
             }
             const [budget, propertySize, standard, style] = propertyVector
             this.setState({
@@ -145,9 +145,9 @@ class Profile extends Component {
   handleSubmit = async () => {
     window.scrollTo(0, 0)
     this.setState({ profileFormLoading: true })
-    const answerVector = []
+    const personalityVector = []
     for (let q = 0; q < 20; q += 1) {
-      answerVector.push(this.state[`q${q + 1}`] - 3)
+      personalityVector.push(this.state[`q${q + 1}`] - 3)
     }
 
     const formFields = {
@@ -164,7 +164,7 @@ class Profile extends Component {
       propertyVector: [this.state.budget, this.state.propertySize, this.state.standard, this.state.style],
       tos: this.state.tos,
       readyToMatch: this.state.readyToMatch,
-      answerVector,
+      personalityVector,
     }
 
     const errors = {}

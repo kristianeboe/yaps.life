@@ -18,9 +18,9 @@ export function createTestUsers(n) {
   const users = []
 
   for (let index = 0; index < n; index += 1) {
-    const answerVector = []
+    const personalityVector = []
     for (let j = 0; j < 20; j += 1) {
-      answerVector.push(getRandomInt(5) - 3)
+      personalityVector.push(getRandomInt(5))
     }
     const university =
       UNIVERSITIES[Math.floor(Math.random() * UNIVERSITIES.length)]
@@ -31,11 +31,15 @@ export function createTestUsers(n) {
     const workplaceKey = Math.floor(Math.random() * Math.floor(Object.keys(WORKPLACES).length))
     const workplace = Object.keys(WORKPLACES)[workplaceKey]
     const workplaceLatLng = WORKPLACES[workplace]
+    
     const budget = BUDGETS[Math.floor(Math.random() * BUDGETS.length)]
     const propertySize = PROPERTY_SIZES[Math.floor(Math.random() * PROPERTY_SIZES.length)]
     const standard = STANDARD[Math.floor(Math.random() * STANDARD.length)]
     const style = STYLE[Math.floor(Math.random() * STYLE.length)]
     const propertyVector = [budget, propertySize, standard, style]
+
+
+    const rentFrom = new Date(2018, 5, getRandomInt(14))
     const user = {
       uid: uuid.v4(),
       displayName: `testUser${index}`,
@@ -46,13 +50,13 @@ export function createTestUsers(n) {
       workplaceLatLng,
       photoURL: `https://placem.at/people?w=290&h=290&random=${getRandomInt(100)}`,
       university,
-
       age: Math.floor(Math.random() * 10) + 20,
+      rentFrom,
       tos: true,
       readyToMatch: true,
       gender: GENDERS[Math.floor(Math.random() * GENDERS.length)],
       fieldOfStudy,
-      answerVector
+      personalityVector
     }
     users.push(user)
   }
@@ -91,8 +95,8 @@ export const me = {
   seeNewUsers: false,
   photoURL:
     'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg',
-  answerVector: [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1],
-  propertyVector: [5, 5, 5],
+  personalityVector: [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1],
+  propertyVector: [1, 3, 5, 3],
   readyToMatch: true,
   fieldOfStudy: 'Computer Science',
   tos: true,
@@ -110,7 +114,7 @@ export const antiKristianUser = {
   uid: 'hWBbCxiigfUISnJ8upb',
   gender: 'Male',
   matchLocation: 'Oslo',
-  answerVector: [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2],
+  personalityVector: [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2],
   propertyVector: [5, 5, 5],
   workplace: 'Capra Consulting Oslo',
   workplaceLatLng: {

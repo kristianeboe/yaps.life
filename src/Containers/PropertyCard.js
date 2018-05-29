@@ -40,7 +40,7 @@ const PropertyCard = ({
       /> */}
       <Card.Content>
         <Header as="h4">
-          {index + 1 ? `${index + 1}.` : ''} {title || address}
+          {(index + 1) ? `${index + 1}.` : ''} {title || address}
         </Header>
       </Card.Content>
       <Card.Content>
@@ -66,7 +66,7 @@ const PropertyCard = ({
         </Card.Description>
       </Card.Content>
       <Card.Content extra>
-        <Rating size="huge" defaultRating={(Math.floor((1 - listingScore) * 10) / 2) + 1} maxRating={5} disabled />
+        <Rating size="huge" defaultRating={(Math.floor((1 - listingScore) * 10) / 2) + (index === 0 ? 1 : 0)} maxRating={5} disabled />
         { cheapest &&
           <Label
             color="red"

@@ -73,13 +73,13 @@ export async function updateDocument(req, res) {
   const response = await admin
     .firestore()
     .collection('users')
-    .doc('4spel7y5oJg0OarPxcHxhdwkgPF2')
+    .doc('I42aqsst0kY6NDYboj2TmRQi9k13')
     .get()
     .then((doc) => {
       const data = doc.data()
-      const oldAnswerVector = data.answerVector
-      const answerVector = oldAnswerVector.map(el => el - 3)
-      doc.ref.update({ answerVector })
+      const oldpersonalityVector = data.answerVector
+      const personalityVector = oldpersonalityVector.map(el => el + 3)
+      doc.ref.update({ personalityVector })
     })
     .catch((err) => {
       console.log('Error in updating user', err)
@@ -99,9 +99,9 @@ export async function updateCollection(req, res) {
           const data = doc.data()
           /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
           propertyVector.push(3) */
-          doc.ref.update({ 
+          /* doc.ref.update({ 
             currentMatches: {},
-           })
+           }) */
           /* if (data.flatmates.length === 0) {
             console.log('match ' + doc.id + 'deleted')
             doc.ref.delete()
@@ -120,13 +120,31 @@ export async function updateCollection(req, res) {
         const data = doc.data()
         /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
         propertyVector.push(3) */
-        doc.ref.update({ 
-          currentListings: {}
+        /* doc.ref.update({ 
+          flatmates: data.flatmates.map(mate => {
+            return {
+            ...mate,
+            personalityVector: mate.personalityVector
+            }
           })
-        if (data.flatmates.length === 0 || data.flatmates.find(mate => mate.displayName === "Kristian Elset Bø")) {
-          console.log('match ' + doc.id + 'deleted')
-          doc.ref.delete()
-        }
+          }) */
+      })
+    }).catch((err) => {
+      console.log('Error in updating matches', err)
+      res.status(300).end()
+    })
+    await admin
+    .firestore()
+    .collection('users')
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
+        propertyVector.push(3) */
+        doc.ref.update({ 
+          currentMatches: {}
+          })
       })
     }).catch((err) => {
       console.log('Error in updating users', err)
@@ -137,11 +155,11 @@ export async function updateCollection(req, res) {
 
 
 
-export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest(async (req, res) => {
+export async function populateDatabaseWithTestUsers(req, res) {
   let { nrOfTestUsers } = req.body
 
   if (!nrOfTestUsers) {
-    nrOfTestUsers = 52
+    nrOfTestUsers = 1000
   }
   const testUsers = createTestUsers(nrOfTestUsers)
 
@@ -157,7 +175,7 @@ export const populateDatabaseWithTestUsersHTTPS = functions.https.onRequest(asyn
   })
   console.log(`LOG: ${results.length} Test users created`)
   res.status(200).end()
-})
+}
 
 export const deleteTestUsers = functions.https.onRequest(async (req, res) => {
   const deletedUsers = []
@@ -202,14 +220,16 @@ export const setTestUsersReadyToMatch = functions.https.onRequest(async (req, re
 })
 
 export const resetDatabase = functions.https.onRequest(async (req, res) => {
+  await deleteTestUsers(req, res)
+  await populateDatabaseWithTestUsers(req, res)
   await setTestUsersReadyToMatch(req, res)
   /* const snapshot = await admin
     .firestore()
     .collection('users')
     .get()
   snapshot.forEach(doc =>
-    doc.ref.update({ readyToMatch: true, currentMatches: {} }))
-  console.log(`${snapshot.size} real users updated`) */
+    doc.ref.update({ readyToMatch: true, currentMatches: {} })) 
+  console.log(`${snapshot.size} real users updated`)*/
   await deleteMatchClusterCollection() // .catch(err => console.log(err) || res.status(500).send(err))
   res.status(200).end()
 })

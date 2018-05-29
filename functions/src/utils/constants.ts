@@ -97,7 +97,11 @@ export const PROPERTY_SIZES = [1, 3, 5]
 export const STANDARD = [1, 3, 5]
 export const STYLE = [1, 3, 5]
 
-export const GROUP_NAMES = [
+export const GROUP_NAMES = {
+  1: ["The One"],
+  2: ["The Dynamic Duo"],
+  3: ["Triple threat"],
+  4: [
   'The Wolf Pack',
   'The Fantastic Four',
   'The A-Team',
@@ -110,7 +114,11 @@ export const GROUP_NAMES = [
   'The Fantastic Foursome of Oz',
   'The Survivors', // left for dead
   'Entourage',
-]
+],
+5: ["The Quintessentials"],
+6: ["The Avengers"],
+'more': ['The Horde']
+}
 
 export const GIRL_GROUP_NAMES = [
   'Sex and the city',

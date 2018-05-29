@@ -26,6 +26,14 @@ class Create extends Component {
     // this.state = initialState
   }
 
+
+  setPhotoURL = (photoURL, loginProvider) => {
+    if (loginProvider === 'facebook') {
+      return `${photoURL}?type=large&width=720&height=720`
+    }
+    return photoURL
+  }
+
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   googleSignIn = async () => {
@@ -52,13 +60,6 @@ class Create extends Component {
     }
   }
 
-  setPhotoURL = (photoURL, loginProvider) => {
-    if (loginProvider === 'facebook') {
-      return `${photoURL}?type=large&width=720&height=720`
-    }
-    return photoURL
-  }
-
   createUserInDatabase = (user, loginProvider) => firestore
     .collection('users')
     .doc(user.uid)
@@ -68,7 +69,7 @@ class Create extends Component {
       photoURL: user.photoURL ? this.setPhotoURL(user.photoURL, loginProvider) : '',
       email: user.email,
       phone: '',
-      answerVector: new Array(20).fill(0),
+      personalityVector: new Array(20).fill(0),
       propertyVector: new Array(4).fill(0),
       loginProvider
     })
@@ -204,7 +205,7 @@ class Create extends Component {
             <Message onClick={() => this.setState({ signUp: !signUp })} >
               <Icon name="help" />
               {signUp ? 'Already have a user?' : 'New to us?'}{' '}
-              <a> {signUp ? 'Log in' : 'Sign up'}</a>&nbsp;
+              <a href="#" > {signUp ? 'Log in' : 'Sign up'}</a>&nbsp;
             </Message>
             <Message
               error

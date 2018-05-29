@@ -113,7 +113,7 @@ export default class ApartmentFinder extends Component {
       groupPropertyVector,
       showAddUserCard: false
     })
-    firestore.collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: Date.now() })
+    firestore.collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: new Date() })
     firestore.collection('matches').doc(matchId).update({
       flatmates, flatScore, propertyAlignment, groupPropertyVector, title: matchTitle
     })

@@ -14,8 +14,8 @@ export function mapSimScoreToPercentage(simScore) {
 }
 
 export function calculateSimilarityScoreBetweenUsers(uData, vData) {
-  const u = uData.answerVector
-  const v = vData.answerVector
+  const u = uData.personalityVector
+  const v = vData.personalityVector
 
   const vectorDistance = euclidianDistanceSquared(u, v)
   const simScore = mapSimScoreToPercentage(vectorDistance)
@@ -23,6 +23,32 @@ export function calculateSimilarityScoreBetweenUsers(uData, vData) {
   return simScore
 }
 
+
+export function calculateAlignment(flatmates, feature, combine=[]) {
+  const similarityDistances = []
+
+  for (let i = 0; i < flatmates.length; i += 1) {
+    const mate1 = flatmates[i]
+    for (let j = 0; j < flatmates.length; j += 1) {
+      if (i !== j) {
+        const mate2 = flatmates[j]
+        if (combine.length > 0) {
+          const similarityDistance = euclidianDistanceSquared(mate1[combine[0]].concat(mate1[combine[1]]), mate2[combine[0]].concat(mate2[combine[1]]))
+          similarityDistances.push(similarityDistance)
+        } else {
+          const similarityDistance = euclidianDistanceSquared(mate1[feature], mate2[feature]) // calculateSimilarityScoreBetweenUsers(mate1, mate2)
+          similarityDistances.push(similarityDistance)
+        }
+      }
+    }
+  }
+
+  let distance = 0
+  if (similarityDistances.length > 1) {
+    distance = similarityDistances.reduce((a, b) => a + b, 0) / similarityDistances.length
+  }
+  return Math.floor(distance)
+}
 export function calculateFlatScore(flatmates) {
   const simScores = []
   for (let i = 0; i < flatmates.length; i += 1) {
@@ -30,31 +56,20 @@ export function calculateFlatScore(flatmates) {
     for (let j = 0; j < flatmates.length; j += 1) {
       const mate2 = flatmates[j]
       if (i !== j) {
-        const simScore = calculateSimilarityScoreBetweenUsers(mate1, mate2)
+        const simScore = euclidianDistanceSquared(mate1.personalityVector, mate2.personalityVector) // calculateSimilarityScoreBetweenUsers(mate1, mate2)
         simScores.push(simScore)
       }
     }
   }
 
-  let flatScore = 100
+  let flatScore = 0
   if (simScores.length > 1) {
     flatScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
   }
   return Math.floor(flatScore)
 }
 
-export function createGroupPropertyVector(flatmates) {
-  const groupVector = []
-  const propertyVectors = flatmates.map(mate => mate.propertyVector)
-  for (let i = 0; i < propertyVectors[0].length; i += 1) {
-    let sum = 0
-    for (let j = 0; j < flatmates.length; j += 1) {
-      sum += propertyVectors[j][i]
-    }
-    groupVector.push(sum / propertyVectors.length)
-  }
-  return groupVector
-}
+
 
 export function mapPropScoreToPercentage(propScore) {
   return Math.floor((1 - (propScore / 48)) * 100)
@@ -68,16 +83,50 @@ export function calculatePropertyAlignment(flatmates) {
       const mate2 = flatmates[j]
       if (i !== j) {
         const propScore = euclidianDistanceSquared(mate1.propertyVector, mate2.propertyVector)
-        propScores.push(mapPropScoreToPercentage(propScore))
+        propScores.push(propScore)// mapPropScoreToPercentage(propScore))
       }
     }
   }
 
-  let propertyAlignment = 100
+  let propertyAlignment = 0
   if (propScores.length > 1) {
     propertyAlignment = propScores.reduce((a, b) => a + b, 0) / propScores.length
   }
   return Math.floor(propertyAlignment)
+}
+
+export function calculateCombinedAlignment(flatmates) {
+  const scores = []
+  for (let i = 0; i < flatmates.length; i += 1) {
+    const mate1 = flatmates[i]
+    for (let j = 0; j < flatmates.length; j += 1) {
+      const mate2 = flatmates[j]
+      if (i !== j) {
+        const score = euclidianDistanceSquared(mate1.personalityVector.concat(mate1.propertyVector), mate2.personalityVector.concat(mate2.propertyVector))
+        scores.push(score)// mapPropScoreToPercentage(propScore))
+      }
+    }
+  }
+
+  let combinedAlignment = 0
+  if (scores.length > 1) {
+    combinedAlignment = scores.reduce((a, b) => a + b, 0) / scores.length
+  }
+  return Math.floor(combinedAlignment)
+}
+
+
+export function createGroupPropertyVector(flatmates) {
+  const groupVector = []
+  const propertyVectors = flatmates.map(mate => mate.propertyVector)
+  for (let i = 0; i < propertyVectors[0].length; i += 1) {
+    let sum = 0
+    for (let j = 0; j < flatmates.length; j += 1) {
+      sum += propertyVectors[j][i]
+    }
+    groupVector.push(sum / propertyVectors.length)
+  }
+  return groupVector
 }
 
 export function chunckArray(array, cSize) {
@@ -128,7 +177,7 @@ export function initChatRoom(matchRef) {
     .collection('messages')
     .add({
       text: 'Stay civil in the chat guys',
-      dateTime: Date.now(),
+      dateTime: new Date(),
       from: {
         uid: 'admin',
         displayName: 'Admin',
@@ -141,7 +190,6 @@ export function initChatRoom(matchRef) {
 }
 
 export async function matchAllAvailableUsers() {
-  console.log('Getting test users')
   const usersToBeMatched = []
   const usersToBeMatchedSnapshot = await admin.firestore().collection('users')
     .where('matchLocation', '==', 'Oslo')
@@ -178,35 +226,40 @@ export async function matchAllAvailableUsers() {
 }
     
 
-export async function createMatchFromFlatmates(flatmates, demo=false, test=false) {
-  const flatScore = calculateFlatScore(flatmates)
-  const propertyAlignment = calculatePropertyAlignment(flatmates)
+export async function createMatchFromFlatmates(flatmates, demo=false, test=false, custom=false) {
+  const personalityAlignment = calculateAlignment(flatmates, 'personalityVector')
+  const propertyAlignment = calculateAlignment(flatmates, 'propertyVector')
   const groupPropertyVector = createGroupPropertyVector(flatmates)
+  const combinedAlignment = calculateAlignment(flatmates, '', ['personalityVector', 'propertyVector'])
 
   const matchUid = uuid.v4()
   const match = {
-    title: GROUP_NAMES[Math.floor(Math.random()*GROUP_NAMES.length)],
+    title: GROUP_NAMES[flatmates.length][Math.floor(Math.random()*GROUP_NAMES[flatmates.length].length)],
     uid: matchUid,
     flatmates,
     location: 'Oslo', // remember to change this in the future
     bestOrigin: '',
-    flatScore,
+    personalityAlignment,
     propertyAlignment,
+    combinedAlignment,
     groupPropertyVector,
     currentListings: {},
-    custom: false,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    demo
+    createdAt: new Date(), //yarn  admin.firestore.FieldValue.serverTimestamp(),
+    demo,
+    test,
+    custom
   }
   const matchRef = admin.firestore().collection('matches').doc(matchUid)
   
-  // Create match
-  await matchRef.set(match)
-  // init chatroom
-  await initChatRoom(matchRef)
+  if (!test) {
+    // Create match
+    await matchRef.set(match)
+    // init chatroom
+    await initChatRoom(matchRef)
+  }
 
   // Update users with new match
-  if (demo) {
+  if (demo || custom) {
   return Promise.all(
     match.flatmates.map((mate) => {
       let collectionName = 'testUsers'
@@ -218,17 +271,16 @@ export async function createMatchFromFlatmates(flatmates, demo=false, test=false
         .collection(collectionName)
         .doc(mate.uid)
         .update({
-          [`currentMatches.${matchUid}`]: {matchId: matchUid, timeStamp: Date.now()},
+          [`currentMatches.${matchUid}`]: {matchId: matchUid, timeStamp: new Date()},
           newMatches: true,
-          gettingCloudMatched: false,
+          gettingCloudMatched: 90,
         })
           .catch(err =>
             console.log('error with updating user with currentMatchId', err)
           )
     })
   ).catch(err => console.log('error with updating users with currentMatchId', err))
-}
-else {
+} else {
   return match
 }
 }

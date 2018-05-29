@@ -88,7 +88,7 @@ export async function getListingDetails(listingURL: string, nrOfFlatmates) {
   }
 
   const budget =
-      pricePerRoom < 5000 ? 1 : pricePerRoom < 5500 ? 1.5 : pricePerRoom < 6000 ? 2 : pricePerRoom < 6500 ? 2.5 : pricePerRoom < 7000 ? 3 : pricePerRoom < 8000 ? 3.5 : pricePerRoom < 9000 ? 4 : pricePerRoom < 10500 ? 4.5 : 5
+      pricePerRoom < 5000 ? 1 : pricePerRoom <= 5500 ? 1.5 : pricePerRoom <= 6000 ? 2 : pricePerRoom <= 6500 ? 2.5 : pricePerRoom <= 7000 ? 3 : pricePerRoom <= 8000 ? 3.5 : pricePerRoom <= 9000 ? 4 : pricePerRoom < 10500 ? 4.5 : 5
   
   const standard = 3
   const style = facilities.find(el => el === 'Moderne') ? 5 : 3

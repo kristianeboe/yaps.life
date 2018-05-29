@@ -37,7 +37,7 @@ const validTOS = tos => tos
 const validReadyToMatch = readyToMatch => true || false
 const validRentFrom = () => true // date.isValid()
 const validRentTo = () => true // date.isValid()
-const validAnswerVector = answerVector => answerVector.length === 20 && answerVector.reduce((f, c) => [-2, -1, 0, 1, 2].includes(c))
+const validpersonalityVector = personalityVector => personalityVector.length === 20 && personalityVector.reduce((f, c) => [-2, -1, 0, 1, 2].includes(c))
 
 /* const validStudyProgramme = studyProgramme =>
 const validUniversity = university =>
@@ -90,7 +90,7 @@ export const ProfileFormValidation = {
   propertyVector: validPropertyVector,
   tos: validTOS,
   readyToMatch: validReadyToMatch,
-  answerVector: validAnswerVector,
+  personalityVector: validpersonalityVector,
 }
 
 /*

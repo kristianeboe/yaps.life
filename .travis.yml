@@ -1,8 +1,6 @@
 env:
   - CI=true
 language: node_js
-node_js:
-  - 6.11.5
 cache:
   directories:
   - node_modules

@@ -20,3 +20,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 firebase-debug.log*
+
+/tests/*.png
+/tests/testData
+/tests/testUsers.json
