@@ -8,6 +8,7 @@ const admin = require('firebase-admin')
 
 admin.initializeApp()
 
+
 const createTestData = require('../lib/utils/createTestData')
 const { extractVectorsFromUsers } = require('../lib/utils/vectorFunctions')
 const {
@@ -16,11 +17,15 @@ const {
 const {
   createMatchFromFlatmates, createGroupPropertyVector, calculateAlignment, createFlatmatesFromClusters
 } = require('../lib/clusteringAlgorithms/clusteringPipeline')
-const { kMeansClustering, dbScanClustering } = require('../lib/clusteringAlgorithms/kMeansClustering')
-const testUsers128 = require('./testData/testUsers128')
+const { kMeansClustering, dbScanClustering, opticsClustering } = require('../lib/clusteringAlgorithms/kMeansClustering')
+const testUsers64 = require('./testUsers64')
 
-console.log(testUsers128.length)
-const testUsers = testUsers128 // createTestData.createTestUsers(48)
+const euclidianDistanceSquared = require('euclidean-distance/squared')
+const cosineSimilarity = require('compute-cosine-distance')
+
+
+console.log(testUsers64.length)
+const testUsers = testUsers64 // createTestData.createTestUsers(48)
 
 const testFlat = [
   {
@@ -100,12 +105,12 @@ test('propertyAlignment', () => {
   expect(propertyAlignment).toBeGreaterThanOrEqual(0)
 })
 
-/* test('baseline, bruteforce', async () => {
-  // const testUsers = createTestData.createTestUsers(64)
+test('baseline, bruteforce', async () => {
+  const testUsers = createTestData.createTestUsers(16)
   /* const testUsers1 = testUsers.map(mate => ({
     ...mate,
     propertyVector: mate.propertyVector.map((el, index) => (index < 2 ? el * 5 : el * 3))
-  }))
+  })) */
   const matchArray = []
   for (let i = 0; i < testUsers.length; i += 1) {
     const testUser1 = testUsers[i]
@@ -125,7 +130,8 @@ test('propertyAlignment', () => {
       }
     }
   }
-  /* const weightedMatchArray = matchArray.map(match => ({
+})
+/* const weightedMatchArray = matchArray.map(match => ({
     ...match,
     flatmates: match.flatmates.map(mate => ({
       ...mate,
@@ -136,11 +142,11 @@ test('propertyAlignment', () => {
   expect(matchArray.length).toBeGreaterThan(0)
 }) */
 
-test('test baseline2', async () => {
+/* test('test baseline2', async () => {
   /* const testUsers1 = testUsers.map(mate => ({
     ...mate,
     propertyVector: mate.propertyVector.map((el, index) => (index < 2 ? el * 5 : el * 3))
-  })) */
+  }))
 
   const perChunk = 4
   const clusters = testUsers.reduce((all, one, i) => {
@@ -157,8 +163,8 @@ test('test baseline2', async () => {
       ...mate,
       propertyVector: mate.propertyVector.map((el, index) => (index < 2 ? el * 3 : el * 1.5))
     }))
-  })) */
-})
+  }))
+}) */
 
 test('kNN Single Match', async () => {
   // const { me } = createTestData
@@ -180,7 +186,7 @@ test('kNN, One Match Per User', async () => {
   // extract question vectors
   const vectors = extractVectorsFromUsers(testUsers, false)
   // Cluster with kNN
-  let clusters = knnClusteringOneMatchPerUser(vectors, 4)
+  let clusters = knnClusteringOneMatchPerUser(vectors)
   // organize into flats
 
   clusters = clusters.map(flatmates =>
@@ -233,6 +239,20 @@ test('Clusters with dbScan', async () => {
 
   const matchArray = await Promise.all(clusters.map(async cluster => createMatchFromFlatmates(cluster, false, true)))
   console.log(printScoreCard('Clusters with dbScan', matchArray))
+  expect(clusters.length).toBeGreaterThan(0)
+})
+
+test('Clusters with OPTICS', async () => {
+  const vectors = extractVectorsFromUsers(testUsers, false)
+  const opticsClusters = opticsClustering(vectors)
+  // expect(clusters.length).toBe(5)
+
+  let clusters = createFlatmatesFromClusters(opticsClusters)
+  clusters = clusters.map(flatmates =>
+    flatmates.map(id => testUsers[id]))
+
+  const matchArray = await Promise.all(clusters.map(async cluster => createMatchFromFlatmates(cluster, false, true)))
+  console.log(printScoreCard('Clusters with OPTICS', matchArray))
   expect(clusters.length).toBeGreaterThan(0)
 })
 

@@ -7,7 +7,12 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/yarn-error.log",
+      "**/tests/testData/**",
+      "**/tests/realData/**",
+      "**/tests/OldCharts/**",
+      "**/tests/*.png"
     ],
     "rewrites": [
       {
@@ -24,6 +29,12 @@
     "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build"
+    ],
+    "ignore": [
+      "package-lock.json",
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
     ]
   }
 }

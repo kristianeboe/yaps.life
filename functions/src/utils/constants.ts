@@ -92,10 +92,10 @@ export const STUDY_PROGRAMMES = {
 }
 export const GENDERS = ['Male', 'Female']
 
-export const BUDGETS = [1, 3, 5]
-export const PROPERTY_SIZES = [1, 3, 5]
-export const STANDARD = [1, 3, 5]
-export const STYLE = [1, 3, 5]
+export const BUDGETS = [-2, 0, 2]
+export const PROPERTY_SIZES = [-2,0, 2]
+export const STANDARD = [-2,0, 2]
+export const STYLE = [-2,0, 2]
 
 export const GROUP_NAMES = {
   1: ["The One"],

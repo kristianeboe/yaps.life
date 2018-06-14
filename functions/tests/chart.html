@@ -1,0 +1,453 @@
+<!doctype html>
+<head>
+    <script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-base.min.js" type="text/javascript"></script>
+    </head>
+<body>
+  <div id="container" style="width: 500px; height: 400px;"></div>
+  <script>
+     anychart.onDocumentLoad(function () {
+  const euclidianDistanceSquared = require('euclidean-distance/squared')
+const cosineSimilarity = require('compute-cosine-distance')
+
+const { extractVectorsFromUsers, enhancePropertyVector } = require('../lib/utils/vectorFunctions')
+const {
+  knnClustering, knnClusteringOneMatchPerUser, knnClusteringSingleMatchTestUsers
+} = require('../lib/clusteringAlgorithms/knnClustering')
+const { kMeansClustering } = require('../lib/clusteringAlgorithms/kMeansClustering')
+const {
+  createMatchFromFlatmates, createGroupPropertyVector, calculateAlignment, createFlatmatesFromClusters
+} = require('../lib/clusteringAlgorithms/clusteringPipeline')
+
+function getAverageFeatureAcrossMatches(matchArray, field) {
+  let averageFeature = 0
+  matchArray.forEach((match) => {
+    averageFeature += match[field]
+  })
+  averageFeature /= matchArray.length
+  return averageFeature
+}
+
+function getMedian(matches, feature, sorted = false) {
+  // const matches = matches.slice(0) // create copy
+  const middle = Math.floor((matches.length) / 2)
+  if (!sorted) {
+    matches.sort((a, b) => a[feature] - b[feature])
+  }
+  return matches[middle] // (matches.length % 2 === 0) ? matches[middle - 1] : (matches[middle - 1.5] + matches[middle - 0.5]) / 2
+}
+
+function getScoreCard(algorithmName, matches, userSize) {
+  const averagePersonalityAlignment = getAverageFeatureAcrossMatches(matches, 'personalityAlignment')
+  const averagePropertyAlignment = getAverageFeatureAcrossMatches(matches, 'propertyAlignment')
+  const averageCombinedAlignment = getAverageFeatureAcrossMatches(matches, 'combinedAlignment')
+  const frequencies = {
+    '0-50': 0,
+    '51-70': 0,
+    '71-90': 0,
+    '91-110': 0,
+    '111-130': 0,
+    '130+': 0
+
+  }
+  matches.forEach((match) => {
+    const combinedAlignment = match.combinedAlignment
+    if (combinedAlignment <= 50) {
+      frequencies['0-50'] += 1
+    } else if (combinedAlignment <= 70) {
+      frequencies['51-70'] += 1
+    } else if (combinedAlignment <= 90) {
+      frequencies['71-90'] += 1
+    } else if (combinedAlignment <= 110) {
+      frequencies['91-110'] += 1
+    } else if (combinedAlignment <= 130) {
+      frequencies['111-130'] += 1
+    } else {
+      frequencies['130+'] += 1
+    }
+  })
+  console.log(frequencies)
+
+  matches.sort((a, b) => a.combinedAlignment - b.combinedAlignment)
+  const medianMatch = getMedian(matches, 'combinedAlignment', true)
+  const minMatch = matches[0]
+  const maxMatch = matches.slice(-1)[0]
+
+  return {
+    id: `${algorithmName}-${userSize}`,
+    userSize,
+    numberOfMatches: matches.length,
+    algorithm: algorithmName,
+    data: {
+      medianMatch,
+      minMatch,
+      maxMatch,
+      averagePersonalityAlignment,
+      averagePropertyAlignment,
+      averageCombinedAlignment,
+    }
+  }
+}
+
+function printScoreCard(scoreCard) {
+  return (
+    `${scoreCard.id}`
+    + `\n Nr of matches: ${scoreCard.numberOfMatches}`
+    /* + `\n Worst personality alignment: ${scoreCard.data.maxMatch.personalityAlignment}`
+    + `\n Average personality alignment: ${scoreCard.data.averagePersonalityAlignment}`
+    + `\n Best personality alignment: ${scoreCard.data.minMatch.personalityAlignment}`
+    + `\n Worst property alignment: ${scoreCard.data.maxMatch.propertyAlignment}`
+    + `\n Average property alignment: ${scoreCard.data.averagePropertyAlignment}`
+    + `\n Best property alignment: ${scoreCard.data.minMatch.propertyAlignment}` */
+    + '\n'
+    + 'euclidian squared'
+    + `\n Worst property alignment: ${scoreCard.data.maxMatch.propertyAlignment}`
+    + `\n Median property alignment: ${scoreCard.data.medianMatch.propertyAlignment}`
+    + `\n Best property alignment: ${scoreCard.data.minMatch.propertyAlignment}`
+    + `\n Worst personality alignment: ${scoreCard.data.maxMatch.personalityAlignment}`
+    + `\n Median personality alignment: ${scoreCard.data.medianMatch.personalityAlignment}`
+    + `\n Best personality alignment: ${scoreCard.data.minMatch.personalityAlignment}`
+    + `\n Worst combined alignment: ${scoreCard.data.maxMatch.combinedAlignment}`
+    + `\n Median combined alignment: ${scoreCard.data.medianMatch.combinedAlignment}`
+    + `\n Best combined alignment: ${scoreCard.data.minMatch.combinedAlignment}`
+    + '\n'
+    + 'euclidian'
+    + `\n Worst property alignment: ${scoreCard.data.maxMatch.alignments.euclideanDistance.propertyAlignment}`
+    + `\n Median property alignment: ${scoreCard.data.medianMatch.alignments.euclideanDistance.propertyAlignment}`
+    + `\n Best property alignment: ${scoreCard.data.minMatch.alignments.euclideanDistance.propertyAlignment}`
+    + `\n Worst personality alignment: ${scoreCard.data.maxMatch.alignments.euclideanDistance.personalityAlignment}`
+    + `\n Median personality alignment: ${scoreCard.data.medianMatch.alignments.euclideanDistance.personalityAlignment}`
+    + `\n Best personality alignment: ${scoreCard.data.minMatch.alignments.euclideanDistance.personalityAlignment}`
+    + `\n Worst combined alignment: ${scoreCard.data.maxMatch.alignments.euclideanDistance.combinedAlignment}`
+    + `\n Median combined alignment: ${scoreCard.data.medianMatch.alignments.euclideanDistance.combinedAlignment}`
+    + `\n Best combined alignment: ${scoreCard.data.minMatch.alignments.euclideanDistance.combinedAlignment}`
+    + '\n'
+    + 'cosine'
+    + `\n Worst property alignment: ${scoreCard.data.minMatch.alignments.cosineDistance.propertyAlignment}`
+    + `\n Median property alignment: ${scoreCard.data.medianMatch.alignments.cosineDistance.propertyAlignment}`
+    + `\n Best property alignment: ${scoreCard.data.maxMatch.alignments.cosineDistance.propertyAlignment}`
+    + `\n Worst personality alignment: ${scoreCard.data.minMatch.alignments.cosineDistance.personalityAlignment}`
+    + `\n Median personality alignment: ${scoreCard.data.medianMatch.alignments.cosineDistance.personalityAlignment}`
+    + `\n Best personality alignment: ${scoreCard.data.maxMatch.alignments.cosineDistance.personalityAlignment}`
+    + `\n Worst combined alignment: ${scoreCard.data.minMatch.alignments.cosineDistance.combinedAlignment}`
+    + `\n Median combined alignment: ${scoreCard.data.medianMatch.alignments.cosineDistance.combinedAlignment}`
+    + `\n Best combined alignment: ${scoreCard.data.maxMatch.alignments.cosineDistance.combinedAlignment}`
+    + '\n'
+
+  )
+}
+
+
+const testUsersAll = require('./testData/testUsers10000')
+
+const realUsers = require('./realData/cleanUsers.json')
+
+
+const bruteforce = async (testUsers, similarityFunction = null) => {
+  const testUsersEnhanced = testUsers.map(mate => ({
+    ...mate,
+    propertyVector: enhancePropertyVector(mate.propertyVector)
+  }))
+  const matchArray = []
+  for (let i = 0; i < testUsers.length; i += 1) {
+    const testUser1 = testUsersEnhanced[i]
+    for (let j = 0; j < testUsers.length; j += 1) {
+      if (j === i) break
+      const testUser2 = testUsersEnhanced[j]
+      for (let k = 0; k < testUsers.length; k += 1) {
+        if (k === j) break
+        const testUser3 = testUsersEnhanced[k]
+        for (let l = 0; l < testUsers.length; l += 1) {
+          if (l === k) break
+          const testUser4 = testUsersEnhanced[l]
+          const flatmates = [testUser1, testUser2, testUser3, testUser4]
+          const match = await createMatchFromFlatmates(flatmates, false, true)
+          matchArray.push(match)
+        }
+      }
+    }
+  }
+  return matchArray
+}
+
+async function baseline(testUsers, similarityFunction = null) {
+  const testUsersEnhanced = testUsers.map(mate => ({
+    ...mate,
+    propertyVector: enhancePropertyVector(mate.propertyVector)
+  }))
+
+  const perChunk = 4
+  const clusters = testUsersEnhanced.reduce((all, one, i) => {
+    const ch = Math.floor(i / perChunk)
+    all[ch] = [].concat((all[ch] || []), one)
+    return all
+  }, [])
+
+  return Promise.all(clusters.map(async cluster => createMatchFromFlatmates(cluster, false, true)))
+}
+
+async function kNNoneMatchPerUser(testUsers) {
+  const vectors = extractVectorsFromUsers(testUsers, false)
+  // Cluster with kNN
+  let clusters = knnClusteringOneMatchPerUser(vectors, 4, cosineSimilarity, true)
+  // organize into flats
+
+  clusters = clusters.map(flatmates =>
+    flatmates.map(id => testUsers[id]))
+
+  return Promise.all(clusters.map(async cluster => createMatchFromFlatmates(cluster, false, true)))
+}
+
+async function kNNallToAll(testUsers) {
+  const vectors = extractVectorsFromUsers(testUsers, false)
+  // Cluster with kNN
+  let clusters = knnClustering(vectors, 4, cosineSimilarity, true)
+  // organize into flats
+  clusters = clusters.map(flatmates =>
+    flatmates.map(id => testUsers[id]))
+
+  return Promise.all(clusters.map(async cluster => createMatchFromFlatmates(cluster, false, true)))
+}
+
+async function kMeans(testUsers, similarityFunction, max = false) {
+  const vectors = extractVectorsFromUsers(testUsers, false)
+  const kClusters = await kMeansClustering(vectors, false)
+  // expect(clusters.length).toBe(5)
+
+  let clusters = createFlatmatesFromClusters(kClusters)
+  // console.log(clusters)
+  clusters = clusters.map(flatmates =>
+    flatmates.map(id => testUsers[id]))
+
+
+  return Promise.all(clusters.map(async cluster => createMatchFromFlatmates(cluster, false, true)))
+}
+
+const algorithms = [
+  { name: 'bruteforce', matchingFunction: bruteforce },
+  { name: 'baseline', matchingFunction: baseline },
+  { name: 'kNNoneMatchPerUser', matchingFunction: kNNoneMatchPerUser },
+  { name: 'kNNallToAll', matchingFunction: kNNallToAll },
+  { name: 'kMeans', matchingFunction: kMeans },
+]
+
+const bruteforceSizes = [5, 8, 12, 16, 20, 25]
+const regularUserSizes = [50, 100, 200, 500, 1000] // 80, 96, 104, 156, 208, 300, 416, 600, 832, 1000, 1200, 1350, 1600, 1800, 2000]
+
+async function getData(bruteforce = false) {
+  const userSizes = bruteforce ? bruteforceSizes : regularUserSizes
+  const algorithmsToEvaluate = bruteforce ? algorithms.slice(0, 1) : algorithms.slice(1)
+  return Promise.all(userSizes.map(async (userSize) => {
+    /* const users = realUsers.slice(0, userSize).map(user => ({
+      ...user,
+      personalityVector: user.personalityVector.map(el => el + 3),
+      propertyVector: user.propertyVector.map(el => el + 3)
+    })) */
+    const users = testUsersAll.slice(0, userSize)
+    const algorithmResults = await Promise.all(algorithmsToEvaluate.map(async (algorithm) => {
+      const matches = await algorithm.matchingFunction(users)
+      const scoreCard = getScoreCard(algorithm.name, matches, userSize)
+      console.log(printScoreCard(scoreCard))
+      return scoreCard
+    }))
+    // console.log(algorithmResults)
+    // console.log('yo', algorithmResults.map(result => [result.data.minMatch.combinedAlignment, result.data.maxMatch.combinedAlignment, result.data.median.combinedAlignment, result.data.averageCombinedAlignment][0]))
+
+    // Bruteforce
+    return [userSize].concat([
+      // algorithmResults[0].data.medianMatch.alignments.euclideanDistance.combinedAlignment, algorithmResults[0].data.minMatch.alignments.euclideanDistance.combinedAlignment, algorithmResults[0].data.maxMatch.alignments.euclideanDistance.combinedAlignment,
+      // algorithmResults[0].data.medianMatch.alignments.euclidianDistanceSquared.combinedAlignment, algorithmResults[0].data.minMatch.alignments.euclidianDistanceSquared.combinedAlignment, algorithmResults[0].data.maxMatch.alignments.euclidianDistanceSquared.combinedAlignment,
+      algorithmResults[0].data.medianMatch.alignments.cosineDistance.combinedAlignment, algorithmResults[0].data.maxMatch.alignments.cosineDistance.combinedAlignment, algorithmResults[0].data.minMatch.alignments.cosineDistance.combinedAlignment,
+    ])
+    // [userSize].concat(algorithmResults.map(result => [result.data.minMatch.combinedAlignment, result.data.maxMatch.combinedAlignment, result.data.median.combinedAlignment, result.data.averageCombinedAlignment])[0])
+    // [algorithmResults.minMatch.combinedAlignment, algorithmResults.maxMatch.combinedAlignment, algorithmResults.median.combinedAlignment, algorithmResults.averageCombinedAlignment])//
+  }))
+}
+
+const drawChart = async (feature) => {
+  // create data
+  const data = await getData(feature)
+  console.log(data)
+
+  const anychartData = anychart.data.set(data)
+
+  /*   const baseline = anychartData.mapAs({ x: 0, value: 1 })
+  const kNNoneMatchPerUser = anychartData.mapAs({ x: 0, value: 2 })
+  const kNNallToAll = anychartData.mapAs({ x: 0, value: 3 })
+  const kMeans = anychartData.mapAs({ x: 0, value: 4 }) */
+
+  const minMatch = anychartData.mapAs({ x: 0, value: 1 })
+  const maxMatch = anychartData.mapAs({ x: 0, value: 2 })
+  const medianMatch = anychartData.mapAs({ x: 0, value: 3 })
+  const average = anychartData.mapAs({ x: 0, value: 4 })
+
+
+  // create a chart
+  const chart = anychart.line()
+
+  // create line series and set the data
+  const baselineSeries = chart.line(minMatch)
+  baselineSeries.name('Baseline')
+  baselineSeries.normal().stroke('red', 1, '10 5', 'round')
+
+  const kNNoneMatchPerUserSeries = chart.line(maxMatch)
+  kNNoneMatchPerUserSeries.name('kNNoneMatchPerUser')
+  kNNoneMatchPerUserSeries.normal().stroke('blue')
+
+  const kNNallToAllSeries = chart.line(medianMatch)
+  kNNallToAllSeries.name('kNNallToAll')
+  kNNallToAllSeries.normal().stroke('green')
+
+  const kMeansSeries = chart.line(average)
+  kMeansSeries.name('kMeans')
+  kMeansSeries.normal().stroke('brown')
+
+
+  // set the chart title
+  const chartTitle = `Algorithm: Bruteforce, ${feature}`
+  chart.title(chartTitle)
+  chart.legend(true)
+
+
+  // set the titles of the axes
+  const xAxis = chart.xAxis()
+  xAxis.title('Users')
+  const yAxis = chart.yAxis()
+  yAxis.title('Combined alignment')
+
+
+  // set the container id
+  chart.container('container')
+  chart.bounds(0, 0, 1200, 1000)
+
+  // initiate drawing the chart
+  chart.draw()
+
+  // generate JPG image and save it to a file
+  const fileType = 'png'
+  return anychartExport.exportTo(chart, fileType).then((image) => {
+    fs.writeFile(`${chartTitle}.${fileType}`, image, (fsWriteError) => {
+      if (fsWriteError) {
+        console.log(fsWriteError)
+      } else {
+        console.log(`${chartTitle}.${fileType} written, Complete`)
+      }
+    })
+  }, (generationError) => {
+    console.log(generationError)
+  })
+}
+
+// drawChart('runningtime')
+
+const drawBruteforce = async (feature) => {
+  const data = await getData(true)
+  console.log(data)
+
+  const anychartData = anychart.data.set(data)
+
+  const cosineMedian = anychartData.mapAs({ x: 0, value: 1 })
+  const cosineBest = anychartData.mapAs({ x: 0, value: 2 })
+  const cosineWorst = anychartData.mapAs({ x: 0, value: 3 })
+
+
+  /* const euclidianSquaredMedian = anychartData.mapAs({ x: 0, value: 4 })
+  const euclidianSquaredBest = anychartData.mapAs({ x: 0, value: 5 })
+  const euclidianSquaredWorst = anychartData.mapAs({ x: 0, value: 6 })
+
+  const euclidianMedian = anychartData.mapAs({ x: 0, value: 7 })
+  const euclidianBest = anychartData.mapAs({ x: 0, value: 8 })
+  const euclidianWorst = anychartData.mapAs({ x: 0, value: 9 }) */
+
+  // create a chart
+  const chart = anychart.line()
+  // set the chart title
+  const chartTitle = 'Algorithm: Bruteforce, real users, euclidian, best, median and worst, 1 - 5'
+  chart.title(chartTitle)
+  chart.legend(true)
+
+  // create line series and set the data
+  const cosineMedianSeries = chart.line(cosineMedian)
+  cosineMedianSeries.name('cosine Median')
+  cosineMedianSeries.normal().stroke('blue')
+  const cosineBestSeries = chart.line(cosineBest)
+  cosineBestSeries.name('cosine Best')
+  cosineBestSeries.normal().stroke('red')
+  const cosineWorstSeries = chart.line(cosineWorst)
+  cosineWorstSeries.name('cosine Worst')
+  cosineWorstSeries.normal().stroke('green')
+
+  /* const euclideanSquaredMedianSeries = chart.line(euclideanSquaredMedian)
+  euclideanSquaredMedianSeries.name('Euclidian Squared Median')
+  euclideanSquaredMedianSeries.normal().stroke('blue')
+  const euclideanSquaredBestSeries = chart.line(euclideanSquaredBest)
+  euclideanSquaredBestSeries.name('Euclidian Squared Best')
+  euclideanSquaredBestSeries.normal().stroke('blue')
+  const euclideanSquaredWorstSeries = chart.line(euclideanSquaredWorst)
+  euclideanSquaredWorstSeries.name('Euclidian Squared Worst')
+  euclideanSquaredWorstSeries.normal().stroke('blue')
+
+  const cosineMedianSeries = chart.line(cosineMedian)
+  cosineMedianSeries.name('Cosine Median')
+  cosineMedianSeries.normal().stroke('green')
+  const cosineBestSeries = chart.line(cosineBest)
+  cosineBestSeries.name('Cosine Best')
+  cosineBestSeries.normal().stroke('green')
+  const cosineWorstSeries = chart.line(cosineWorst)
+  cosineWorstSeries.name('Cosine Worst')
+  cosineWorstSeries.normal().stroke('green') */
+
+
+  // set the titles of the axes
+  const xAxis = chart.xAxis()
+  xAxis.title('Users')
+  const yAxis = chart.yAxis()
+  yAxis.title('Combined alignment')
+
+
+  // set the container id
+  chart.container('container')
+  chart.bounds(0, 0, 1200, 1000)
+
+  // initiate drawing the chart
+  chart.draw()
+
+  // generate JPG image and save it to a file
+  /* const fileType = 'png'
+  return anychartExport.exportTo(chart, fileType).then((image) => {
+    fs.writeFile(`${chartTitle}.${fileType}`, image, (fsWriteError) => {
+      if (fsWriteError) {
+        console.log(fsWriteError)
+      } else {
+        console.log(`${chartTitle}.${fileType} written, Complete`)
+      }
+    })
+  }, (generationError) => {
+    console.log(generationError)
+  }) */
+}
+
+async function getResults() {
+  const testUsers = testUsersAll.slice(0, 32)
+  const bruteforceMatches = await bruteforce(testUsers)
+  const bruteforceScoreCard = getScoreCard('Bruteforce', bruteforceMatches, 32)
+  console.log(printScoreCard(bruteforceScoreCard))
+  getData()
+}
+
+
+// drawBruteforce('similarity functions')
+// getResults()
+/* console.log(realUsers.length)
+realUsers.slice(0, 32).forEach((user) => {
+  console.log(user.displayName, user.personalityVector) // [...user.personalityVector, ...user.propertyVector].length)
+}) */
+// console.log(realUsers.find(el => el.displayName === 'Mathias Iden'))
+/* testUsersAll.slice(0, 32).forEach((user) => {
+  console.log([...user.personalityVector, ...user.propertyVector].length)
+})
+ */
+
+drawBruteforce()})
+  </script>
+</body>
+</html>

@@ -20,7 +20,7 @@ export function createTestUsers(n) {
   for (let index = 0; index < n; index += 1) {
     const personalityVector = []
     for (let j = 0; j < 20; j += 1) {
-      personalityVector.push(getRandomInt(5))
+      personalityVector.push(getRandomInt(5)-3)
     }
     const university =
       UNIVERSITIES[Math.floor(Math.random() * UNIVERSITIES.length)]
@@ -122,6 +122,8 @@ export const antiKristianUser = {
     lng: 10.751287199999979
   }
 }
+
+export const randomRealUser = [2, 2, 0, 1,  1,  1,  -1,  -1,  0,  1,  -2,  -2,  -1,  -2,  -1,  2,  2,  2, 2, 2]
 
 export const kristianVector = [1, 0, 0, 0, 1, 2, 1, 0, 1, 1, -2, -2, -1, -1, -1, 2, 2, 2, 2, 1]
 export const antiKristianVector = [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 2, 2, 2, 2, 2, -2, -2, -2, -2, -2]

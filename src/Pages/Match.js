@@ -8,6 +8,7 @@ import {
   Label,
 } from 'semantic-ui-react'
 import axios from 'axios'
+import euclidianDistanceSquared from 'euclidean-distance/squared'
 import { calculateSimilarityScoreBetweenUsers, createGroupPropertyVector, calculateAlignment } from '../utils/alignMentFunctions'
 import { auth, firestore } from '../firebase'
 import ChatRoom from '../Components/ChatRoom'
@@ -113,10 +114,36 @@ class Match extends Component {
       })
   }
 
-  /* addFlatmateToMatch = (userData) => {
+  calculateAlignment = (flatmates, feature, combine = []) => {
+    const similarityDistances = []
+
+    for (let i = 0; i < flatmates.length; i += 1) {
+      const mate1 = flatmates[i]
+      for (let j = 0; j < flatmates.length; j += 1) {
+        if (i !== j) {
+          const mate2 = flatmates[j]
+          if (combine.length > 0) {
+            const similarityDistance = euclidianDistanceSquared(mate1[combine[0]].concat(mate1[combine[1]]), mate2[combine[0]].concat(mate2[combine[1]]))
+            similarityDistances.push(similarityDistance)
+          } else {
+            const similarityDistance = euclidianDistanceSquared(mate1[feature], mate2[feature]) // calculateSimilarityScoreBetweenUsers(mate1, mate2)
+            similarityDistances.push(similarityDistance)
+          }
+        }
+      }
+    }
+
+    let distance = 0
+    if (similarityDistances.length > 1) {
+      distance = similarityDistances.reduce((a, b) => a + b, 0) / similarityDistances.length
+    }
+    return Math.floor(distance)
+  }
+
+  addFlatmateToMatch = async (userData) => {
     const flatmates = [...this.state.flatmates, userData]
-    const personalityAlignment = calculatepersonalityAlignment(flatmates)
-    const propertyAlignment = calculatePropertyAlignment(flatmates)
+    const personalityAlignment = calculateAlignment(flatmates, 'personalityVector')
+    const propertyAlignment = calculateAlignment(flatmates, 'propertyVector')
     const groupPropertyVector = createGroupPropertyVector(flatmates)
     const matchTitle = flatmates.length === 2 ? 'The Dynamic Duo' : flatmates.length === 3 ? 'Triple threat' : flatmates.length === 4 ? 'Fantastic Four' : flatmates.length === 5 ? 'The Quintessentials' : flatmates.length === 6 ? 'The Avengers' : 'The Horde'
     console.log(personalityAlignment)
@@ -127,18 +154,13 @@ class Match extends Component {
       groupPropertyVector,
       showAddUserCard: false
     })
-    firestore.collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: new Date() })
-    firestore.collection('matches').doc(matchId).update({
-      flatmates, personalityAlignment, propertyAlignment, groupPropertyVector, title: matchTitle
+    firestore.collection('users').doc(userData.uid).update({ [`currentMatches.${matchId}`]: { matchId, timeStamp: new Date() } })
+    await firestore.collection('matches').doc(matchId).update({
+      flatmates, personalityAlignment, propertyAlignment, groupPropertyVector, title: matchTitle, currentListings: {},
     })
-    if (flatmates.length > 2) {
-      axios
-        .post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getBestOriginForMatchHTTPS', { matchId })
-        .then((response) => {
-          console.log(response)
-        })
-    }
-  } */
+
+    axios.post('https://us-central1-yaps-1496498804190.cloudfunctions.net/getBestOriginForMatchHTTPS', { matchId })
+  }
 
   render() {
     const {
@@ -177,6 +199,22 @@ class Match extends Component {
                     userUid={this.state.user.uid}
                   />
                   <Grid.Row>
+                    <Grid.Column
+                      style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                    >
+                      <Segment.Group horizontal>
+                        <Segment>Budget: {this.state.groupPropertyVector[0]}</Segment>
+                        <Segment>Size: {this.state.groupPropertyVector[1]}</Segment>
+                        <Segment>Standard: {this.state.groupPropertyVector[2]}</Segment>
+                        <Segment>Style: {this.state.groupPropertyVector[3]}</Segment>
+                      </Segment.Group>
+                    </Grid.Column>
+                  </Grid.Row>
+                  <Grid.Row>
                     {this.state.flatmates.length < 4 && (
                       <Grid.Column
                         style={{
@@ -197,7 +235,7 @@ class Match extends Component {
                     )}
                   </Grid.Row>
                 </Grid>
-                <Label as="a" color="blue" ribbon>Personality alignment: {this.state.personalityAlignment} <br />Property alignment: {this.state.propertyAlignment}</Label>
+                <Label as="a" color="blue" ribbon>Personality alignment: {Math.floor((1 - this.state.personalityAlignment / 2) * 100)} <br />Property alignment: {Math.floor((1 - this.state.propertyAlignment / 2) * 100)}</Label>
               </Segment>
               <Grid stackable columns="equal">
                 <Grid.Column>

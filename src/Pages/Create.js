@@ -82,8 +82,7 @@ class Create extends Component {
       this.setState({ passwordMatchError: true, formError: true })
       return
     }
-    this.setState({ passwordMatchError: false, formError: false })
-    this.setState({ loading: true })
+    this.setState({ passwordMatchError: false, formError: false, loading: true })
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((user) => {
@@ -106,11 +105,11 @@ class Create extends Component {
   handleSignIn = (event) => {
     event.preventDefault()
     const { email, password } = this.state
-    if (!this.validatePassword(password) || !this.validateEmail(email)) {
+    if (!this.validPassword(password) || !this.validEmail(email)) {
       this.setState({ formError: true })
       return
     }
-    this.setState({ passwordMatchError: false, formError: false })
+    this.setState({ passwordMatchError: false, formError: false, loading: true })
     auth
       .signInWithEmailAndPassword(email, password)
       .then(() => {

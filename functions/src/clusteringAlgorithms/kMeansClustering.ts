@@ -1,8 +1,10 @@
 const kMeans = require('node-kmeans')
 const densityClustering = require('density-clustering');
 const euclidianDistanceSquared = require('euclidean-distance/squared')
+const euclidianDistance = require('euclidean-distance')
+const cosineDistance = require('compute-cosine-distance')
 
-function euclidianDistance(a, b) {
+/* function euclidianDistance(a, b) {
   if (a.length !== b.length) {
     return (new Error('The vectors must have the same length'));
   }
@@ -11,7 +13,7 @@ function euclidianDistance(a, b) {
     d += Math.pow((a[i] - b[i]), 2);
   }
   return d;
-}
+} */
 
 export function kMeansClustering(vectors) {
   // console.log(users[0])
@@ -19,8 +21,8 @@ export function kMeansClustering(vectors) {
     // console.log(vectors)
     // distance: (a,b) => similarity(a,b)
     // const k = Math.floor(users.length / 4) // users.length > 500 ? 10 : 4
-    const k = Math.ceil(Math.log2(vectors.length))
-    kMeans.clusterize(vectors, { k, distance: euclidianDistanceSquared }, (err, res) => {
+    const k = Math.ceil(Math.log2(vectors.length))-1
+    kMeans.clusterize(vectors, { k, distance: euclidianDistance }, (err, res) => {
       if (err) reject(err)
       else {
         const clusters = []
@@ -37,6 +39,17 @@ export function kMeansClustering(vectors) {
 export function dbScanClustering(vectors) {
   const dbScan = new densityClustering.DBSCAN()
   const clusters = dbScan.run(vectors, 9, 3)
+  
+  return clusters
+
+
+}
+
+export function opticsClustering(vectors) {
+  const optics = new densityClustering.OPTICS()
+  const clusters = optics.run(vectors, 9, 3)
+  const plot = optics.getReachabilityPlot()
+  console.log(clusters, plot)
   
   return clusters
 

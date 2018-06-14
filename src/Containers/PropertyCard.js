@@ -5,6 +5,7 @@ import { BUDGET_TO_TEXT, STANDARD_TO_TEXT, STYLE_TO_TEXT, PROPERTY_SIZE_TO_TEXT 
 import { secondsToMinutes } from '../utils/FormattingFunctions'
 import ChatAccordion from '../Components/ChatAccordion'
 import wireframeImage from '../assets/images/imageWireframe.png'
+import { mapCosineScoreToPercentage } from '../utils/alignMentFunctions'
 /* const fakeProp = {
   title: 'Penthouse på møllenberg',
   address: 'Wessels gate 22b',
@@ -66,7 +67,7 @@ const PropertyCard = ({
         </Card.Description>
       </Card.Content>
       <Card.Content extra>
-        <Rating size="huge" defaultRating={(Math.floor((1 - listingScore) * 10) / 2) + (index === 0 ? 1 : 0)} maxRating={5} disabled />
+        <Rating size="huge" defaultRating={(10 - listingScore) / 2 + (index === 0 ? 1 : 0)} maxRating={5} disabled />
         { cheapest &&
           <Label
             color="red"

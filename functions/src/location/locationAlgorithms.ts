@@ -111,13 +111,15 @@ export async function getBestOriginForMatch(match) {
   const nrOfBedroomsFrom = `no_of_bedrooms_from=${nrOfFlatmates}&`
   const propertyTypes = nrOfFlatmates === 1 ? 'property_type=17' : 
     'property_type=1&property_type=3&property_type=4&property_type=2'
-
+  const priceTo = match.groupPropertyVector[0] < 2 ? 5000*nrOfFlatmates : match.groupPropertyVector[0] < 4 ? 7000*nrOfFlatmates : 9000*nrOfFlatmates
+  const priceToString = `&price_to=${priceTo}`
   const finnQueryString =
     finnQueryStem +
     locationConstraintCity +
     locationConstraintNeighbourhood +
     nrOfBedroomsFrom +
-    propertyTypes
+    propertyTypes +
+    priceToString
 
   const airBnBQueryString = `${'https://www.airbnb.com/s/Oslo--Norway/homes?place_id=ChIJOfBn8mFuQUYRmh4j019gkn4&query=Oslo%2C%20Norway&refinement_paths%5B%5D=%2Fhomes&allow_override%5B%5D=' +
     '&adults='}${nrOfFlatmates}&min_beds=${nrOfFlatmates}&min_bedrooms=${nrOfFlatmates}&s_tag=2D91el1z`

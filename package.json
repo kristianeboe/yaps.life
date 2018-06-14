@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
-    "compute-cosine-similarity": "^1.0.0",
+    "compute-cosine-distance": "^1.0.0",
     "euclidean-distance": "^1.0.0",
     "firebase": "^4.12.0",
     "moment": "^2.22.1",

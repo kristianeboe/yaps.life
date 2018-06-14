@@ -1,33 +1,39 @@
 import euclidianDistanceSquared from 'euclidean-distance/squared'
 
-export function calculateAlignment(flatmates, feature, combine = []) {
-  const similarityDistances = []
+const cosineDistance = require('compute-cosine-distance')
+
+export function calculateAlignment(flatmates, feature, combine = [], similarityFunction = cosineDistance) {
+  const similarities = []
 
   for (let i = 0; i < flatmates.length; i += 1) {
     const mate1 = flatmates[i]
     for (let j = 0; j < flatmates.length; j += 1) {
       if (i !== j) {
         const mate2 = flatmates[j]
+        let similarity = 0
         if (combine.length > 0) {
-          const similarityDistance = euclidianDistanceSquared(mate1[combine[0]].concat(mate1[combine[1]]), mate2[combine[0]].concat(mate2[combine[1]]))
-          similarityDistances.push(similarityDistance)
+          similarity = similarityFunction(mate1[combine[0]].concat(mate1[combine[1]]), mate2[combine[0]].concat(mate2[combine[1]]))
         } else {
-          const similarityDistance = euclidianDistanceSquared(mate1[feature], mate2[feature]) // calculateSimilarityScoreBetweenUsers(mate1, mate2)
-          similarityDistances.push(similarityDistance)
+          similarity = similarityFunction(mate1[feature], mate2[feature])
         }
+        similarities.push(similarity >= 0 ? similarity : 0)
       }
     }
   }
 
   let distance = 0
-  if (similarityDistances.length > 1) {
-    distance = similarityDistances.reduce((a, b) => a + b, 0) / similarityDistances.length
+  if (similarities.length > 1) {
+    distance = similarities.reduce((a, b) => a + b) / similarities.length
   }
-  return Math.floor(distance)
+  return distance
 }
 
 
 export function mapSimScoreToPercentage(simScore) { return Math.floor((1 - (simScore / 320)) * 100) }
+
+export function mapCosineScoreToPercentage(cosineScore) {
+  return Math.floor(100 * (1 - cosineScore / 2))
+}
 
 export function calculateSimilarityScoreBetweenUsers(uData, vData) {
   console.log(uData.personalityVector)
@@ -35,10 +41,15 @@ export function calculateSimilarityScoreBetweenUsers(uData, vData) {
   const u = uData.personalityVector
   const v = vData.personalityVector
 
-  const vectorDistance = euclidianDistanceSquared(u, v)
-  const simScore = mapSimScoreToPercentage(vectorDistance)
 
-  return simScore
+  // const vectorDistance = euclidianDistanceSquared(u, v)
+  // const simScore = mapSimScoreToPercentage(vectorDistance)
+  // const cosineSim = cosineSimilarity(u, v)
+  // console.log(cosineSim)
+
+  // return 1 - cosineSim
+
+  return mapCosineScoreToPercentage(cosineDistance(u, v))
 }
 
 export function calculateFlatScore(flatmates) {

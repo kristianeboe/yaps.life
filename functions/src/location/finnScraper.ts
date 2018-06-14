@@ -43,6 +43,10 @@ export async function getListingDetails(listingURL: string, nrOfFlatmates) {
           value = value.split(' ')[0]
           listingTemp.propertySize = value
           break
+          case 'Prim&aelig;rrom':
+          value = value.split(' ')[0]
+          listingTemp.propertySize = value
+          break
         case 'Bruksareal':
           value = value.split(' ')[0]
           listingTemp.propertySize = value
@@ -82,16 +86,16 @@ export async function getListingDetails(listingURL: string, nrOfFlatmates) {
 
   let propertySize =  listingTemp['propertySize']
   if (propertySize > 40) {
-    propertySize = propertySize <  65 ? 1 : propertySize <  80 ? 2 : propertySize <  90 ? 2.5 : propertySize <  100 ? 3 : propertySize < 110 ? 3.5 : propertySize < 120 ? 4 : 5
+    propertySize = propertySize <  65 ? -2 : propertySize <  80 ? -1 : propertySize <  90 ? -0.5 : propertySize <  100 ? 0 : propertySize < 110 ? 0.5 : propertySize < 120 ? 1 : 2
   } else {
-    propertySize = propertySize <  8 ? 1 : propertySize <  10 ? 2 : propertySize <  12 ? 3 : propertySize <  15 ? 4 : 5
+    propertySize = propertySize <  8 ? -2 : propertySize <  10 ? -1 : propertySize <  12 ? 0 : propertySize <  15 ? 1 : 2
   }
 
   const budget =
-      pricePerRoom < 5000 ? 1 : pricePerRoom <= 5500 ? 1.5 : pricePerRoom <= 6000 ? 2 : pricePerRoom <= 6500 ? 2.5 : pricePerRoom <= 7000 ? 3 : pricePerRoom <= 8000 ? 3.5 : pricePerRoom <= 9000 ? 4 : pricePerRoom < 10500 ? 4.5 : 5
+      pricePerRoom < 5000 ? -2 : pricePerRoom <= 5500 ? -1.5 : pricePerRoom <= 6000 ? -1 : pricePerRoom <= 6500 ? -0.5 : pricePerRoom <= 7000 ? 0 : pricePerRoom <= 8000 ? 0.5 : pricePerRoom <= 9000 ? 1 : pricePerRoom < 10500 ? 1.5 : 2
   
-  const standard = 3
-  const style = facilities.find(el => el === 'Moderne') ? 5 : 3
+  const standard = 0
+  const style = facilities.find(el => el === 'Moderne') ? 2 : 0
 
   const propertyVector = [budget, propertySize, standard, style]
 

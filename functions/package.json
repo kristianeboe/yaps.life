@@ -2,11 +2,11 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "dependencies": {
-    "@stdlib/stdlib": "^0.0.40",
     "anychart-nodejs": "^1.3.8",
     "axios": "^0.17.1",
     "cheerio": "^1.0.0-rc.2",
-    "compute-cosine-similarity": "^1.0.0",
+    "compute-cosine-distance": "^1.0.0",
+    "compute-cosine-distance": "^1.0.0",
     "cors": "^2.8.4",
     "density-clustering": "^1.3.0",
     "euclidean-distance": "^1.0.0",
@@ -15,9 +15,7 @@
     "jsdom": "^11.11.0",
     "moment": "^2.22.1",
     "node-kmeans": "^1.1.8",
-    "npm": "^6.0.1",
-    "uuid": "^3.2.1",
-    "vector-utils": "^1.16.2"
+    "uuid": "^3.2.1"
   },
   "scripts": {
     "test": "npm run build && jest",

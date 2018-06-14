@@ -18,10 +18,10 @@ import moment from 'moment'
 
 import MatchingQuestion from '../Components/MatchingQuestion'
 import {
-  SOCIAL_HABBITS_QUESTIONES,
-  CLEANLINESS_QUESTIONES,
-  SOCIAL_OPENNESS_QUESTIONES,
-  SOCIAL_FLEXIBILITY_QUESTIONES
+  SOCIAL_HABITS_QUESTIONS,
+  CLEANLINESS_QUESTIONS,
+  SOCIAL_OPENNESS_QUESTIONS,
+  SOCIAL_FLEXIBILITY_QUESTIONS
 } from '../assets/MatchingQuestions'
 import { ProfileFormValidation } from '../utils/FormValidations'
 import { auth, firestore } from '../firebase'
@@ -39,7 +39,7 @@ class Profile extends Component {
     super(props)
 
     const questions = {}
-    const personalityVector = new Array(20 + 1).join('0').split('').map(parseFloat)
+    const personalityVector = new Array(20).fill(3)
     for (let index = 0; index < personalityVector.length; index += 1) {
       const answer = personalityVector[index]
       questions[`q${index + 1}`] = answer
@@ -59,7 +59,6 @@ class Profile extends Component {
       matchLocation: '',
       workplace: '',
       workplaceLatLng: {},
-      budget: 0,
       university: '',
       universityOptions: UNIVERSITY_OPTIONS,
       ...questions,
@@ -88,9 +87,10 @@ class Profile extends Component {
 
             for (let index = 0; index < personalityVector.length; index += 1) {
               const answer = personalityVector[index]
-              questions[`q${index + 1}`] = answer
+              questions[`q${index + 1}`] = answer + 3
             }
             const [budget, propertySize, standard, style] = propertyVector
+            console.log(propertyVector)
             this.setState({
               profileFormLoading: false,
               displayName: userData.displayName ? userData.displayName : '',
@@ -252,6 +252,7 @@ class Profile extends Component {
       budget, propertySize, standard, style
     } = this.state
 
+    console.log(this.state.userData)
     return (
       <div style={{
         backgroundAttachment: 'fixed',
@@ -289,7 +290,7 @@ class Profile extends Component {
                   <Form.Group widths="equal">
                     <Form.Select
                       fluid
-                      style={{ zIndex: 61 }}
+                      style={{ zIndex: 62 }}
                       label="Field of study"
                       options={this.state.fieldOfStudyOptions}
                       placeholder="Field of study"
@@ -429,7 +430,6 @@ class Profile extends Component {
                 content={
                   <div>
                     You're ready to match! <Link to="matches" >Go to match list</Link>
-
                   </div>
                 }
               />
@@ -451,9 +451,9 @@ class Profile extends Component {
                   style={{ minHeight: '35em' }}
                   loading={this.state.profileFormLoading}
                 >
-                  <h1>Social habbits</h1>
+                  <h1>Social habits</h1>
                   <Segment style={{ paddingTop: '5vh' }} >
-                    {SOCIAL_HABBITS_QUESTIONES.map(question => (
+                    {SOCIAL_HABITS_QUESTIONS.map(question => (
                       <MatchingQuestion
                         key={question.key}
                         question={question}
@@ -473,7 +473,7 @@ class Profile extends Component {
                 >
                   <h1>Cleanliness</h1>
                   <Segment style={{ paddingTop: '5vh' }}>
-                    {CLEANLINESS_QUESTIONES.map(question => (
+                    {CLEANLINESS_QUESTIONS.map(question => (
                       <MatchingQuestion
                         key={question.key}
                         question={question}
@@ -495,7 +495,7 @@ class Profile extends Component {
                 >
                   <h1>Social openness</h1>
                   <Segment style={{ paddingTop: '5vh' }} >
-                    {SOCIAL_OPENNESS_QUESTIONES.map(question => (
+                    {SOCIAL_OPENNESS_QUESTIONS.map(question => (
                       <MatchingQuestion
                         key={question.key}
                         question={question}
@@ -515,7 +515,7 @@ class Profile extends Component {
                 >
                   <h1>Social flexibility</h1>
                   <Segment style={{ paddingTop: '5vh' }} >
-                    {SOCIAL_FLEXIBILITY_QUESTIONES.map(question => (
+                    {SOCIAL_FLEXIBILITY_QUESTIONS.map(question => (
                       <MatchingQuestion
                         key={question.key}
                         question={question}
@@ -539,7 +539,12 @@ class Profile extends Component {
                 <Segment>
                   <div>
                     <Button onClick={this.handleSubmit} type="submit">Save</Button>
-                    <Button onClick={() => this.setState({ redirectToMatch: true })} >Go to match list</Button>
+                    <Button onClick={() => {
+                      this.handleSubmit()
+                      this.setState({ redirectToMatch: true })
+                      }}
+                    >Go to match list
+                    </Button>
                   </div>
                 </Segment>
               </Grid.Column>

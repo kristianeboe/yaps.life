@@ -3,7 +3,9 @@ import * as functions from 'firebase-functions'
 import * as uuid from 'uuid'
 
 const euclidianDistanceSquared = require('euclidean-distance/squared')
+const euclidianDistance = require('euclidean-distance')
 const cors = require('cors')({ origin: true })
+const cosineDistance = require('compute-cosine-distance')
 
 import { createTestUsers, exampleMatch } from './utils/createTestData'
 import {
@@ -30,14 +32,14 @@ export const updateDocumentHTTPS = functions.https.onRequest((req, res) => {
     return updateDocument(req, res)
   })
 })
-/*
+
 
 export const updateCollectionHTTPS = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     return updateCollection(req, res)
   })
 })
-
+/*
 export const aggregateMatchInfoHTTPS = functions.https.onRequest(async (req, res) => {
   cors(req, res, async () => {
     return aggregateMatchInfo(req, res)
@@ -151,24 +153,17 @@ export const onMatchCreate = functions.firestore
     const match = snap.data()
 
     // Get best origin and data from external sources
-    const updatedMatch = await getBestOriginForMatch(match)
-    const localListingURLs = await getPropertyList(updatedMatch.finnQueryString)//'https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20507&location=1.20061.20512&location=1.20061.20511&location=1.20061.20510&location=1.20061.20513&location=1.20061.20509&location=1.20061.20508&no_of_bedrooms_from=' + updatedMatch.flatmates.length + '&property_type=1&property_type=3&property_type=4&property_type=2&sort=0')//updatedMatch.finnQueryString)
-    const globalListingURLs = await getPropertyList(`https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20507&location=1.20061.20512&location=1.20061.20511&location=1.20061.20510&location=1.20061.20513&location=1.20061.20509&location=1.20061.20508&no_of_bedrooms_from=${updatedMatch.flatmates.length === 1 ? '1&property_type=17' :  updatedMatch.flatmates.length + '&property_type=1&property_type=3&property_type=4&property_type=2&sort=0'}`) //updatedMatch.finnQueryString)
-    const localFinnListings= localListingURLs.slice(0, 10)
-    const globalFinnListings= globalListingURLs.slice(0, 20)
-    const finnListingsURLs = [...new Set(localFinnListings.concat(globalFinnListings))]
-    const finnListings = await Promise.all(finnListingsURLs.map(url => getListingDetails(url, match.flatmates.length)))
-    const topListings = finnListings.filter(listing => (console.log(listing.numberOfBedrooms) ||  Number(listing.numberOfBedrooms) === match.flatmates.length) && (getInitialGroupScoreForListing(listing, updatedMatch) < 2)).sort((a,b) => getInitialGroupScoreForListing(b, updatedMatch) - getInitialGroupScoreForListing(a, updatedMatch) ).slice(0, 6)
-    console.log(topListings)
+    const topListings = await getExternalTopListings(match)
+
     await Promise.all(topListings.map( async listing => {
-      const groupScore = getInitialGroupScoreForListing(listing, updatedMatch)
-      const commuteTime = await getAverageCommuteTime(listing.address, updatedMatch.flatmates)
+      const groupScore = getInitialGroupScoreForListing(listing, match)
+      const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
       // add external listing to match
-      await addExternalListingToMatch(listing, groupScore, commuteTime, updatedMatch)
+      await addExternalListingToMatch(listing, groupScore, commuteTime, match)
 
     }))
     
-    const listingsSnapshot = await admin.firestore().collection('listings').get()
+    const listingsSnapshot = await admin.firestore().collection('listings').where('location', '==', match.location).get()
     listingsSnapshot.forEach(async listingDoc => {
       await matchListingWithMatch(listingDoc, snap)
     })
@@ -188,38 +183,53 @@ export const onListingCreate = functions.firestore
 async function matchListingWithMatch(listingDoc, matchDoc) {
   const listing = listingDoc.data()
   const match = matchDoc.data()
-  if(listing.numberOfBedrooms === match.flatmates.length) {
-    const groupScore = getInitialGroupScoreForListing(listing, match)
-    // add distance metric/heuristic
-    if (groupScore < 2) {
-      const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
-      const listingScore = getFinalListingScore(commuteTime, match.groupPropertyVector, listing.propertyVector)
-      const {groupPropertyVector, flatmates, propertyList} = match
-      await matchDoc.ref.update({
-        [`currentListings.${listingDoc.id}`]: {listingId: listingDoc.id, commuteTime, listingScore, groupScore, timeStamp: new Date(), source: 'internal'},
-      })
-      await listingDoc.ref.update({
-        [`currentMatches.${matchDoc.id}`]: {matchId: matchDoc.id, timeStamp: new Date()}
-      })
-      
-      
-      // Set metadata about chat
-      // create chat between parties
-      await listingDoc.ref.collection(matchDoc.id)
-      .add({
-        text: "It's a match! Time to set up a viewing" ,
-        dateTime: new Date(),
-        from: {
-          uid: 'admin',
-          displayName: 'Admin',
-          photoURL:
-              'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
-        }
-      })
-      // Send email to parties
-      
+  if (match.location === "Oslo") {
+    if( listing.numberOfBedrooms === match.flatmates.length) {
+      const groupScore = getInitialGroupScoreForListing(listing, match)
+      console.log(groupScore)
+      // add distance metric/heuristic
+      if (groupScore < 0.5) {
+        const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
+        const listingScore = getFinalListingScore(commuteTime, match.groupPropertyVector, listing.propertyVector)
+        const {groupPropertyVector, flatmates, propertyList} = match
+        await matchDoc.ref.update({
+          [`currentListings.${listingDoc.id}`]: {listingId: listingDoc.id, commuteTime, listingScore, groupScore, timeStamp: new Date(), source: 'internal'},
+        })
+        await listingDoc.ref.update({
+          [`currentMatches.${matchDoc.id}`]: {matchId: matchDoc.id, timeStamp: new Date()}
+        })
+        
+        
+        // Set metadata about chat
+        // create chat between parties
+        await listingDoc.ref.collection(matchDoc.id)
+        .add({
+          text: "It's a match! Time to set up a viewing" ,
+          dateTime: new Date(),
+          from: {
+            uid: 'admin',
+            displayName: 'Admin',
+            photoURL:
+                'https://lh5.googleusercontent.com/-2HYA3plx19M/AAAAAAAAAAI/AAAAAAAA7Nw/XWJkYEc6q6Q/photo.jpg'
+          }
+        })
+        // Send email to parties
+        
+      }
     }
   }
+}
+
+async function getExternalTopListings(match) {
+  const updatedMatch = await getBestOriginForMatch(match)
+  const localListingURLs = await getPropertyList(updatedMatch.finnQueryString)//'https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20507&location=1.20061.20512&location=1.20061.20511&location=1.20061.20510&location=1.20061.20513&location=1.20061.20509&location=1.20061.20508&no_of_bedrooms_from=' + updatedMatch.flatmates.length + '&property_type=1&property_type=3&property_type=4&property_type=2&sort=0')//updatedMatch.finnQueryString)
+  const globalListingURLs = await getPropertyList(`https://www.finn.no/realestate/lettings/search.html?location=0.20061&location=1.20061.20507&location=1.20061.20512&location=1.20061.20511&location=1.20061.20510&location=1.20061.20513&location=1.20061.20509&location=1.20061.20508&no_of_bedrooms_from=${updatedMatch.flatmates.length === 1 ? '1&property_type=17' :  updatedMatch.flatmates.length + '&property_type=1&property_type=3&property_type=4&property_type=2&sort=0'}`) //updatedMatch.finnQueryString)
+  const localFinnListings= localListingURLs.slice(0, 10)
+  const globalFinnListings= globalListingURLs.slice(0, 20)
+  const finnListingsURLs = [...new Set(localFinnListings.concat(globalFinnListings))]
+  const finnListings = await Promise.all(finnListingsURLs.map(url => getListingDetails(url, match.flatmates.length)))
+  const topListings = finnListings.filter(listing => ( Number(listing.numberOfBedrooms) === match.flatmates.length) && listing.address !== "UTLEID").sort((a,b) => getInitialGroupScoreForListing(a, updatedMatch) - getInitialGroupScoreForListing(b, updatedMatch) ).slice(0, 6)
+  return topListings
 }
 
 export const getBestOriginForMatchHTTPS = functions.https.onRequest((req, res) => {
@@ -227,7 +237,24 @@ export const getBestOriginForMatchHTTPS = functions.https.onRequest((req, res) =
     const { matchId } = req.body
     const matchDoc = await admin.firestore().collection('matches').doc(matchId).get()
     const match = matchDoc.data()
-    await getBestOriginForMatch(match)
+
+    if (match.location === "Oslo") {
+
+      const topListings = await getExternalTopListings(match)
+      await Promise.all(topListings.map( async listing => {
+        const groupScore = getInitialGroupScoreForListing(listing, match)
+        const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
+        // add external listing to match
+        await addExternalListingToMatch(listing, groupScore, commuteTime, match)
+  
+      }))
+    }
+    
+    const listingsSnapshot = await admin.firestore().collection('listings').get()
+    listingsSnapshot.forEach(async listingDoc => {
+      await matchListingWithMatch(listingDoc, matchDoc)
+    })
+
     res.status(200).end()
   })
 })
@@ -274,12 +301,12 @@ async function addExternalListingToMatch(listing, groupScore, commuteTime, match
 }
 
 function getInitialGroupScoreForListing(listing, match){
-  const weights = [0.4, 0.2, 0.2, 0.2]
+  const weights = [2, 2, 0.5, 0.5]
   const groupPropertyVector = match.groupPropertyVector.map((el, i) => el * weights[i])
   const propertyVector = listing.propertyVector.map((el, i) => el * weights[i])
 
   // group score
-  const groupScore = euclidianDistanceSquared(
+  const groupScore = euclidianDistance(
     groupPropertyVector,
     propertyVector
   )
@@ -288,19 +315,20 @@ function getInitialGroupScoreForListing(listing, match){
 
 
 function getFinalListingScore(commuteTime, groupPropertyVector, propertyVector){
-  const weights = [0.3, 0.35, 0.15, 0.1, 0.1]
-  const commuteScore = commuteTime < 720 ? 5 : commuteTime < 1000 ? 4.5 : commuteTime < 1200 ? 4 : commuteTime < 1500 ? 3.5 : commuteTime < 1820 ? 3 : commuteTime < 2200 ? 2.5 : commuteTime < 2450 ? 2 : 1
+  const weights = [2, 2, 1, 0.5, 0.5]
+  const commuteScore = commuteTime < 720 ? 2 : commuteTime < 1000 ? 1.5 : commuteTime < 1200 ? 1 : commuteTime < 1500 ? 0.5 : commuteTime < 1820 ? 0 : commuteTime < 2200 ? -0.5 : commuteTime < 2450 ? -1 : -2
 
-  const expandedGroupVector = [4].concat(groupPropertyVector)
+  const expandedGroupVector = [1].concat(groupPropertyVector)
   const expandedPropertyVector = [commuteScore].concat(propertyVector)
 
-  const listingScore = euclidianDistanceSquared(expandedGroupVector, expandedPropertyVector)
+  const listingScore = euclidianDistance(expandedGroupVector, expandedPropertyVector)
 
   const WexpandedGroupVector = expandedGroupVector.map((el, i) => el * weights[i])
   const WexpandedPropertyVector = expandedPropertyVector.map((el, i) => el * weights[i])
 
-  const WlistingScore = euclidianDistanceSquared(WexpandedGroupVector, WexpandedPropertyVector)
+  const WlistingScore = euclidianDistance(WexpandedGroupVector, WexpandedPropertyVector)
   // const finalScore = Math.floor((1 - WlistingScore) * 100) moved to client side
 
   return WlistingScore
 }
+

@@ -17,7 +17,6 @@ const FlatList = (props) => {
     let fastest = flats[0].commuteTime
     let cheapest = flats[0].listingData.pricePerRoom
     flats.forEach((flat) => {
-      console.log(flat.commuteTime, fastest, fastestId)
       if (flat.commuteTime < fastest) {
         fastest = flat.commuteTime
         fastestId = flat.listingId
@@ -32,7 +31,10 @@ const FlatList = (props) => {
     }
   }
 
-  return _.sortBy(flats, 'listingScore')
+  return _.chain(flats)
+    .sortBy(flat => flat.listingData.pricePerRoom)
+    .sortBy('listingScore')
+    .value()
     .map((flat, index) => (
       <PropertyCard
         key={flat.listingId}

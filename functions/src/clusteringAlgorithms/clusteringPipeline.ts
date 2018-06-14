@@ -3,6 +3,8 @@
 import * as admin from 'firebase-admin'
 import * as uuid from 'uuid'
 const euclidianDistanceSquared = require('euclidean-distance/squared')
+const euclidianDistance = require('euclidean-distance')
+const cosineDistance = require('compute-cosine-distance')
 import {extractVectorsFromUsers } from '../utils/vectorFunctions'
 import { knnClustering, knnClusteringOneMatchPerUser } from './knnClustering'
 import  {kMeansClustering} from './kMeansClustering'
@@ -24,50 +26,32 @@ export function calculateSimilarityScoreBetweenUsers(uData, vData) {
 }
 
 
-export function calculateAlignment(flatmates, feature, combine=[]) {
-  const similarityDistances = []
+export function calculateAlignment(flatmates, feature, combine=[], similarityFunction=euclidianDistanceSquared) {
+  const similarities = []
 
   for (let i = 0; i < flatmates.length; i += 1) {
     const mate1 = flatmates[i]
     for (let j = 0; j < flatmates.length; j += 1) {
       if (i !== j) {
         const mate2 = flatmates[j]
+        let similarity = 0
         if (combine.length > 0) {
-          const similarityDistance = euclidianDistanceSquared(mate1[combine[0]].concat(mate1[combine[1]]), mate2[combine[0]].concat(mate2[combine[1]]))
-          similarityDistances.push(similarityDistance)
+           similarity = similarityFunction(mate1[combine[0]].concat(mate1[combine[1]]), mate2[combine[0]].concat(mate2[combine[1]]))
         } else {
-          const similarityDistance = euclidianDistanceSquared(mate1[feature], mate2[feature]) // calculateSimilarityScoreBetweenUsers(mate1, mate2)
-          similarityDistances.push(similarityDistance)
+           similarity = similarityFunction(mate1[feature], mate2[feature])
         }
+        similarities.push(similarity  >= 0 ? similarity : 0)
       }
     }
   }
 
   let distance = 0
-  if (similarityDistances.length > 1) {
-    distance = similarityDistances.reduce((a, b) => a + b, 0) / similarityDistances.length
+  if (similarities.length > 1) {
+    distance = similarities.reduce((a, b) => a + b) / similarities.length
   }
-  return Math.floor(distance)
+  return distance
 }
-export function calculateFlatScore(flatmates) {
-  const simScores = []
-  for (let i = 0; i < flatmates.length; i += 1) {
-    const mate1 = flatmates[i]
-    for (let j = 0; j < flatmates.length; j += 1) {
-      const mate2 = flatmates[j]
-      if (i !== j) {
-        const simScore = euclidianDistanceSquared(mate1.personalityVector, mate2.personalityVector) // calculateSimilarityScoreBetweenUsers(mate1, mate2)
-        simScores.push(simScore)
-      }
-    }
-  }
 
-  let flatScore = 0
-  if (simScores.length > 1) {
-    flatScore = simScores.reduce((a, b) => a + b, 0) / simScores.length
-  }
-  return Math.floor(flatScore)
-}
 
 
 
@@ -75,25 +59,7 @@ export function mapPropScoreToPercentage(propScore) {
   return Math.floor((1 - (propScore / 48)) * 100)
 }
 
-export function calculatePropertyAlignment(flatmates) {
-  const propScores = []
-  for (let i = 0; i < flatmates.length; i += 1) {
-    const mate1 = flatmates[i]
-    for (let j = 0; j < flatmates.length; j += 1) {
-      const mate2 = flatmates[j]
-      if (i !== j) {
-        const propScore = euclidianDistanceSquared(mate1.propertyVector, mate2.propertyVector)
-        propScores.push(propScore)// mapPropScoreToPercentage(propScore))
-      }
-    }
-  }
 
-  let propertyAlignment = 0
-  if (propScores.length > 1) {
-    propertyAlignment = propScores.reduce((a, b) => a + b, 0) / propScores.length
-  }
-  return Math.floor(propertyAlignment)
-}
 
 export function calculateCombinedAlignment(flatmates) {
   const scores = []
@@ -190,47 +156,129 @@ export function initChatRoom(matchRef) {
 }
 
 export async function matchAllAvailableUsers() {
-  const usersToBeMatched = []
+  const locationBuckets = {}
   const usersToBeMatchedSnapshot = await admin.firestore().collection('users')
-    .where('matchLocation', '==', 'Oslo')
     .where('readyToMatch', '==', true)
     .get()
+    //.where('matchLocation', '==', 'Oslo')
   usersToBeMatchedSnapshot.forEach(userDoc => {
     const user = userDoc.data()
-    usersToBeMatched.push(user)
+    if (Object.keys(locationBuckets).includes(user.location)) {
+      locationBuckets[user.location] = locationBuckets[user.location].concat(user)
+    }
   })
-
-  console.log(`got ${usersToBeMatched.length} users`)
-  if (usersToBeMatched.length < 16) {
-    console.log('Not enough users to do a match')
-    return false
-  }
-
-  // Cluster
-  console.log('starting clustering')
-  const vectors = extractVectorsFromUsers(usersToBeMatched, false)
-  const clusters = await knnClusteringOneMatchPerUser(vectors, 4)
-  // console.log(`${clusters.length} clusters created`)
+  const matchesInLocations = await Promise.all(Object.keys(locationBuckets).map(async (location) => {
+    const usersToBeMatched = locationBuckets[location]
+    console.log(`Location: ${location} got ${usersToBeMatched.length} users to be matched`)
+    if (usersToBeMatched.length < 4) {
+      console.log('Not enough users to do a match')
+      return false
+    }
   
-  // Turn clusters into flats
-  console.log('Organizing into flats')
-  let listOfFlatmates = createFlatmatesFromClusters(clusters)
-  
-  console.log('all flatmates length', listOfFlatmates.length)
-  listOfFlatmates = listOfFlatmates.map(flatmates => flatmates.map(id => usersToBeMatched[id]))
+    // Cluster
+    console.log('starting clustering')
 
-  return Promise.all(
-    listOfFlatmates.map(flatmates => createMatchFromFlatmates(flatmates))
-  )
+    // Extract vectors from users
+    const vectors = extractVectorsFromUsers(usersToBeMatched, false, true)
+    // Get intital clusters of user indexes
+    const kMeansClusters = await kMeansClustering(vectors)
+    /* 
+    [
+      [1, 2, 3, 4, 5, 6, 7, 8],
+      [9, 10, 11, 12],
+      [13, 14, 15, 16, 17, 18]
+    ]
+     */
+
+    const usersToBeMatchedClustered = []
+    // Map initial clusters back to user ojects from indexes
+    //const usersToBeMatchedClustered = kMeansClusters.map(c =>c.map(id => usersToBeMatched[id]))
+    /* 
+    [
+      [user1, user2, user3, user4, user5, user6, user7, user8],
+      [user9, user10, user11, user12],
+      [user13, user14, user15, user16, user17, user18],
+    ]
+    */
+    
+    // For each initial cluster
+    const clustersOfClusters = usersToBeMatchedClustered.map( (kMeansCluster) => {
+      // Extract vectors again
+      const vectorsV2 = extractVectorsFromUsers(kMeansCluster, false, true)
+      // Pass them into the kNN algorithm and get the final groups of 2,3,4 or 5
+      const kNNClusters = knnClusteringOneMatchPerUser(vectorsV2, cosineDistance)
+      // [[1, 2, 3, 4], [5, 6, 7, 8]],
+      // Map these clustered indexes back to user objects
+      const clustersV2 = kNNClusters.map(flatmates =>
+        flatmates.map(id => kMeansCluster[id]))
+      return clustersV2
+      })
+
+    /* 
+    [
+      [[user1, user2, user3, user4], [user5, user6, user7, user8]],
+      [[user9, user10, user11, user12]],
+      [[user13, user14, user15], [user16, user17, user18]],
+    ]
+    */
+   
+    // flatten this list 
+    const groups = [].concat.apply([], clustersOfClusters)
+    // Create matches from groups
+    return Promise.all(groups.map(async cluster => createMatchFromFlatmates(cluster, false, true)))
+/* 
+
+    const clusters = await knnClusteringOneMatchPerUser(vectors, 4)
+    // console.log(`${clusters.length} clusters created`)
+    
+    // Turn clusters into flats
+    console.log('Organizing into flats')
+    let listOfFlatmates = createFlatmatesFromClusters(clusters)
+    
+    console.log('all flatmates length', listOfFlatmates.length)
+    listOfFlatmates = listOfFlatmates.map(flatmates => flatmates.map(id => usersToBeMatched[id]))
+  
+    return Promise.all(
+      listOfFlatmates.map(flatmates => createMatchFromFlatmates(flatmates))
+    ) */
+  }))
+
 
 }
     
 
 export async function createMatchFromFlatmates(flatmates, demo=false, test=false, custom=false) {
-  const personalityAlignment = calculateAlignment(flatmates, 'personalityVector')
-  const propertyAlignment = calculateAlignment(flatmates, 'propertyVector')
-  const groupPropertyVector = createGroupPropertyVector(flatmates)
-  const combinedAlignment = calculateAlignment(flatmates, '', ['personalityVector', 'propertyVector'])
+
+  const flatmatesAlign = flatmates.map(mate => {
+    return {
+      ...mate,
+      personalityVector: [mate.personalityVector.slice(0,6).reduce((a,b) => a+b), mate.personalityVector.slice(6,11).reduce((a,b) => a+b), mate.personalityVector.slice(11,15).reduce((a,b) => a+b), mate.personalityVector.slice(15,20).reduce((a,b) => a+b)]
+    }
+  })
+
+  const personalityAlignment = calculateAlignment(flatmatesAlign, 'personalityVector', [], cosineDistance)
+  const propertyAlignment = calculateAlignment(flatmatesAlign, 'propertyVector', [], cosineDistance)
+  const combinedAlignment = calculateAlignment(flatmatesAlign, '', ['personalityVector', 'propertyVector'], cosineDistance)
+  const groupPropertyVector = createGroupPropertyVector(flatmatesAlign)
+
+  const alignments = {
+    euclideanDistance: {
+      personalityAlignment : calculateAlignment(flatmatesAlign, 'personalityVector', [], euclidianDistance),
+      propertyAlignment : calculateAlignment(flatmatesAlign, 'propertyVector', [], euclidianDistance),
+      combinedAlignment : calculateAlignment(flatmatesAlign, '', ['personalityVector', 'propertyVector'], euclidianDistance),
+    },
+    euclidianDistanceSquared: {
+      personalityAlignment: calculateAlignment(flatmatesAlign, 'personalityVector', [], euclidianDistanceSquared),
+      propertyAlignment: calculateAlignment(flatmatesAlign, 'propertyVector', [], euclidianDistanceSquared),
+      combinedAlignment: calculateAlignment(flatmatesAlign, '', ['personalityVector', 'propertyVector'], euclidianDistanceSquared),
+    },
+    cosineDistance: {
+      personalityAlignment : calculateAlignment(flatmatesAlign, 'personalityVector', [], cosineDistance),
+      propertyAlignment : calculateAlignment(flatmatesAlign, 'propertyVector', [], cosineDistance),
+      combinedAlignment : calculateAlignment(flatmatesAlign, '', ['personalityVector', 'propertyVector'], cosineDistance),
+    },
+
+  }
 
   const matchUid = uuid.v4()
   const match = {
@@ -247,7 +295,8 @@ export async function createMatchFromFlatmates(flatmates, demo=false, test=false
     createdAt: new Date(), //yarn  admin.firestore.FieldValue.serverTimestamp(),
     demo,
     test,
-    custom
+    custom,
+    alignments
   }
   const matchRef = admin.firestore().collection('matches').doc(matchUid)
   

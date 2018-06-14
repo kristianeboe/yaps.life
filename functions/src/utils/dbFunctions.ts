@@ -133,24 +133,68 @@ export async function updateCollection(req, res) {
       console.log('Error in updating matches', err)
       res.status(300).end()
     })
+    const realUsers = []
     await admin
     .firestore()
     .collection('users')
     .get()
     .then((snapshot) => {
-      snapshot.forEach(doc => {
+      snapshot.forEach(async doc => {
         const data = doc.data()
-        /* const propertyVector = data.propertyVector ? data.propertyVector : [3,3,3]
-        propertyVector.push(3) */
-        doc.ref.update({ 
-          currentMatches: {}
+        let {personalityVector, propertyVector, email} = data
+        if (!personalityVector) {
+          personalityVector = new Array(20).fill(0)
+        }
+        if (!propertyVector) {
+          propertyVector = new Array(20).fill(0)
+        }
+
+        if (propertyVector.length > 4) {
+          propertyVector = propertyVector.slice(0, 4)
+        }
+        if (propertyVector.some(el => el > 2)) {
+          propertyVector = propertyVector.map(el => el - 3)
+        }
+        if (propertyVector.some(el => el < -2 || el > 2)) {
+          propertyVector = propertyVector.map(el => {
+            if (el < -2) {
+              return -2
+            }
+            if (el > 2) {
+              return 2
+            }
+            return el
           })
+        }
+        if (personalityVector.some(el => el > 2)) {
+          personalityVector = personalityVector.map(el => el - 3)
+        }
+        if (personalityVector.some(el => el < -2 || el > 2)) {
+          personalityVector = personalityVector.map(el => {
+            if (el < -2) {
+              return -2
+            }
+            if (el > 2) {
+              return 2
+            }
+            return el
+          })
+        }
+        doc.ref.update({
+          personalityVector,
+          propertyVector
+        })
+        if (personalityVector.some(el => el !== 0 ) && propertyVector.some(el => el !== 0)) {
+          console.log(email, personalityVector, propertyVector)
+        }
+
+
       })
     }).catch((err) => {
       console.log('Error in updating users', err)
       res.status(300).end()
     })
-    res.status(200).end()
+    res.status(200).send(JSON.stringify(realUsers))
   }
 
 

@@ -11,7 +11,7 @@ export const validEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(email)
 }
-export const validPassword = password => password.length > 6
+export const validPassword = password => password.length > 5
 export const validPhone = phone => phone.length === 0 || phone.length >= 8 && phone.length < 14
 
 
@@ -29,7 +29,7 @@ const validBudget = buget => BUDGET_OPTIONS.some(el => el.value === buget)
 const validPropertySize = propertySize => PROPERTY_SIZE_OPTIONS.some(el => el.value === propertySize)
 const validStandard = standard => STANDARD_OPTIONS.some(el => el.value === standard)
 const validStyle = style => STYLE_OPTIONS.some(el => el.value === style)
-const validPropertyVector = propertyVector => propertyVector.length === 4 && propertyVector.reduce((f, c) => [1, 3, 5].includes(c))
+const validPropertyVector = propertyVector => propertyVector.length === 4 && propertyVector.reduce((f, c) => [-2, 0, 2].includes(c))
 
 
 const validListingURL = listingURL => listingURL.length === 0 || listingURL.includes('finn.no') || listingURL.includes('airbnb.com') || listingURL.includes('hybel.no') || listingURL.includes('utleiemegleren.no')

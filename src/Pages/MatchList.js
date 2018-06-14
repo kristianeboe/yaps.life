@@ -5,6 +5,7 @@ import _ from 'underscore'
 import axios from 'axios'
 import { auth, firestore } from '../firebase'
 import personAvatar from '../assets/images/personAvatar.png'
+import { mapCosineScoreToPercentage } from '../utils/alignMentFunctions'
 
 const fakeMatch = {
   uid: 'Getting cloud matched',
@@ -83,6 +84,7 @@ class MatchList extends Component {
 
   getMatched = (e) => {
     e.preventDefault()
+    if (!this.readyToMatch()) return
     console.log('about to match')
     this.setState({ gettingCloudMatched: 10 })
     axios
@@ -99,8 +101,8 @@ class MatchList extends Component {
   }
 
   createNewCustomMatch = (e) => {
-    if (!this.readyToMatch()) return
     e.preventDefault()
+    if (!this.readyToMatch()) return
     this.setState({ gettingCloudMatched: 10 })
     console.log('about to match')
     axios
@@ -133,6 +135,7 @@ class MatchList extends Component {
 
 
   render() {
+    console.log(this.state.matches)
     if (this.state.redirectToNewMatch) {
       return <Redirect push to={`/matches/${this.state.match.uid}`} />
     }
@@ -149,7 +152,6 @@ class MatchList extends Component {
       )
     }
 
-    console.log(this.state.user)
     return (
       <div style={{
         backgroundAttachment: 'fixed',
@@ -214,8 +216,8 @@ class MatchList extends Component {
                 <div>{match.createdAt.toDateString()}</div>
                 <div>{match.bestOrigin ? match.bestOrigin : match.location}</div>
                 <div>
-                  <div>{`Personality alignment: ${match.personalityAlignment ? match.personalityAlignment : ''}`}</div>
-                  <div>{`Property alignment: ${match.propertyAlignment ? match.propertyAlignment : ''}`}</div>
+                  <div>{`Personality alignment: ${mapCosineScoreToPercentage(match.personalityAlignment)}%`}</div>
+                  <div>{`Property alignment: ${mapCosineScoreToPercentage(match.propertyAlignment)}%`}</div>
                 </div>
                 <List horizontal>
                   {match.flatmates.map(mate => (
@@ -226,7 +228,7 @@ class MatchList extends Component {
                         {mate.workplace ? mate.workplace.split(/[ ,]+/)[0] : ''}
                       </List.Content>
                     </List.Item>
-              ))}
+                  ))}
                 </List>
               </Segment>
             ))}
