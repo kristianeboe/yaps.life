@@ -1,10 +1,13 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { render } from 'react-dom'
 import { BrowserRouter as Router, } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
 import 'semantic-ui-css/semantic.min.css'
 import './index.css'
 import registerServiceWorker from './registerServiceWorker'
 
+import rootReducer from './reducers'
 import App from './App'
 
 function hashLinkScroll() {
@@ -22,13 +25,18 @@ function hashLinkScroll() {
 }
 
 
-const RouterWrapper = () => (
-  <Router
-    onUpdate={hashLinkScroll}
-  >
-    <App />
-  </Router>
+const store = createStore(rootReducer)
+
+
+render(
+  <Provider store={store}>
+    <Router
+      onUpdate={hashLinkScroll}
+    >
+      <App />
+    </Router>
+  </Provider>,
+  document.getElementById('root')
 )
 
-ReactDOM.render(<RouterWrapper />, document.getElementById('root'))
 registerServiceWorker()
