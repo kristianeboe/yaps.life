@@ -252,7 +252,6 @@ class Profile extends Component {
       budget, propertySize, standard, style
     } = this.state
 
-    console.log(this.state.userData)
     return (
       <div style={{
         backgroundAttachment: 'fixed',

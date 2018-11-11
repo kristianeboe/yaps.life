@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Container, Button, Form, Icon, Divider, Message, Segment, Header } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
-import { firestore, auth, googleProvider, facebookProvider } from '../firebase'
 import { validEmail, validPassword } from '../utils/FormValidations'
+import { logInWithProvider, toggleSignUp, logInWithEmail, signUpWithEmail } from '../actions'
+import { getSignupFlag, getRedirectToProfile } from '../selectors'
 // const initialState = {
 //   email: 'kristian.e.boe@crux.no',
 //   password: 'Crux2005',
@@ -16,8 +18,6 @@ class Create extends Component {
     this.state = {
       email: '',
       password: '',
-      signUp: props.location.state ? props.location.state.signUp : false,
-      redirectToProfile: false,
       loading: false,
       formError: false,
       passwordMatchError: false,
@@ -26,110 +26,15 @@ class Create extends Component {
     // this.state = initialState
   }
 
-
-  setPhotoURL = (photoURL, loginProvider) => {
-    if (loginProvider === 'facebook') {
-      return `${photoURL}?type=large&width=720&height=720`
-    }
-    return photoURL
-  }
-
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
-  googleSignIn = async () => {
-    const userSignInOperation = await auth.signInWithPopup(googleProvider)
-    console.log(userSignInOperation)
-    if (userSignInOperation.additionalUserInfo.isNewUser) {
-      await this.createUserInDatabase(userSignInOperation.user, 'google')
-      this.setState({ redirectToProfile: true })
-    } else {
-      this.setState({ redirectToProfile: true })
-    }
-  }
-
-  // https://graph.facebook.com/kristianeboe/mutualfriends?user=fredrik.moger&access_token=EAACJi5OZB7w8BAM89fuYenUFWGZCKwdWdVNjoUFrDMqbPZA1kDfWFZCrAzCQU3G4k2qlC6TNFBxKooJksyaNNtXC1IJecvj49DDlE0XT2LkxPqTpiuEUcZApkFUzPaZACULzdkbbU6Rq5H6GwsZB8SZBkZBO0fvs3GkJdv6llg0hsOwZDZD
-
-  facebookLogin = async () => {
-    const userSignInOperation = await auth.signInWithPopup(facebookProvider)
-    // console.log(userSignInOperation)
-    if (userSignInOperation.additionalUserInfo.isNewUser) {
-      await this.createUserInDatabase(userSignInOperation.user, 'facebook')
-      this.setState({ redirectToProfile: true })
-    } else {
-      this.setState({ redirectToProfile: true })
-    }
-  }
-
-  createUserInDatabase = (user, loginProvider) => firestore
-    .collection('users')
-    .doc(user.uid)
-    .set({
-      uid: user.uid,
-      displayName: user.displayName ? user.displayName : '',
-      photoURL: user.photoURL ? this.setPhotoURL(user.photoURL, loginProvider) : '',
-      email: user.email,
-      phone: '',
-      personalityVector: new Array(20).fill(0),
-      propertyVector: new Array(4).fill(0),
-      loginProvider
-    })
-
-  handleSignUp = (event) => {
-    event.preventDefault()
-    const { email, password, passwordConfirm } = this.state
-
-    if (password !== passwordConfirm) {
-      this.setState({ passwordMatchError: true, formError: true })
-      return
-    }
-    this.setState({ passwordMatchError: false, formError: false, loading: true })
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((user) => {
-        console.log(user)
-        this.createUserInDatabase(user, 'email').then(() =>
-          this.setState({
-            email: '',
-            password: '',
-            loading: false,
-            redirectToProfile: true,
-          }))
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        console.log(error)
-        // ...
-      })
-  }
-
-  handleSignIn = (event) => {
-    event.preventDefault()
-    const { email, password } = this.state
-    if (!this.validPassword(password) || !this.validEmail(email)) {
-      this.setState({ formError: true })
-      return
-    }
-    this.setState({ passwordMatchError: false, formError: false, loading: true })
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        this.setState({
-          email: '',
-          password: '',
-          redirectToProfile: true,
-        })
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        console.log(error)
-        // ...
-      })
-  }
 
   render() {
+    const { signUp, redirectToProfile } = this.props
+    console.log(this.props)
     const {
-      signUp, redirectToProfile, loading, formError, passwordMatchError, errors,
-      email, password, passwordConfirm,
+      loading, formError, passwordMatchError, errors,
+      email, password, passwordConfirm
     } = this.state
     // && this.props.location.state ? this.props.location.state.redirectToProfile : false
     if (redirectToProfile) {
@@ -145,11 +50,11 @@ class Create extends Component {
             </Header.Subheader>
           </Header>
           <Button.Group size="large" style={{ display: 'flex' }}>
-            <Button color="facebook" onClick={this.facebookLogin}>
+            <Button color="facebook" onClick={() => this.props.loginWithProvider('FACEBOOK')}>
               <Icon name="facebook" />
             </Button>
             <Button.Or />
-            <Button color="grey" onClick={this.googleSignIn}>
+            <Button color="grey" onClick={() => this.props.loginWithProvider('GOOGLE')}>
               <Icon name="google" />
             </Button>
           </Button.Group>
@@ -178,7 +83,7 @@ class Create extends Component {
               onBlur={() => this.setState({ errors: { ...errors, password: !validPassword(password) } })}
               error={errors.password}
             />
-            {this.state.signUp && (
+            {signUp && (
             <Form.Input
               fluid
               icon="lock"
@@ -192,16 +97,16 @@ class Create extends Component {
               error={errors.passwordConfirm}
             />
             )}
-            {this.state.signUp ? (
-              <Button onClick={this.handleSignUp} color="orange" fluid size="large">
+            {signUp ? (
+              <Button onClick={this.props.signUpWithEmail} color="orange" fluid size="large">
               Sign up
               </Button>
           ) : (
-            <Button onClick={this.handleSignIn} color="orange" fluid size="large">
+            <Button onClick={this.props.logInWithEmail} color="orange" fluid size="large">
                 Log in
             </Button>
             )}
-            <Message onClick={() => this.setState({ signUp: !signUp })} >
+            <Message onClick={() => this.props.toggleSignUp(!signUp)} >
               <Icon name="help" />
               {signUp ? 'Already have a user?' : 'New to us?'}{' '}
               <a href="#" > {signUp ? 'Log in' : 'Sign up'}</a>&nbsp;
@@ -218,4 +123,15 @@ class Create extends Component {
   }
 }
 
-export default Create
+export default connect(
+  state => ({
+    signUp: getSignupFlag(state),
+    redirectToProfile: getRedirectToProfile(state)
+  }),
+  dispatch => ({
+    loginWithProvider: provider => dispatch(logInWithProvider(provider)),
+    loginWithEmail: (email, password) => dispatch(logInWithEmail(email, password)),
+    signUpWithEmail: (email, password, passwordConfirm) => dispatch(signUpWithEmail(email, password, passwordConfirm)),
+    toggleSignUp: toggle => dispatch(toggleSignUp(toggle))
+  })
+)(Create)

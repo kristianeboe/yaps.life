@@ -1,16 +1,27 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { BrowserRouter as Router, } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunkMiddleware from 'redux-thunk'
 import 'semantic-ui-css/semantic.min.css'
+
 import './index.css'
 import registerServiceWorker from './registerServiceWorker'
-
 import rootReducer from './reducers'
-import App from './App'
+import Root from './Root'
+import { logger, crashReporter } from './middleware'
 
-function hashLinkScroll() {
+registerServiceWorker()
+const store = createStore(
+  rootReducer,
+  applyMiddleware(thunkMiddleware, logger, crashReporter)
+)
+
+// store.dispatch({ type: 'CHANGE_PROFILE', key: 'displayName', value: 'Bob' })
+// store.dispatch(fetchUserData('123445')).then(() => console.log(store.getState()))
+
+render(<Root store={store} />, document.getElementById('root'))
+
+/* function hashLinkScroll() {
   const { hash } = window.location
   if (hash !== '') {
     // Push onto callback queue so it runs after the DOM is updated,
@@ -22,21 +33,4 @@ function hashLinkScroll() {
       if (element) element.scrollIntoView()
     }, 0)
   }
-}
-
-
-const store = createStore(rootReducer)
-
-
-render(
-  <Provider store={store}>
-    <Router
-      onUpdate={hashLinkScroll}
-    >
-      <App />
-    </Router>
-  </Provider>,
-  document.getElementById('root')
-)
-
-registerServiceWorker()
+} */

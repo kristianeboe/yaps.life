@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { getMatches, getUser } from './selectors'
 import { auth, firestore } from './firebase'
 import AppHeader from './Components/AppHeader'
 import Home from './Pages/Home'
@@ -12,36 +14,22 @@ import AccountSettings from './Pages/AccountSettings'
 // import LandlordProfie from './Components/LandlordProfile'
 import ApartmentFinder from './Pages/ApartmentFinder'
 import TOS from './Pages/TOS'
+import { fetchUserData, logInWithProvider } from './actions'
 
 class App extends Component {
-  constructor(props) {
-    super(props)
-    this.unsubscribe = null
-    this.state = {
-      user: null,
-      userData: {},
-    }
-  }
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.unsubscribe = firestore.collection('users').doc(user.uid).onSnapshot(doc => this.setState({ user, userData: doc.data() }))
-      } else {
-        this.setState({ user, userData: {} })
+        this.props.fetchUserData(user.uid)
       }
     })
   }
 
-  componentWillUnmount() {
-    if (this.unsubscribe) {
-      this.unsubscribe()
-    }
-  }
   render() {
-    const { user, userData } = this.state
     return (
       <div className="app">
-        <AppHeader user={user} newMatches={userData ? userData.newMatches : false} />
+        {/* //user={user} newMatches={userData ? userData.newMatches : false} */}
+        <AppHeader />
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/create" component={Create} />
@@ -58,4 +46,13 @@ class App extends Component {
   }
 }
 
-export default App
+export default withRouter(connect(
+  state => ({
+    matches: getMatches(state),
+    user: getUser(state),
+  }),
+  dispatch => ({
+    fetchUserData: uid => dispatch(fetchUserData(uid)),
+    logInWithProvider: provider => dispatch(logInWithProvider(provider))
+  })
+)(App))

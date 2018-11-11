@@ -1,13 +1,11 @@
-const matches = (state = [], action) => {
+import { REQUEST_USER_MATCHES, RECEIVE_USER_MATCHES } from '../actions'
+
+const matches = (state = {}, action) => {
   switch (action.type) {
-    case 'ADD_MATCH':
-      return [
-        ...state,
-        {
-          id: action.id,
-          flatmates: action.flatmates,
-        }
-      ]
+    case REQUEST_USER_MATCHES:
+      return state
+    case RECEIVE_USER_MATCHES:
+      return action.payload.data
     default:
       return state
   }
