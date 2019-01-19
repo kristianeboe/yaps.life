@@ -2,19 +2,23 @@ import axios from 'axios'
 import * as cheerio from 'cheerio'
 
 export async function getListingDetails(listingURL: string, nrOfFlatmates) {
-  const response:any = await axios.get(listingURL).catch(err => console.log('Error in getting Finn url'))
+  let response = {
+    data: ''
+  }
+  try {
+    response = await axios.get(listingURL)
+
+  } catch(err) {
+    console.log('Error in getting Finn url')
+    return null
+  }
   const html = response.data
   const $ = cheerio.load(html)
 
-  const title = $('h1').text()
-  const address = $('.word-break p')
-    .first()
+  const title = $('div > section:nth-child(4) > h1').text()
+  const address = $('div > section:nth-child(4) > p')
     .text()
-  const pricePerMonth = $('div.h1.mtn.r-margin').text().replace(/[,-\s]/g, '')
-
-  // console.log($('.word-break div'))
-  // const price = $('.word-break div')['5'].text()
-  // console.log(price)
+  const pricePerMonth = $('div > div:nth-child(5) > span.u-t3').text().replace(/[,-\s]/g, '')
 
   // need to init object for TypeScript
   const listingTemp = {
@@ -24,7 +28,7 @@ export async function getListingDetails(listingURL: string, nrOfFlatmates) {
     propertySize: 0,
   }
 
-  const dlItems = $('dl.r-prl.mhn.multicol.col-count1upto640.col-count2upto768.col-count1upto990.col-count2from990')
+  const dlItems = $('div.grid__unit.u-r-size2of3 > div > section:nth-child(6) > dl')
   dlItems.children().each((i, ele) => {
     if (ele.name === 'dt') {
       const key = ele.children[0].data.trim()
@@ -75,7 +79,7 @@ export async function getListingDetails(listingURL: string, nrOfFlatmates) {
   })
 
   const facilities = []
-  const facilitiesSection = $('ul.bullets.col-count1upto480.col-count2upto990.col-count2from990')
+  const facilitiesSection = $('div.grid > div.grid__unit.u-r-size2of3 > div > div:nth-child(8) > ul')
   facilitiesSection.children().each((i, ele) => {
     facilities.push(ele.children[0].data.trim())
   })

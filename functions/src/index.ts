@@ -261,14 +261,14 @@ export const getBestOriginForMatchHTTPS = functions.https.onRequest((req, res) =
 
 export const getListingDetailsHTTPS = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    const { listingURL, nrOfFlatmates } = req.body
-    console.log(listingURL, req.body)
+    let { listingURL, nrOfFlatmates } = req.body
 
     if (!listingURL) {
-      res.status(400).end()
+      return res.status(400).end()
     }
     const listing = await getListingDetails(listingURL, nrOfFlatmates)
-    res.status(200).send(listing)
+    console.log(listing)
+    return res.status(200).json(listing)
   })
 })
 

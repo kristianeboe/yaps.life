@@ -6,7 +6,6 @@
     "axios": "^0.17.1",
     "cheerio": "^1.0.0-rc.2",
     "compute-cosine-distance": "^1.0.0",
-    "compute-cosine-distance": "^1.0.0",
     "cors": "^2.8.4",
     "density-clustering": "^1.3.0",
     "euclidean-distance": "^1.0.0",

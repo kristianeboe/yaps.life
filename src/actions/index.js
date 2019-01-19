@@ -44,7 +44,6 @@ export function logOutUserSuccess() {
   }
 }
 
-
 export function redirect(page) {
   return {
     type: REDIRECT,
@@ -72,7 +71,6 @@ export function setActiveLink(linkId) {
   }
 }
 
-
 function requestUserData(userId) {
   return {
     type: REQUEST_USER_DATA,
@@ -84,7 +82,7 @@ function requestUserData(userId) {
 
 function requestUserMatches() {
   return {
-    type: REQUEST_USER_MATCHES,
+    type: REQUEST_USER_MATCHES
   }
 }
 
@@ -112,7 +110,11 @@ function receiveUserMatches(userMatches) {
 function fetchUserMatches(matchIds) {
   return async (dispatch) => {
     dispatch(requestUserMatches())
-    const matches = await Promise.all(Object.keys(matchIds).map(id => firestore.collection('matches').doc(id).get()))
+    const matches = await Promise.all(Object.keys(matchIds).map(id =>
+      firestore
+        .collection('matches')
+        .doc(id)
+        .get()))
     dispatch(receiveUserMatches(matches.map(match => match.data())))
   }
 }
@@ -120,7 +122,10 @@ function fetchUserMatches(matchIds) {
 export function fetchUserData(uid) {
   return async (dispatch) => {
     dispatch(requestUserData(uid))
-    const user = await firestore.collection('users').doc(uid).get()
+    const user = await firestore
+      .collection('users')
+      .doc(uid)
+      .get()
     const data = user.data()
     dispatch(fetchUserMatches(data.currentMatches))
     dispatch(receiveUserData(uid, user.data()))
@@ -135,24 +140,26 @@ const setPhotoURL = (photoURL, loginProvider) => {
   // https://graph.facebook.com/kristianeboe/mutualfriends?user=fredrik.moger&access_token=EAACJi5OZB7w8BAM89fuYenUFWGZCKwdWdVNjoUFrDMqbPZA1kDfWFZCrAzCQU3G4k2qlC6TNFBxKooJksyaNNtXC1IJecvj49DDlE0XT2LkxPqTpiuEUcZApkFUzPaZACULzdkbbU6Rq5H6GwsZB8SZBkZBO0fvs3GkJdv6llg0hsOwZDZD
 }
 
-const createUserInDatabase = (user, loginProvider) => firestore
-  .collection('users')
-  .doc(user.uid)
-  .set({
-    uid: user.uid,
-    displayName: user.displayName ? user.displayName : '',
-    photoURL: user.photoURL ? setPhotoURL(user.photoURL, loginProvider) : '',
-    email: user.email,
-    phone: '',
-    personalityVector: new Array(20).fill(0),
-    propertyVector: new Array(4).fill(0),
-    loginProvider
-  })
+const createUserInDatabase = (user, loginProvider) =>
+  firestore
+    .collection('users')
+    .doc(user.uid)
+    .set({
+      uid: user.uid,
+      displayName: user.displayName ? user.displayName : '',
+      photoURL: user.photoURL ? setPhotoURL(user.photoURL, loginProvider) : '',
+      email: user.email,
+      phone: '',
+      personalityVector: new Array(20).fill(0),
+      propertyVector: new Array(4).fill(0),
+      loginProvider
+    })
 
 export function logInWithProvider(method) {
   return async (dispatch) => {
     dispatch(logInUser())
-    const provider = method === SIGNIN_METHODS.GOOGLE ? googleProvider : facebookProvider
+    const provider =
+      method === SIGNIN_METHODS.GOOGLE ? googleProvider : facebookProvider
     const userSignInOperation = await auth.signInWithPopup(provider)
     if (userSignInOperation.additionalUserInfo.isNewUser) {
       await createUserInDatabase(userSignInOperation.user, method)
@@ -168,7 +175,7 @@ export function signUpWithEmail(email, password, passwordConfirm) {
       console.log('passwordMatchError')
       return
       // dispatch(passwordMatchError())
-    // this.setState({ passwordMatchError: true, formError: true })
+      // this.setState({ passwordMatchError: true, formError: true })
     }
     dispatch(logInUser()) // signupStart
     // this.setState({ passwordMatchError: false, formError: false, loading: true })
