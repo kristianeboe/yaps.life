@@ -29,7 +29,7 @@ const validBudget = buget => BUDGET_OPTIONS.some(el => el.value === buget)
 const validPropertySize = propertySize => PROPERTY_SIZE_OPTIONS.some(el => el.value === propertySize)
 const validStandard = standard => STANDARD_OPTIONS.some(el => el.value === standard)
 const validStyle = style => STYLE_OPTIONS.some(el => el.value === style)
-const validPropertyVector = propertyVector => propertyVector.length === 4 && propertyVector.reduce((f, c) => [-2, 0, 2].includes(c))
+const validPropertyVector = propertyVector => propertyVector.length === 4 && propertyVector.reduce((f, c) => [1, 3, 5].includes(c))
 
 
 const validListingURL = listingURL => listingURL.length === 0 || listingURL.includes('finn.no') || listingURL.includes('airbnb.com') || listingURL.includes('hybel.no') || listingURL.includes('utleiemegleren.no')

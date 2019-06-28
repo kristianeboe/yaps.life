@@ -281,13 +281,13 @@ export const addExternalListingToMatchHTTPS = functions.https.onRequest((req, re
     const match = matchDoc.data()
     const groupScore = getInitialGroupScoreForListing(listing, match)
     
-    if (groupScore < 2) {
-      // commute score
-      const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
-      await addExternalListingToMatch(listing, groupScore, commuteTime, match)
-    }
 
-    res.status(200).end()
+    // commute score
+    const commuteTime = await getAverageCommuteTime(listing.address, match.flatmates)
+    await addExternalListingToMatch(listing, groupScore, commuteTime, match)
+
+
+    res.status(200).send('Listing added to match')
   })
 })
 

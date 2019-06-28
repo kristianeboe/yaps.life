@@ -15,6 +15,7 @@ import ChatRoom from '../Components/ChatRoom'
 import FlatRank from '../Components/FlatRank'
 import Flatmates from '../Containers/Flatmates'
 import FlatList from '../Containers/FlatList'
+import PropertyCard from '../Containers/PropertyCard'
 
 /* const getListingScore = (commuteTime, groupPropertyVector, propertyVector) => {
   const weights = [0.3, 0.3, 0.2, 0.1, 0.1]
@@ -73,7 +74,8 @@ class Match extends Component {
   }
 
 
-  getPropertyList = async (currentListings, groupPropertyVector) => Promise.all(Object.values(currentListings).map(async (listing) => {
+  getPropertyList = async (currentListings, groupPropertyVector) => Promise.all(Object.keys(currentListings).map(async (listingKey) => {
+    const listing = currentListings[listingKey]
     if (listing.source === 'external') {
       // const listingScore = getListingScore(listing.commuteTime, groupPropertyVector, listing.listingData.propertyVector)
       return { ...listing }
@@ -107,6 +109,7 @@ class Match extends Component {
           flatmatesLoading: false,
           showChatRoom: true,
         })
+        console.log('currentListings', currentListings)
         const matchPropertyList = await this.getPropertyList(currentListings, groupPropertyVector)
         this.setState({
           propertyList: matchPropertyList,
@@ -282,7 +285,22 @@ class Match extends Component {
                       </Header.Subheader>
                     </Header>
                     {propertyList.length === 0 &&
-                    <Segment style={{ minHeight: '4em' }} loading={propertyList.length === 0} />
+                    <PropertyCard
+                      key="default"
+                      property={{
+                      title: 'Demo listing', address: 'demo address', pricePerRoom: 2500, propertyVector: [1, 2, 3, 4], listingURL: 'default', showChat: false, rentFrom: new Date(), rentTo: null, numberOfBedrooms: flatmates.length
+                     }}
+                      commuteTime="commute time"
+                      groupScore={3}
+                      listingScore={3}
+                      listingId="234123123123123123"
+                      matchId="341234123123123123"
+                      index={0}
+                      matchDoc={this.state.matchDoc || { data: () => [] }}
+                      landlord={false}
+                      fastest
+                      cheapest={false}
+                    />
                   }
                     <FlatList matchDoc={this.state.matchDoc} flats={propertyList} />
                   </Segment>

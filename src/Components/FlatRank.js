@@ -57,6 +57,8 @@ class FlatRank extends Component {
       listingURL: this.state.listingURL,
     }
 
+    console.log([this.state.budget, this.state.propertySize, this.state.standard, this.state.style])
+
     if (formFields.address && (!formFields.addressLatLng.lat || !formFields.addressLatLng.lng)) {
       await geocodeByAddress(formFields.address).then(results => getLatLng(results[0]))
         .then(({ lat, lng }) => {
@@ -95,6 +97,7 @@ class FlatRank extends Component {
       }
       const url = 'https://us-central1-yaps-1496498804190.cloudfunctions.net/addExternalListingToMatchHTTPS'
       const response = await axios.post(url, data)
+      console.log(response)
 
       this.setState({
         evaluateListingSuccess: true, ...initialFormState, evaluateListingError: false, evaluateListingLoading: false
