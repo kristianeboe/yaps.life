@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@sentry/browser": "^4.3.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "compute-cosine-distance": "^1.0.0",
     "euclidean-distance": "^1.0.0",
     "firebase": "^4.12.0",
