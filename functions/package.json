@@ -11,7 +11,7 @@
     "euclidean-distance": "^1.0.0",
     "firebase-admin": "5.11.0",
     "firebase-functions": "^1.0.1",
-    "jsdom": "^11.11.0",
+    "jsdom": "^16.5.0",
     "moment": "^2.22.1",
     "node-kmeans": "^1.1.8",
     "uuid": "^3.2.1"
