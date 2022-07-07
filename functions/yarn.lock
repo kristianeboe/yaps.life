@@ -1044,12 +1044,6 @@ compressible@^2.0.12:
 
 compute-cosine-distance@^1.0.0:
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/compute-cosine-distance/-/compute-cosine-distance-1.0.0.tgz#aa1f9b3fee83f1859e4550615153420a3ca35600"
-  dependencies:
-    compute-cosine-distance "^1.0.0"
-
-compute-cosine-distance@^1.0.0:
-  version "1.0.0"
   resolved "https://registry.yarnpkg.com/compute-cosine-distance/-/compute-cosine-distance-1.0.0.tgz#29f2bf2e7baefa231caba40591a31c17b19a4e95"
   dependencies:
     compute-dot "^1.1.0"
@@ -3378,13 +3372,9 @@ modelo@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/modelo/-/modelo-4.2.0.tgz#3b4b420023a66ca7e32bdba16e710937e14d1b0b"
 
-moment@*, moment@^2.22.1:
-  version "2.22.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
-
-moment@2.x.x:
-  version "2.20.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
+moment@*, moment@2.x.x, moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
 
 ms@2.0.0:
   version "2.0.0"
