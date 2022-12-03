@@ -1044,12 +1044,6 @@ compressible@^2.0.12:
 
 compute-cosine-distance@^1.0.0:
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/compute-cosine-distance/-/compute-cosine-distance-1.0.0.tgz#aa1f9b3fee83f1859e4550615153420a3ca35600"
-  dependencies:
-    compute-cosine-distance "^1.0.0"
-
-compute-cosine-distance@^1.0.0:
-  version "1.0.0"
   resolved "https://registry.yarnpkg.com/compute-cosine-distance/-/compute-cosine-distance-1.0.0.tgz#29f2bf2e7baefa231caba40591a31c17b19a4e95"
   dependencies:
     compute-dot "^1.1.0"
@@ -1245,8 +1239,8 @@ decamelize@^1.0.0, decamelize@^1.1.1:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
 decode-uri-component@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
 
 deep-equal@^1.0.1:
   version "1.0.1"
